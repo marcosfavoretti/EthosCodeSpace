@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/ethos-codespace/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/ethos-codespace/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/ethos-codespace",
+  "projects": {
+    "estrutura-api": {
+      "type": "application",
+      "root": "apps/estrutura-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/estrutura-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/estrutura-api/tsconfig.app.json"
+      }
+    },
+    "ethos-codespace": {
+      "type": "application",
+      "root": "apps/ethos-codespace",
+      "entryFile": "main",
+      "sourceRoot": "apps/ethos-codespace/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ethos-codespace/tsconfig.app.json"
+      }
+    },
+    "modules": {
+      "type": "library",
+      "root": "libs/modules",
+      "entryFile": "index",
+      "sourceRoot": "libs/modules/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/modules/tsconfig.lib.json"
+      }
+    },
+    "notas-maker": {
+      "type": "application",
+      "root": "apps/notas-maker",
+      "entryFile": "main",
+      "sourceRoot": "apps/notas-maker/src",
+      "compilerOptions": {
+        "assets": [
+          "templates/*"
+        ],
+        "tsConfigPath": "apps/notas-maker/tsconfig.app.json"
+      }
+    },
+    "user-authenticator": {
+      "type": "application",
+      "root": "apps/user-authenticator",
+      "entryFile": "main",
+      "sourceRoot": "apps/user-authenticator/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/user-authenticator/tsconfig.app.json"
+      }
+    }
+  }
+}
