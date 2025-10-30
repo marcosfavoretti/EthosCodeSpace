@@ -1,16 +1,27 @@
 import { NestFactory } from '@nestjs/core';
-import { NotasMakerModule } from './notas-maker.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { NotasMakerWorkerModule } from './notas-maker-worker.module';
+import { __NOTAS_QUEUE } from './@core/symbols';
+import { NOTA_QUEUE } from './@core/consts';
+
 async function bootstrap() {
-  const app = await NestFactory.create(NotasMakerModule);
-  const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
-    .setVersion('1.0')
-    .addTag('cats')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/doc', app, documentFactory);
-  await app.listen(process.env.port ?? 3000);
+  const appContext = await NestFactory.createApplicationContext(NotasMakerWorkerModule);
+  const configService = appContext.get(ConfigService);
+
+  const app = await NestFactory.createMicroservice(NotasMakerWorkerModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get<string>('RABBITMQ_URL')],
+      queue: NOTA_QUEUE,
+      queueOptions: {
+        durable: false,
+      },
+    },
+  });
+
+  await app.listen();
+  console.log('Worker is listening');
+  await appContext.close();
 }
 bootstrap();

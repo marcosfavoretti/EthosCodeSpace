@@ -1,7 +1,8 @@
 import { CreateNotaReqDTO } from "@app/modules/contracts/dto/CreateNotaReq.dto";
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { NotaPayloadFactory } from "../@core/service/NotaPayloadFactory";
 import { NotaServiceFactory } from "../@core/service/NotaServiceFactory";
+import { GerarNotaResDTO } from "@app/modules/contracts/dto/GerarNotaRes.dto";
 
 @Injectable()
 export class GerarNotaUseCase {
@@ -11,7 +12,7 @@ export class GerarNotaUseCase {
         private notaPayloadFabrica: NotaPayloadFactory
     ) { }
 
-    async execute(dto: CreateNotaReqDTO): Promise<string> {
+    async execute(dto: CreateNotaReqDTO): Promise<GerarNotaResDTO> {
         try {
             const { payload, tipo } = dto;
             const nota = await this.notaPayloadFabrica.create({
@@ -22,9 +23,12 @@ export class GerarNotaUseCase {
                 .buildNota({
                     identificador: nota[0].type
                 });
-            const { content, fileName } = await notaStrategy.gerar(nota);
-            if (fileName) return fileName;
-            return content instanceof Buffer ? content.toString() : content as string;
+            const { content, fileName, mimeType } = await notaStrategy.gerar(nota);
+            return {
+                content: content as Buffer,
+                fileName,
+                mimeType     
+            };
         } catch (error) {
             throw new BadRequestException(error.message)
         }

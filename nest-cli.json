@@ -49,6 +49,18 @@
         "tsConfigPath": "apps/notas-maker/tsconfig.app.json"
       }
     },
+    "notas-maker-worker": {
+      "type": "application",
+      "root": "apps/notas-maker-worker",
+      "entryFile": "main.worker",
+      "sourceRoot": "apps/notas-maker/src",
+      "compilerOptions": {
+        "assets": [
+          "templates/*"
+        ],
+        "tsConfigPath": "apps/notas-maker/tsconfig.worker.json"
+      }
+    },
     "user-authenticator": {
       "type": "application",
       "root": "apps/user-authenticator",

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { NotasMakerModule } from './../src/notas-maker.module';
+import { NotasMakerModule } from '../src/notas-maker.module-master';
 
 describe('NotasMakerController (e2e)', () => {
   let app: INestApplication;

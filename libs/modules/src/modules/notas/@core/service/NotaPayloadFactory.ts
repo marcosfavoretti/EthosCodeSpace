@@ -19,13 +19,17 @@ export class NotaPayloadFactory {
 
             case __InventarioAlmox.toString():
                 const payloadCast = payload as CreateInventarioNotaReqDTO[];
-                return payloadCast
+                const notas = payloadCast
                     .map(pay => new NotaInventarioAlmox(
                         pay.id,
                         pay.cod_item,
                         pay.cod_local_estoq,
                         pay.den_item_reduz
                     ));
+                
+                console.log(notas.length)
+  
+                return notas;
 
             default:
                 throw new Error(`Tipo de nota desconhecido: ${tipo}`);

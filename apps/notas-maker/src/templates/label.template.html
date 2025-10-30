@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=400, initial-scale=1.0">
+    <title>Etiqueta 5x3cm</title>
+    <style>
+        /* NOTA CRÍTICA:
+          Este CSS assume uma renderização de 203 DPI (8 dots/mm).
+          - Largura: 50mm * 8 = 400px
+          - Altura: 30mm * 8 = 240px
+          Configure seu renderizador de imagem para usar um viewport de 400x240.
+        */
+        body {
+            margin: 0;
+            padding: 0;
+            /* Use uma fonte monoespaçada e limpa para o valor */
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0; /* Fundo cinza (só para preview) */
+        }
+
+        .label {
+            /* Dimensões exatas em pixels (baseado em 203 DPI) */
+            width: 400px;
+            height: 240px;
+
+            /* Apenas para preview (pode remover) */
+            /* width: 5cm; 
+              height: 3cm;
+              border: 1px dashed #888;
+            */
+
+            background-color: #ffffff; /* Fundo branco obrigatório */
+            box-sizing: border-box; /* Impede que padding/border mude o tamanho */
+            overflow: hidden; /* Garante que nada vaze */
+
+            /* Layout Flexbox para centralizar tudo */
+            display: flex;
+            flex-direction: column;
+            align-items: center;      /* Centraliza horizontalmente */
+            justify-content: center; /* Centraliza verticalmente */
+            padding: 10px; /* Um pequeno respiro interno */
+        }
+
+        .datamatrix-image {
+            /* Define o tamanho máximo da imagem */
+            max-width: 100%;
+            max-height: 180px; /* Ajuste (Altura total 240px - 60px do texto) */
+            object-fit: contain;
+            margin-bottom: 8px; /* Espaço entre imagem e texto */
+        }
+
+        .datamatrix-value {
+            font-size: 30px; /* Tamanho de fonte fixo */
+            font-weight: bold;
+            text-align: center;
+            color: #000000;
+            
+            /* Essencial para strings de datamatrix que não têm espaços */
+            word-break: break-all; 
+            
+            line-height: 1.2;
+            max-height: 50px; /* Garante que não quebre o layout */
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="label">
+
+        <img 
+            class="datamatrix-image" 
+            src="data:image/png;base64,{{datamatrixImageBase64}}" 
+            alt="Datamatrix"
+        >
+
+        <div class="datamatrix-value">
+            {{datamatrixValue}}
+        </div>
+
+    </div>
+
+</body>
+</html>
