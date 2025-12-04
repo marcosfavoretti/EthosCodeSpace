@@ -45,7 +45,7 @@ export class AuthController {
     private checkUserTokenUsecase: CheckUserTokenUsecase,
     @Inject(ValidaCriacaoUsuarioUseCase)
     private validaCriacaoUsuarioUseCase: ValidaCriacaoUsuarioUseCase,
-  ) {}
+  ) { }
 
   @Get()
   @Render('index')
@@ -77,7 +77,7 @@ export class AuthController {
     return this.createUserUsecase.execute(createUserDto);
   }
 
-  
+
   /**endpoint para validacao de usuario que retorna um html para ser renderizado*/
   @Get('validate-user/:token')
   @Render('user-validation')
@@ -202,6 +202,8 @@ export class AuthController {
    * @description valida se o token é valido ou nao
    */
   @Post('check-token')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Check JWT validity' })
   @ApiBody({
@@ -212,8 +214,8 @@ export class AuthController {
     description: 'Token validity',
     schema: { example: { isValid: true } },
   })
-  async checkToken(@Body('token') token: string) {
-    const isValid = this.checkUserTokenUsecase.execute(token);
+  async checkToken(@Req() req: CustomRequest) {
+    const isValid = this.checkUserTokenUsecase.execute(req.cookies.access_token);
     return { isValid };
   }
 }
