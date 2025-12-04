@@ -1,64 +1,60 @@
-import { Partcode } from "@app/modules/shared/classes/Partcode";
-import { Processos } from "./Processos";
+import { Partcode } from '@app/modules/shared/classes/Partcode';
+import { Processos } from './Processos';
 
 export class ItemEstrutura {
-    constructor(
-        private partcode: Partcode,
-        private itemCliente: string,
-        private qtd: number,
-        private status: string,
-        private ehControle: boolean,
-        private filhos: Array<ItemEstrutura> = [],
-        private itemPai?: ItemEstrutura,
-    ) { }
+  constructor(
+    public status: string,
+    public partcode: Partcode,
+    public itemCliente: string,
+    public qtd: number,
+  ) {}
 
-    addFilhos(...filho: ItemEstrutura[]): void {
-        this.filhos.push(...filho);
-    }
+  private _ehControle: boolean;
 
-    getEhControle(){
-        return this.ehControle;
-    }
+  setItemDeControle() {
+    this._ehControle = true;
+  }
 
-    getPartcode(): Partcode {
-        return this.partcode;
-    }
-    getChildren(): ItemEstrutura[] {
-        return this.filhos;
-    }
-    getItemPai(): ItemEstrutura | undefined {
-        return this.itemPai;
-    }
-    getStatus(): string {
-        return this.status;
-    }
-    getQtd(): number {
-        return this.qtd;
-    }
-    getCodItemCliente(): string {
-        return this.itemCliente;
-    }
-    isFinal(): boolean {
-        return 'F' === this.status;
-    }
-    static createItem(props: {
-        partcode: string,
-        ehControle: boolean,
-        itemCliente: string,
-        qtd: number,
-        status: string,
-        filhos?: Array<Processos>,
-        itemPai?: ItemEstrutura
-    }): ItemEstrutura {
-        const novoItem = new ItemEstrutura(
-            new Partcode(props.partcode),
-            props.itemCliente,
-            props.qtd,
-            props.status,
-            props.ehControle,
-            [],//sem filhos
-            props?.itemPai
-        );
-        return novoItem;
-    }
+  get ehControle() {
+    return this._ehControle;
+  }
+
+  static createItem(props: {
+    partcode: string | Partcode;
+    itemCliente: string;
+    qtd: number;
+    status: string;
+    ehControle: boolean;
+  }) {
+    const item = new ItemEstrutura(
+      props.status,
+      props.partcode instanceof Partcode
+        ? props.partcode
+        : new Partcode(props.partcode),
+      props.itemCliente,
+      props.qtd,
+    );
+    item.setItemDeControle();
+    return item;
+  }
+
+  // get ehControle() {
+  //     return this._ehControle;
+  // }
+
+  // get status() {
+  //     return this._status;
+  // }
+
+  // get partcode() {
+  //     return this._partcode;
+  // }
+
+  // get itemCliente() {
+  //     return this._itemCliente;
+  // }
+
+  // get qtd() {
+  //     return this._qtd
+  // }
 }

@@ -1,5 +1,6 @@
 export enum CargoEnum {
   ADMIN = 'ADMIN',
   PCP = 'PCP',
-  USER = 'USER'
+  USER = 'USER',
+  CATERPILLAR_USER = 'CATERPILLAR_USER',
 }

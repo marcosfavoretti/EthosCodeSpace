@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Validação de Usuário</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            background-color: #fff;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
+        h1.success {
+            color: #28a745;
+        }
+        h1.failure {
+            color: #dc3545;
+        }
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {{#if success}}
+            <h1 class="success">Sucesso!</h1>
+            <p>{{ message }}</p>
+            <p>Você já pode fechar esta página.</p>
+        {{else}}
+            <h1 class="failure">Falha na Validação</h1>
+            <p>{{ message }}</p>
+        {{/if}}
+    </div>
+    <span>se navegador será redirecionado em 30 segundos para o aplicativo</span>
+</body>
+<script>
+    setTimeout(function() {
+        window.location.href = 'https://app.ethos.ind.br';
+    }, 30000); 
+</script>
+</html>

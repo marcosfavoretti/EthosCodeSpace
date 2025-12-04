@@ -12,9 +12,9 @@ import { UserServiceModule } from '@app/modules/modules/user/UserService.module'
     }),
     TypeormDevConfigModule,
     UserServiceModule,
-    UserModule
+    UserModule,
   ],
   controllers: [DefaultController],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

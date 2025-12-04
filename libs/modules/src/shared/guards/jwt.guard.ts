@@ -1,50 +1,52 @@
-import { Injectable, CanActivate, ExecutionContext, Inject } from '@nestjs/common';
-import { JwtHandler } from '../../modules/user/infra/service/JwtHandler';
-import { User } from '../../modules/user/@core/entities/User.entity';
-import { IUserService } from '../../modules/user/@core/interfaces/IUserService';
-import { cookiesExtractor } from '@app/modules/utils/cookiesExtractor';
-import { CustomRequest } from '@app/modules/shared/types/AppRequest.type';
-import { UserService } from '@app/modules/modules/user/infra/service/User.service';
+import {
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException, // Use Unauthorized (401) para auth, Forbidden (403) é para permissão
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt'; // Use o padrão do Nest ou seu wrapper
+import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  private jwtHandler = new JwtHandler();
+  private readonly logger = new Logger(JwtGuard.name);
+
   constructor(
-    @Inject(IUserService) private userService: UserService
-  ) { }
+    private jwtService: JwtService,
+    private configService: ConfigService
+  ) {}
 
-  async canActivate(
-    context: ExecutionContext,
-  ): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request: Request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromCookie(request);
+
+    if (!token) {
+      throw new UnauthorizedException('Token não encontrado');
+    }
+
     try {
-      const request: CustomRequest = context.switchToHttp().getRequest();
-      // Tenta pegar do cookie (withCredentials)
-      const cookies = cookiesExtractor(request);
-      let accessToken = cookies && cookies['access_token'];
+      // 1. Verifica se a assinatura é válida e se não expirou
+      // Isso NÃO vai no banco de dados. É pura criptografia/matemática.
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
 
-      // Se não encontrou no cookie, tenta pegar do header Authorization (Bearer)
-      if (!accessToken) {
-        const authHeader = request.headers['authorization'] || request.headers['Authorization'];
-        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-          accessToken = authHeader.slice(7).trim();
-        }
-      }
+      // Isso desacopla totalmente do banco de dados MySQL
+      request['user'] = {
+        ...payload // Lembra da conversa anterior? Isso ajuda aqui!
+        // ...outros dados úteis do payload
+      };
 
-      if (!accessToken) {
-        return false;
-      }
-
-      const decodedToken = this.jwtHandler.decodeToken(accessToken) as User;
-      console.log(decodedToken);
-      const user = await this.userService.getUser(decodedToken.id);
-      if (!user) {
-        return false;
-      }
-      request.user = user;
-      return this.jwtHandler.checkToken(accessToken);
+      return true;
+    } catch (error) {
+      this.logger.warn(`Token inválido: ${error.message}`);
+      throw new UnauthorizedException('Sessão inválida ou expirada');
     }
-    catch (error) {
-      return false;
-    }
+  }
+
+  private extractTokenFromCookie(request: Request): string | undefined {
+    return request.cookies?.access_token;
   }
 }

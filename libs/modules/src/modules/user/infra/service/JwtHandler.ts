@@ -1,42 +1,37 @@
 import { jwtWrapper } from '@app/modules/utils/jwt.wrapper';
 import { User } from '../../@core/entities/User.entity';
+import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
 
-
+@Injectable()
 export class JwtHandler {
-    private secretKey: string;
-    private expiresIn: number;
+  private secretKey: string;
+  private expiresIn: number;
 
-    constructor() {
-        this.secretKey = String(process.env.SECRET);
-        this.expiresIn = Number(process.env.EXPIREHOURS);
-    }
+  constructor(private configService: ConfigService) {
+    this.secretKey = this.configService.get<string>('SECRET', 'default-secret');
+    this.expiresIn = this.configService.get<number>('EXPIREHOURS', 3600);
+  }
 
-    checkToken(token: string): boolean {
-        try {
-            jwtWrapper().verify(token, this.secretKey);
-            return true;
-        } catch (error) {
-            return false;
-        }
+  checkToken(token: string): boolean {
+    try {
+      jwtWrapper().verify(token, this.secretKey);
+      return true;
+    } catch (error) {
+      return false;
     }
+  }
 
-    decodeToken(token: string): unknown {
-        try {
-            return jwtWrapper().decode(token);
-        } catch (error) {
-            return null;
-        }
+  decodeToken(token: string): unknown {
+    try {
+      return jwtWrapper().decode(token);
+    } catch (error) {
+      return null;
     }
+  }
 
-    generateToken(user: User): string {
-        const payload: Omit<User, 'password'> = {
-            ...user
-        }
-        return jwtWrapper()
-            .sign(
-                payload,
-                this.secretKey,
-                { expiresIn: this.expiresIn }
-            );
-    }
+  generateToken<T>(payload: T): string {
+    Logger.log(payload)
+    return jwtWrapper().sign(JSON.stringify(payload), this.secretKey);
+  }
 }

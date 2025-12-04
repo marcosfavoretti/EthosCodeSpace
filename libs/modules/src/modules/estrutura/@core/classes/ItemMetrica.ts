@@ -1,12 +1,12 @@
 export class ItemMetrica {
-    constructor(
-        private _props: {
-            nome: string,
-            valor: string
-        }
-    ) { }
+  constructor(
+    private _props: {
+      nome: string;
+      valor: string;
+    },
+  ) {}
 
-    get props() {
-        return structuredClone(this.props)
-    }
+  get props() {
+    return structuredClone(this.props);
+  }
 }

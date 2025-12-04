@@ -1,30 +1,45 @@
-import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
-import { plainToInstance } from "class-transformer";
-import { JwtHandler } from "../infra/service/JwtHandler";
-import { IUserService } from "../@core/interfaces/IUserService";
-import { AuthDto } from "@app/modules/contracts/dto/Auth.dto";
-import { User } from "../@core/entities/User.entity";
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { JwtHandler } from '../infra/service/JwtHandler';
+import { IUserService } from '../@core/interfaces/IUserService';
+import { AuthDto } from '@app/modules/contracts/dto/Auth.dto';
+import { User } from '../@core/entities/User.entity';
+import { AutenticationService } from '../infra/service/Autentication.service';
+import { UserResponseDTO } from '@app/modules/contracts/dto/ResUser.dto';
+import { UserNotFoundException } from '../@core/exceptions/UserNotFound.exception';
 
 @Injectable()
 export class LoginUserUsecase {
-    private jwtGen: JwtHandler = new JwtHandler();
+  constructor(
+    @Inject(AutenticationService)
+    private autenticationService: AutenticationService,
+    @Inject(IUserService) private userService: IUserService,
+    private jwtGen: JwtHandler,
+  ) { }
 
-    constructor(
-        @Inject(IUserService) private userService: IUserService,
-    ) { }
-
-    async login(dto: AuthDto): Promise<string> {
-        try {
-            const user = await this.userService.auth(dto);
-            const user2jwt = plainToInstance(User, user, { excludeExtraneousValues: true });
-            return this.jwtGen.generateToken(user2jwt);
-        } catch (error) {
-            if (error instanceof UnauthorizedException) throw error;
-            throw new InternalServerErrorException("problemas ao efetuar o login", error.message);
-        }
+  async login(dto: AuthDto): Promise<string> {
+    try {
+      const user = await this.autenticationService.auth(dto.user, dto.password);
+      const userObject = UserResponseDTO.fromEntity(user);
+      return this.jwtGen.generateToken(userObject);
+    } catch (error) {
+      Logger.error(error)
+      if (error instanceof UnauthorizedException) throw error;
+      if (error instanceof UserNotFoundException) throw error;
+        throw new InternalServerErrorException(
+          'problemas ao efetuar o login'
+        );
     }
+  }
 
-    async loginAsGuest(dto: { name: string }): Promise<User> {
-        return await this.userService.guestAutentication(dto.name);
-    }
+  async loginAsGuest(dto: { name: string }): Promise<User> {
+    return await this.userService.guestAutentication(dto.name);
+  }
 }

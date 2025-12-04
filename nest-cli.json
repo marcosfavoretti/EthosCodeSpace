@@ -10,6 +10,24 @@
   "monorepo": true,
   "root": "apps/ethos-codespace",
   "projects": {
+    "buffer-api": {
+      "type": "application",
+      "root": "apps/buffer-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/buffer-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/buffer-api/tsconfig.app.json"
+      }
+    },
+    "certificados-cat": {
+      "type": "application",
+      "root": "apps/certificados-cat",
+      "entryFile": "main",
+      "sourceRoot": "apps/certificados-cat/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/certificados-cat/tsconfig.app.json"
+      }
+    },
     "estrutura-api": {
       "type": "application",
       "root": "apps/estrutura-api",
@@ -26,6 +44,54 @@
       "sourceRoot": "apps/ethos-codespace/src",
       "compilerOptions": {
         "tsConfigPath": "apps/ethos-codespace/tsconfig.app.json"
+      }
+    },
+    "ethos-mobile": {
+      "type": "application",
+      "root": "apps/ethos-mobile",
+      "entryFile": "main",
+      "sourceRoot": "apps/ethos-mobile/src",
+      "compilerOptions": {
+        "assets": [
+          "templates/*"
+        ],
+        "tsConfigPath": "apps/ethos-mobile/tsconfig.app.json"
+      }
+    },
+    "ethos-producao": {
+      "type": "application",
+      "root": "apps/ethos-producao",
+      "entryFile": "main",
+      "sourceRoot": "apps/ethos-producao/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ethos-producao/tsconfig.app.json"
+      }
+    },
+    "ethos-relogio-de-ponto-api": {
+      "type": "application",
+      "root": "apps/ethos-relogio-de-ponto-api",
+      "entryFile": "main.api",
+      "sourceRoot": "apps/ethos-relogio-de-ponto/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ethos-relogio-de-ponto/tsconfig.app.json"
+      }
+    },
+    "ethos-relogio-de-ponto-master": {
+      "type": "application",
+      "root": "apps/ethos-relogio-de-ponto-master",
+      "entryFile": "main.master",
+      "sourceRoot": "apps/ethos-relogio-de-ponto/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ethos-relogio-de-ponto/tsconfig.master.json"
+      }
+    },
+    "ethos-relogio-de-ponto-worker": {
+      "type": "application",
+      "root": "apps/ethos-relogio-de-ponto-worker",
+      "entryFile": "main.worker",
+      "sourceRoot": "apps/ethos-relogio-de-ponto/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ethos-relogio-de-ponto/tsconfig.worker.json"
       }
     },
     "modules": {
@@ -61,13 +127,25 @@
         "tsConfigPath": "apps/notas-maker/tsconfig.worker.json"
       }
     },
+    "notificacao-api": {
+      "type": "application",
+      "root": "apps/notificacao-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/notificacao-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notificacao-api/tsconfig.app.json"
+      }
+    },
     "user-authenticator": {
       "type": "application",
       "root": "apps/user-authenticator",
       "entryFile": "main",
       "sourceRoot": "apps/user-authenticator/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/user-authenticator/tsconfig.app.json"
+        "tsConfigPath": "apps/user-authenticator/tsconfig.app.json",
+        "assets": [
+          "views/*.hbs"
+        ]
       }
     }
   }

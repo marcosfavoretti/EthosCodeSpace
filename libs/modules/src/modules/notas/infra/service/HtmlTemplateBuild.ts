@@ -1,11 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { ITemplateBuilder } from "../../@core/interface/ITemplateBuilder";
+import { Injectable } from '@nestjs/common';
+import { ITemplateBuilder } from '../../@core/interface/ITemplateBuilder';
 
 @Injectable()
-export class HtmlTemplateBuild
-    implements ITemplateBuilder {
-
-    async builin(props: { template: string; data: unknown; }): Promise<string> {
-        return "NONO";
-    }
+export class HtmlTemplateBuild implements ITemplateBuilder {
+  async builin(props: { template: string; data: unknown }): Promise<string> {
+    return 'NONO';
+  }
 }

@@ -1,5 +1,5 @@
-export class EstruturaNotFound extends Error{
-    constructor(partcode: string){
-        super(`Estrutura ${partcode} não encontrada!`);
-    }
+export class EstruturaNotFound extends Error {
+  constructor(partcode: string) {
+    super(`Estrutura ${partcode} não encontrada!`);
+  }
 }

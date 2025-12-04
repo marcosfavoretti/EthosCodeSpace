@@ -1,3 +1,1 @@
-export class SyncoClientHTTPService {
-
-}
+export class SyncoClientHTTPService {}

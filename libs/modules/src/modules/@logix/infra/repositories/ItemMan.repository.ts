@@ -1,50 +1,43 @@
-import { Injectable } from "@nestjs/common";
-import { DataSource, Repository, In } from "typeorm";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { ItemMan } from "../../@core/entities/ItemMan.entity";
-import { Partcode } from "@app/modules/shared/classes/Partcode";
-
-export type RoteiroProps = {
-    roteiro: string,
-    numRoteiro: string
-}
-
-export type RoteiroMultiProps = {
-    roteiro: string,
-    numRoteiro: string
-    cod_item: string
-}
+import { Injectable, Logger } from '@nestjs/common';
+import { DataSource, Repository, In, Raw } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { ItemMan } from '../../@core/entities/ItemMan.entity';
+import { Partcode } from '@app/modules/shared/classes/Partcode';
 
 @Injectable()
 export class ItemManRepository extends Repository<ItemMan> {
+  constructor(@InjectDataSource('logix') dataSource: DataSource) {
+    super(ItemMan, dataSource.createEntityManager());
+  }
 
-    constructor(@InjectDataSource() dataSource: DataSource) {
-        super(ItemMan, dataSource.createEntityManager());
-    }
+  async roteiroPadrao(item: Partcode): Promise<ItemMan> {
+    const data = await this.findOne({
+      where: {
+        codItem: Raw((aliasDaColuna) => `TRIM(${aliasDaColuna}) = :valor`, {
+          valor: item.getPartcodeNum(),
+        }),
+      },
+      select: ['codRoteiro', 'numAlternRoteiro'],
+    });
+    if (!data) throw new Error('Sem roteiro padrão');
+    Logger.log(data);
+    return data;
+  }
+  async roteirosPadroes(itens: string[]): Promise<ItemMan[]> {
+    if (!itens.length) return [];
 
-    async roteiroPadrao(item: Partcode): Promise<RoteiroProps> {
-        const data = await this.findOne({
-            where: { codItem: item.getPartcodeNum() },
-            select: ['codRoteiro', 'numAlternRoteiro']
-        });
-        if (!data) throw new Error('Sem roteiro padrão');
-        return {
-            roteiro: data.codRoteiro.trim(),
-            numRoteiro: data.numAlternRoteiro.trim()
-        };
-    }
+    const data = await this.find({
+      where: {
+        codItem: Raw(
+          (alias) => `TRIM(${alias}) IN (:...itens)`, // Use :... para expandir o array
+          { itens: itens }, // Passe o array como parâmetro
+        ),
+      },
+      select: ['codRoteiro', 'numAlternRoteiro', 'codItem'],
+    });
 
-    async roteirosPadroes(itens: string[]): Promise<RoteiroMultiProps[]> {
-        if (!itens.length) return [];
-        const data = await this.find({
-            where: { codItem: In(itens) },
-            select: ['codRoteiro', 'numAlternRoteiro', 'codItem']
-        });
-        if (!data.length) throw new Error('Sem roteiro padrão');
-        return data.map(row => ({
-            roteiro: row.codRoteiro.trim(),
-            numRoteiro: row.numAlternRoteiro.trim(),
-            cod_item: row.codItem.trim()
-        }));
-    }
+    if (!data.length) throw new Error('Sem roteiro padrão');
+
+    return data;
+  }
 }

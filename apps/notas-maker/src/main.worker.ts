@@ -6,7 +6,9 @@ import { __NOTAS_QUEUE } from './@core/symbols';
 import { NOTA_QUEUE } from './@core/consts';
 
 async function bootstrap() {
-  const appContext = await NestFactory.createApplicationContext(NotasMakerWorkerModule);
+  const appContext = await NestFactory.createApplicationContext(
+    NotasMakerWorkerModule,
+  );
   const configService = appContext.get(ConfigService);
 
   const app = await NestFactory.createMicroservice(NotasMakerWorkerModule, {
@@ -15,7 +17,7 @@ async function bootstrap() {
       urls: [configService.get<string>('RABBITMQ_URL')],
       queue: NOTA_QUEUE,
       queueOptions: {
-        durable: false,
+        durable: true,
       },
     },
   });

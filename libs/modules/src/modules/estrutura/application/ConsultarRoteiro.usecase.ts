@@ -1,22 +1,35 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { ItemManRepository, RoteiroProps } from "../../@logix/infra/repositories/ItemMan.repository";
-import { ManProcessoItemRepository, ManProcessoResult } from "../../@logix/infra/repositories/ManProcessoItem.repository";
-import { ConsultaPorPartcodeReqDTO } from "@app/modules/contracts/dto/ConsultaPorPartcodeReq.dto";
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { ItemManRepository } from '../../@logix/infra/repositories/ItemMan.repository';
+import { ManProcessoItemRepository } from '../../@logix/infra/repositories/ManProcessoItem.repository';
+import { ConsultaPorPartcodeReqDTO } from '@app/modules/contracts/dto/ConsultaPorPartcodeReq.dto';
 
 @Injectable()
 export class ConsultarRoteiroUsecase {
-    
-    @Inject(ItemManRepository) private itemManRepository: ItemManRepository;
-    @Inject(ManProcessoItemRepository) private manProcessoItemRepository: ManProcessoItemRepository;
+  @Inject(ItemManRepository) private itemManRepository: ItemManRepository;
+  @Inject(ManProcessoItemRepository)
+  private manProcessoItemRepository: ManProcessoItemRepository;
 
-    async consultar(dto: ConsultaPorPartcodeReqDTO): Promise<string[]> {
-        const setores = new Set<string>();
-        const roteiroID: RoteiroProps = await this.itemManRepository.roteiroPadrao(dto.partcode);
-        const setor: ManProcessoResult[] = await this.manProcessoItemRepository.getOperacao(dto.partcode, roteiroID);
-        const setorOp = setor.map(s => s.operacao);
-        for (const op of setorOp) {
-            setores.add(op);
-        }
-        return Array.from(setores);
+  async consultar(dto: ConsultaPorPartcodeReqDTO): Promise<string[]> {
+    try {
+      const roteiroID = await this.itemManRepository.roteiroPadrao(
+        dto.partcode,
+      );
+      const setor = await this.manProcessoItemRepository.getOperacao(
+        dto.partcode,
+        {
+          idRoteiro: roteiroID.codRoteiro,
+          numRoteiro: roteiroID.numAlternRoteiro,
+        },
+      );
+      const setoresUnicos = new Set<string>();
+      setor.forEach((s) => setoresUnicos.add(s.operacao));
+      return Array.from(setoresUnicos);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
+  }
 }

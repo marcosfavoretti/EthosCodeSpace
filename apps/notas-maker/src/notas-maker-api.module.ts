@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { NotasModule } from '@app/modules/modules/notas/Notas.module';
-import { NotasOrquestradasController } from './controller/notas-orquestradas-controller';
+import { NotasOrquestradasController } from './controller/notas-orquestradas.controller';
 import { __NOTAS_QUEUE } from './@core/symbols';
 import { NOTA_QUEUE } from './@core/consts';
 
@@ -31,6 +31,6 @@ import { NOTA_QUEUE } from './@core/consts';
       },
     ]),
   ],
-  controllers: [ NotasOrquestradasController],
+  controllers: [NotasOrquestradasController],
 })
 export class NotasMakerApiModule {}

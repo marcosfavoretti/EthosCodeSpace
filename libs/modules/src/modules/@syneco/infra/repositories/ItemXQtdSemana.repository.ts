@@ -1,12 +1,9 @@
-import { Repository } from "typeorm";
-import { ItemXQtdSemana } from "../../@core/entities/ItemXQtdSemana.entity";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { DataSource } from "typeorm/browser";
+import { DataSource, Repository } from 'typeorm';
+import { ItemXQtdSemana } from '../../@core/entities/ItemXQtdSemana.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 export class ItemXQtdSemanaRepository extends Repository<ItemXQtdSemana> {
-    constructor(
-        @InjectDataSource() dt: DataSource
-    ) {
-        super(ItemXQtdSemana, dt.createEntityManager());
-    }
+  constructor(@InjectDataSource('syneco_database') dt: DataSource) {
+    super(ItemXQtdSemana, dt.createEntityManager());
+  }
 }

@@ -1,10 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class GerarNotaResDTO{
-    @ApiProperty()
-    fileName?: string;
-    @ApiProperty()
-    content: Buffer;
-    @ApiProperty()
-    mimeType: string;
+export class GerarNotaResDTO {
+  @ApiProperty()
+  fileName?: string;
+  @ApiProperty()
+  content: Buffer;
+  @ApiProperty()
+  mimeType: string;
 }

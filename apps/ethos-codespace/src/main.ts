@@ -4,13 +4,13 @@ import { Logger, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { config } from 'dotenv';
 
-config()
+config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1.0',
-    prefix: 'v.'
+    prefix: 'v.',
   });
 
   app.setGlobalPrefix('api');

@@ -1,17 +1,40 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { EstruturaApiModule } from './estrutura-api.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { ClassSerializerInterceptor, Logger } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(EstruturaApiModule);
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Estrutura API')
+    .setDescription('api para consulta de estruturas ETHOS')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
+  app.enableCors();
+  app.setGlobalPrefix('estrutura');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+      forbidNonWhitelisted: true,
+      whitelist: true,
+    }),
+  );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/doc', app, documentFactory);
-  await app.listen(process.env.port ?? 3000);
+  //config service
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT')!;
+  const host = configService.get<string>('HOST')!;
+  //
+  await app
+    .listen(port, host)
+    .then(() =>
+      Logger.log(`swagger: http://${host || 'localhost'}:${port}/api/doc/}`),
+    );
 }
 bootstrap();
