@@ -21,10 +21,15 @@ export class ProcessaCertificadoUseCase {
             // Certifique-se que o nome das propriedades aqui batem com a sua Entity do TypeORM
             const certificadoServerTime = certificadoData.metadata.start_timestamp;
             const serverTime = certificadoServerTime ? new Date(certificadoServerTime) : new Date(0);
-
+ 
+            /**pega a ultima pasta onde esta o arquivo e o nome do arquivo apeans ex: C:/cabA/testea.txt -> /cabA/testea.txt*/
+            const pathParts = filepath.split('/');
+            const produto = pathParts[pathParts.length - 2];
+            const serialNumber = pathParts[pathParts.length - 1];
+            
 
             await this.certificadosRepo.save({
-                certificadoPath: filepath,
+                certificadoPath: `/${produto}/${serialNumber}`,
                 produto: certificadoData.metadata.rops!,
                 serialNumber: certificadoData.metadata.serianumber!,
                 serverTime,

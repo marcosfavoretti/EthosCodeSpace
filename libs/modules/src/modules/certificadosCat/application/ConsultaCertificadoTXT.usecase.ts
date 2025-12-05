@@ -25,24 +25,22 @@ export class ConsultaCertificadoTXTUsecase {
                 where: { _id: new ObjectId(id) }
             });
 
-            const caminhoRelativo = relative(this.configService.get<string>('LOCAL_STORAGE_PATH')!, certificadoPath);
+            const storage = this.configService.get<string>('LOCAL_STORAGE_PATH')!;
 
-            const { dir, base } = parse(caminhoRelativo);
             
             Logger.log({ 
                 full: certificadoPath, 
-                relativo: caminhoRelativo, 
-                pastaParaStorage: dir, 
-                arquivo: base 
+                relativo: storage, 
             });
 
-            const stream =  await this.storageService.getStream(dir, base);
+            const stream =  await this.storageService.getStream('', certificadoPath);
             //valida se o stream é valido
             if (!stream) {
                 throw new NotFoundException('Arquivo não encontrado no storage');
             }
             return stream;
         } catch (error) {
+            Logger.error(error)
             if (error instanceof EntityNotFoundError) throw new NotFoundException('Certificado não encontrado');
             throw new InternalServerErrorException('Falha ao buscar o arquivo');
         }
