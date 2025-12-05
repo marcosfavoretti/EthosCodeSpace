@@ -3,7 +3,7 @@ import { CertificadoCatRepository } from '../infra/repository/CertificadoCat.rep
 import { ConsultaCertificadosDTO } from '@app/modules/contracts/dto/ConsultaCertificados.dto';
 import { ResponsePaginatorDTO } from '@app/modules/contracts/dto/ResponsePaginator.dto';
 import { CertificadosCatEntity } from '../@core/entities/CertificadoCat.entity';
-import { FindManyOptions, Like } from 'typeorm';
+import { FindManyOptions } from 'typeorm';
 
 @Injectable()
 export class ConsultaCertificadosUseCase {
@@ -12,21 +12,22 @@ export class ConsultaCertificadosUseCase {
   async execute(
     query: ConsultaCertificadosDTO,
   ): Promise<ResponsePaginatorDTO<CertificadosCatEntity>> {
-    
+
     let { page, limit, } = query;
     const { produto, seriaNumber } = query;
-    
+
     page = Number(page ?? 1);
     limit = Number(limit ?? 5);
 
     const where: FindManyOptions<CertificadosCatEntity>['where'] = {};
 
+
     if (produto) {
-      where.produto = produto;
+      where.produto = new RegExp(`^${produto}`) as any;
     }
 
     if (seriaNumber) {
-      where.serialNumber = seriaNumber;
+      where.serialNumber = new RegExp(`^${seriaNumber}`) as any;
     }
 
     const [certificados, total] = await this.certificadoRepository.findAndCount({

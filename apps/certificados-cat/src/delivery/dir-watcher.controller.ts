@@ -39,7 +39,8 @@ export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
         // Configuração do Chokidar
         this.watcher = chokidar.watch(dirPath, {
             persistent: true,
-            ignoreInitial: true, // true = processa apenas arquivos NOVOS (ignora os que já estavam lá ao iniciar)
+            ignoreInitial: true
+            , // true = processa apenas arquivos NOVOS (ignora os que já estavam lá ao iniciar)
             awaitWriteFinish: {
                 stabilityThreshold: 2000, // Espera 2s sem mudanças no tamanho do arquivo para garantir que a cópia terminou
                 pollInterval: 100

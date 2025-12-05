@@ -6,7 +6,7 @@ import * as path from 'path'; // <--- 1. Importar o módulo path
 @Injectable()
 export class ProcessadorCertificadoToJson {
     // Regex Patterns (Readonly para garantir que não sejam alterados)
-    private readonly regexHeader = /\*(?:Teste iniciado|Testing Initiated)[:`]*.*?(?:Operador|Operator)[:`]*\s+(?<operator>.+?)\s+(?<dateTime>.+?)\s+Test Stand:\s+(?<testStand>.+)/;
+    private readonly regexHeader = /\*[`]?(?:Teste iniciado|Testing Initiated):[`\s]*(?:Operador|Operator):?[`]?\s*(?<operator>.+?)\s+(?<dateTime>.+?[AP]M)(?:\s+Test Stand:\s+(?<testStand>.+))?/;
     private readonly regexRops = /ROP's:\s+(?<rops>\d+)/;
     private readonly regexGroupStart = /Test Selection Name:\s+(?<name>\w+)\s+(?<date>.+)\s+(?<time>\d{1,2}:\d{2}\s+[AP]M)/;
     private readonly regexGroupEnd = /Entire Test\((?<count>\d+)\s+Individual Tests\)\s+Cumulativo\s+(?<duration>[\d:]+)/;
@@ -95,7 +95,7 @@ export class ProcessadorCertificadoToJson {
         if (headerMatch && headerMatch.groups) {
             this.output.metadata.operator = headerMatch.groups.operator.trim();
             this.output.metadata.start_timestamp = headerMatch.groups.dateTime.trim();
-            this.output.metadata.test_stand = headerMatch.groups.testStand.trim();
+            this.output.metadata.test_stand = headerMatch.groups?.testStand?.trim();
             return;
         }
 

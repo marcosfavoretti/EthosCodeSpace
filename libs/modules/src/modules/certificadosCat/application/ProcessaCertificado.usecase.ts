@@ -20,20 +20,28 @@ export class ProcessaCertificadoUseCase {
             // 2. Salva no banco de dados
             // Certifique-se que o nome das propriedades aqui batem com a sua Entity do TypeORM
             const certificadoServerTime = certificadoData.metadata.start_timestamp;
-            const serverTime = certificadoServerTime ? new Date(certificadoServerTime) : new Date(0);
- 
+            if (!certificadoServerTime) throw new Error(`Problema ao processar data do arquivo ${certificadoServerTime}`);
+            const serverTime = new Date(certificadoServerTime);
+            //converte o servertime para horario pt-br
+            const offset = -3 * 60; // GMT-3
+            serverTime.setMinutes(serverTime.getMinutes() + offset);
+
+            Logger.log(serverTime);
+
             /**pega a ultima pasta onde esta o arquivo e o nome do arquivo apeans ex: C:/cabA/testea.txt -> /cabA/testea.txt*/
             const pathParts = filepath.split('/');
             const produto = pathParts[pathParts.length - 2];
             const serialNumber = pathParts[pathParts.length - 1];
-            
-
+            if (!pathParts || !produto || !serialNumber) {
+                throw new Error('Problema ao processar nome do arquivo');
+            }
             await this.certificadosRepo.save({
                 certificadoPath: `/${produto}/${serialNumber}`,
                 produto: certificadoData.metadata.rops!,
                 serialNumber: certificadoData.metadata.serianumber!,
                 serverTime,
             });
+
             // 3. Retorna os dados processados para quem chamou a API
             return certificadoData;
         } catch (error) {
