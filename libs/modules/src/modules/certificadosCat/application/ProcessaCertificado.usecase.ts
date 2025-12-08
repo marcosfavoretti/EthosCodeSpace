@@ -1,5 +1,5 @@
 import { ProcessaCertificadoDTO } from "@app/modules/contracts/dto/ProcessaCertificado.dto";
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { ProcessadorCertificadoToJson } from "../@core/services/ProcessadorCertificadoToJson.service";
 import { CertificadoCatRepository } from "../infra/repository/CertificadoCat.repository";
 
@@ -17,10 +17,20 @@ export class ProcessaCertificadoUseCase {
             // 1. Processa o arquivo (Lê o TXT e transforma em JSON)
             const certificadoData = await this.processador.parseFile(filepath);
 
-            // 2. Salva no banco de dados
-            // Certifique-se que o nome das propriedades aqui batem com a sua Entity do TypeORM
+            const { serianumber, rops } = certificadoData.metadata;
+            if (!serianumber) {
+                throw new InternalServerErrorException('Não foi possível extrair o número de série do arquivo.');
+            }
+
+            // 2. Verifica se o certificado já existe
+            const certificadoExistente = await this.certificadosRepo.findOne({ where: { serialNumber: serianumber, produto: rops } });
+            if (certificadoExistente) {
+                throw new ConflictException(`Certificado com serial number ${serianumber} já existe e não pode ser processado como novo.`);
+            }
+
+            // 3. Prepara os dados para salvar
             const certificadoServerTime = certificadoData.metadata.start_timestamp;
-            if (!certificadoServerTime) throw new Error(`Problema ao processar data do arquivo ${certificadoServerTime}`);
+            if (!certificadoServerTime) throw new Error(`Problema ao processar data do arquivo ${filepath}`);
             const serverTime = new Date(certificadoServerTime);
             //converte o servertime para horario pt-br
             const offset = -3 * 60; // GMT-3
@@ -28,30 +38,37 @@ export class ProcessaCertificadoUseCase {
 
             Logger.log(serverTime);
 
-            /**pega a ultima pasta onde esta o arquivo e o nome do arquivo apeans ex: C:/cabA/testea.txt -> /cabA/testea.txt*/
             const pathParts = filepath.split('/');
             const produto = pathParts[pathParts.length - 2];
-            const serialNumber = pathParts[pathParts.length - 1];
-            if (!pathParts || !produto || !serialNumber) {
-                throw new Error('Problema ao processar nome do arquivo');
+            // const serialNumber = pathParts[pathParts.length - 1]; // Já extraído acima
+            if (!pathParts || !produto) { // serialNumber já foi verificado
+                throw new Error('Problema ao processar nome do arquivo ou produto');
             }
-            await this.certificadosRepo.save({
-                certificadoPath: `/${produto}/${serialNumber}`,
+
+            // Cria uma nova instância da entidade
+            const novoCertificado = this.certificadosRepo.create({
+                certificadoPath: `/${produto}/${serianumber}`,
                 produto: certificadoData.metadata.rops!,
-                serialNumber: certificadoData.metadata.serianumber!,
+                serialNumber: serianumber, // Usar o serialNumber extraído
                 serverTime,
             });
 
-            // 3. Retorna os dados processados para quem chamou a API
+            await this.certificadosRepo.save(novoCertificado);
+            Logger.log(`Novo certificado ${serianumber} processado com sucesso.`);
+
+            // 4. Retorna os dados processados para quem chamou a API
             return certificadoData;
         } catch (error) {
+            Logger.error(`Erro ao processar arquivo ${dto.filepath}`, error.stack);
             if (error.code === 'ENOENT') {
                 throw new BadRequestException('Arquivo não encontrado: ' + dto.filepath);
             }
             if (error.code === 'EACCES') {
                 throw new ForbiddenException('Sem permissão para ler o arquivo: ' + dto.filepath);
             }
-            console.error(error);
+            if (error instanceof ConflictException) {
+                throw error;
+            }
             throw new InternalServerErrorException('Erro ao processar o certificado: ' + error.message);
         }
     }

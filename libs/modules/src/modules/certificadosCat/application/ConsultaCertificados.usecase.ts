@@ -16,7 +16,7 @@ export class ConsultaCertificadosUseCase {
     let { page, limit, } = query;
     const { produto, seriaNumber } = query;
 
-    page = Number(page ?? 1);
+    page = Number(page ?? 0);
     limit = Number(limit ?? 5);
 
     const where: FindManyOptions<CertificadosCatEntity>['where'] = {};

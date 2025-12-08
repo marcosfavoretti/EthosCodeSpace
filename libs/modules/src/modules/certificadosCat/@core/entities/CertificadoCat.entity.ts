@@ -1,4 +1,4 @@
-import { Column, Entity, ObjectId, ObjectIdColumn } from "typeorm";
+import { Column, Entity, ObjectId, ObjectIdColumn, Index } from "typeorm";
 
 @Entity({name: 'CertificadosCat'})
 export class CertificadosCatEntity {
@@ -8,6 +8,7 @@ export class CertificadosCatEntity {
     @Column()
     produto: string;
 
+    @Index({ unique: true }) // Adiciona a restrição de unicidade aqui
     @Column()
     serialNumber: string;
 

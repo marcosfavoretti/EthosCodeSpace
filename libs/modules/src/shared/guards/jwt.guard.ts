@@ -16,11 +16,14 @@ export class JwtGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromCookie(request);
+    const mode = this.configService.get<string>('APP_MODE', 'PROD')?.toLowerCase();
+    Logger.debug(`APLICATIVO EM MODO => ${mode}`, "JWT GUARD")
+    if (mode === 'dev') return true;
 
     if (!token) {
       throw new UnauthorizedException('Token não encontrado');

@@ -1,8 +1,9 @@
 import { ProcessaCertificadoUseCase } from "@app/modules/modules/certificadosCat/application/ProcessaCertificado.usecase";
+import { ReprocessaCertificadoUseCase } from "@app/modules/modules/certificadosCat/application/ReprocessaCertificado.usecase"; // Importar o novo UseCase
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as chokidar from 'chokidar';
-import * as path from 'path'; // <--- Importante para extrair o nome do arquivo
+import * as path from 'path';
 
 @Injectable()
 export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
@@ -11,15 +12,14 @@ export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
 
     constructor(
         private configService: ConfigService,
-        private processaCertificadoUseCase: ProcessaCertificadoUseCase
+        private processaCertificadoUseCase: ProcessaCertificadoUseCase,
+        private reprocessaCertificadoUseCase: ReprocessaCertificadoUseCase // Injetar o novo UseCase
     ) { }
 
-    // Inicia o watcher assim que o módulo sobe
     onModuleInit() {
         this.setupTriggers();
     }
 
-    // Fecha o watcher quando a aplicação desliga para evitar memory leaks
     async onModuleDestroy() {
         if (this.watcher) {
             await this.watcher.close();
@@ -36,26 +36,19 @@ export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
 
         this.logger.log(`Iniciando monitoramento na pasta: ${dirPath}`);
 
-        // Configuração do Chokidar
         this.watcher = chokidar.watch(dirPath, {
             persistent: true,
-            ignoreInitial: true
-            , // true = processa apenas arquivos NOVOS (ignora os que já estavam lá ao iniciar)
+            ignoreInitial: true,
             awaitWriteFinish: {
-                stabilityThreshold: 2000, // Espera 2s sem mudanças no tamanho do arquivo para garantir que a cópia terminou
+                stabilityThreshold: 2000,
                 pollInterval: 100
             },
         });
 
-        // Evento 'add': Disparado quando um arquivo é adicionado
-        this.watcher.on('add', async (filePath) => {
+        // Refatora a lógica de manipulação de arquivo em uma única função
+        const handleFileEvent = async (filePath: string, eventType: 'adicionado' | 'modificado') => {
             const fileName = path.parse(filePath).name;
-            const fullFileName = path.basename(filePath); // Nome com extensão para logs
-
-            // 2. Regex de Validação
-            // ^ETH = Começa obrigatoriamente com ETH
-            // \d+  = Seguido de um ou mais dígitos numéricos (0-9)
-            // $    = Fim da string (garante que não tem letras depois)
+            const fullFileName = path.basename(filePath);
             const pattern = /^ETH\d+$/;
 
             if (!pattern.test(fileName)) {
@@ -63,17 +56,22 @@ export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
                 return;
             }
 
-            this.logger.log(`Novo arquivo válido detectado: ${fullFileName}`);
+            this.logger.log(`Arquivo válido ${eventType}: ${fullFileName}`);
 
             try {
-                // Chama o UseCase
-                await this.processaCertificadoUseCase.execute({ filepath: filePath });
-                this.logger.log(`Arquivo processado com sucesso: ${fullFileName}`);
+                if (eventType === 'adicionado') {
+                    await this.processaCertificadoUseCase.execute({ filepath: filePath });
+                } else if (eventType === 'modificado') {
+                    await this.reprocessaCertificadoUseCase.execute({ filepath: filePath });
+                }
+                this.logger.log(`Arquivo ${fullFileName} processado com sucesso.`);
             } catch (error) {
                 this.logger.error(`Erro ao processar arquivo ${fullFileName}`, (error as Error).stack);
             }
-        });
+        };
 
+        this.watcher.on('add', (filePath) => handleFileEvent(filePath, 'adicionado'));
+        this.watcher.on('change', (filePath) => handleFileEvent(filePath, 'modificado')); // Lidar com o evento 'change'
         this.watcher.on('error', (error) => {
             this.logger.error(`Erro no Watcher: ${(error as Error).message}`);
         });

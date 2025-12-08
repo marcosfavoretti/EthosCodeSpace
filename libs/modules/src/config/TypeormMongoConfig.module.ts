@@ -16,6 +16,7 @@ export function typeormMongoConfig(
     password: configService.get<string>('MONGOPASSWORD'),
     database: configService.get<string>('MONGODATABASE'),
     entities: entities,
+    authSource: 'admin',
     synchronize: false,
   };
   return config;

@@ -3,12 +3,15 @@ import { Reflector } from '@nestjs/core';
 import { CargoInapropriadoException } from '../../modules/user/@core/exception/CargoInapropriado.exception';
 import { ROLES_KEY } from '@app/modules/shared/decorators/Cargo.decorator';
 import { User } from '../../modules/user/@core/entities/User.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) { }
+  constructor(private reflector: Reflector, private configService: ConfigService) { }
 
   canActivate(context: ExecutionContext): boolean {
+    const mode = this.configService.get<string>('APP_MODE')?.toLowerCase();
+    if (mode === 'dev') return true;
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
