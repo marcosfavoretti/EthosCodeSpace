@@ -2,6 +2,7 @@ import { ProcessaCertificadoDTO } from "@app/modules/contracts/dto/ProcessaCerti
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { ProcessadorCertificadoToJson } from "../@core/services/ProcessadorCertificadoToJson.service";
 import { CertificadoCatRepository } from "../infra/repository/CertificadoCat.repository";
+import { CertificadoNaoCriadoException } from "../@core/exceptions/CertificadoNaoCriado.exception";
 
 @Injectable()
 export class ReprocessaCertificadoUseCase {
@@ -25,7 +26,7 @@ export class ReprocessaCertificadoUseCase {
             const certificadoExistente = await this.certificadosRepo.findOne({ where: { serialNumber: serianumber, produto: rops} });
 
             if (!certificadoExistente) {
-                throw new NotFoundException(`Certificado com serial number ${serianumber} não encontrado para atualização.`);
+                throw new CertificadoNaoCriadoException(`Certificado com serial number ${serianumber} e produto ${rops} não encontrado para reprocessamento`);
             }
 
             // 3. Atualiza os dados do certificado existente
@@ -52,6 +53,9 @@ export class ReprocessaCertificadoUseCase {
         } catch (error) {
             Logger.error(`Erro ao reprocessar o arquivo ${filepath}`, error.stack);
             if (error instanceof NotFoundException) {
+                throw error;
+            }
+            if (error instanceof CertificadoNaoCriadoException) {
                 throw error;
             }
             throw new InternalServerErrorException('Erro ao reprocessar o certificado: ' + error.message);
