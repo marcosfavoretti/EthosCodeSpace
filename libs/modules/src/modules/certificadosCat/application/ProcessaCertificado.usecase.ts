@@ -2,6 +2,7 @@ import { ProcessaCertificadoDTO } from "@app/modules/contracts/dto/ProcessaCerti
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { ProcessadorCertificadoToJson } from "../@core/services/ProcessadorCertificadoToJson.service";
 import { CertificadoCatRepository } from "../infra/repository/CertificadoCat.repository";
+import path from "node:path";
 
 @Injectable()
 export class ProcessaCertificadoUseCase {
@@ -44,11 +45,24 @@ export class ProcessaCertificadoUseCase {
 
             Logger.log(serverTime);
 
-            const pathParts = filepath.split('/');
-            const produto = pathParts[pathParts.length - 2];
+            // const pathParts = filepath.split('/');
+            // console.log(pathParts)
+            // const produto = pathParts[pathParts.length - 2];
+            const pastaDoArquivo = path.dirname(filepath);
+            const produto = path.basename(pastaDoArquivo);
             // const serialNumber = pathParts[pathParts.length - 1]; // Já extraído acima
-            if (!pathParts || !produto) { // serialNumber já foi verificado
-                throw new Error(`Problema ao processar nome do arquivo: ${pathParts} ou produto ${produto}`);
+            
+            console.log({
+                serianumber, 
+                filepath,
+                produto,
+                rops, 
+                start_timestamp,
+            })
+
+
+            if (!produto) { // serialNumber já foi verificado
+                throw new Error(`Problema ao processar nome do produto ${produto}`);
             }
 
             // Cria uma nova instância da entidade
