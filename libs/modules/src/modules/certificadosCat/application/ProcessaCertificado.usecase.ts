@@ -47,7 +47,7 @@ export class ProcessaCertificadoUseCase {
 
             // Cria uma nova instância da entidade
             const novoCertificado = this.certificadosRepo.create({
-                certificadoPath: `/${produto}/${serianumber}`,
+                certificadoPath: `/${produto}/${serianumber}.txt`,
                 produto: certificadoData.metadata.rops!,
                 serialNumber: serianumber, // Usar o serialNumber extraído
                 serverTime,

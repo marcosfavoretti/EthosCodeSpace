@@ -30,8 +30,9 @@ export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
     setupTriggers(): void {
         const dirPath = this.configService.get<string>('CERTIFICADOS_CAT_WATCHER_DIR_PATH');
         
-        const rawIgnora = this.configService.get<string>('IGNORA_CERTIFICADOS_INICIAIS');
-        const shouldIgnoreInitial = rawIgnora === 'true' || rawIgnora === '1';
+        const rawIgnora = this.configService.get<number>('IGNORA_CERTIFICADOS_INICIAIS', 1);
+        
+        const shouldIgnoreInitial = Boolean(rawIgnora);
 
         if (!dirPath) {
             this.logger.error('VARIAVEL CERTIFICADOS_CAT_WATCHER_DIR_PATH NÃO DEFINIDA.');
@@ -43,6 +44,7 @@ export class DirWatcherService implements OnModuleInit, OnModuleDestroy {
 
         this.watcher = chokidar.watch(dirPath, {
             persistent: true,
+            ignoreInitial: shouldIgnoreInitial,
             awaitWriteFinish: {
                 stabilityThreshold: 2000,
                 pollInterval: 100

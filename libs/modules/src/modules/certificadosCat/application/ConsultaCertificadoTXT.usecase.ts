@@ -27,7 +27,6 @@ export class ConsultaCertificadoTXTUsecase {
 
             const storage = this.configService.get<string>('LOCAL_STORAGE_PATH')!;
 
-            
             Logger.log({ 
                 full: certificadoPath, 
                 relativo: storage, 

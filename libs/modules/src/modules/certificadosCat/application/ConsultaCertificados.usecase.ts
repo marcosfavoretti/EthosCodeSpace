@@ -4,6 +4,7 @@ import { ConsultaCertificadosDTO } from '@app/modules/contracts/dto/ConsultaCert
 import { ResponsePaginatorDTO } from '@app/modules/contracts/dto/ResponsePaginator.dto';
 import { CertificadosCatEntity } from '../@core/entities/CertificadoCat.entity';
 import { FindManyOptions } from 'typeorm';
+import { ResCertificadosDto } from '@app/modules/contracts/dto/ResCertificados.dto';
 
 @Injectable()
 export class ConsultaCertificadosUseCase {
@@ -11,7 +12,7 @@ export class ConsultaCertificadosUseCase {
 
   async execute(
     query: ConsultaCertificadosDTO,
-  ): Promise<ResponsePaginatorDTO<CertificadosCatEntity>> {
+  ): Promise<ResponsePaginatorDTO<ResCertificadosDto>> {
 
     let { page, limit, } = query;
     const { produto, seriaNumber } = query;
@@ -38,8 +39,8 @@ export class ConsultaCertificadosUseCase {
         serverTime: 'DESC',
       },
     });
-
-
-    return new ResponsePaginatorDTO(certificados, total, page, limit);
+    //
+    const certificadosDTO = certificados.map(certificado => ResCertificadosDto.fromEntity(certificado));
+    return new ResponsePaginatorDTO(certificadosDTO, total, page, limit);
   }
 }

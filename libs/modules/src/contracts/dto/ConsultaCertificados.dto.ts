@@ -5,7 +5,7 @@ import { PaginationDTO } from './Paginator.dto';
 export class ConsultaCertificadosDTO extends PaginationDTO {
   @ApiPropertyOptional({
     description: 'Filtra pelo nome do produto.',
-    example: 'ETHOS-123',
+    example: '6177027',
   })
   @IsOptional()
   @IsString()
@@ -13,7 +13,7 @@ export class ConsultaCertificadosDTO extends PaginationDTO {
 
   @ApiPropertyOptional({
     description: 'Filtra pelo número de série.',
-    example: 'SN001',
+    example: 'ETH28112513',
   })
   @IsOptional()
   @IsString()

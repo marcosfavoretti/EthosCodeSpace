@@ -1,10 +1,10 @@
 import { ProcessaCertificadoDTO } from '@app/modules/contracts/dto/ProcessaCertificado.dto';
 import { ProcessaCertificadoUseCase } from '@app/modules/modules/certificadosCat/application/ProcessaCertificado.usecase';
 import { Body, Controller, Get, Inject, Param, Post, Query, Res, StreamableFile, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConsultaCertificadosUseCase } from '@app/modules/modules/certificadosCat/application/ConsultaCertificados.usecase';
 import { ConsultaCertificadosDTO } from '@app/modules/contracts/dto/ConsultaCertificados.dto';
-import { PaginatedResponseDto } from '@app/modules/contracts/dto/ResponsePaginator.dto';
+import { PaginatedResponseDto, ResponsePaginatorDTO } from '@app/modules/contracts/dto/ResponsePaginator.dto';
 import { CertificadosCatEntity } from '@app/modules/modules/certificadosCat/@core/entities/CertificadoCat.entity';
 import { ConsultaCertificadoTXTUsecase } from '@app/modules/modules/certificadosCat/application/ConsultaCertificadoTXT.usecase';
 import { ConsultaPorIdDto } from '@app/modules/contracts/dto/ConsultaPorId.dto';
@@ -13,6 +13,7 @@ import { Roles } from '@app/modules/shared/decorators/Cargo.decorator';
 import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
 import { RolesGuard } from '@app/modules/shared/guards/VerificaCargo.guard';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
+import { ResCertificadosDto } from '@app/modules/contracts/dto/ResCertificados.dto';
 
 @UseGuards(JwtGuard)
 @ApiTags('Certificados CAT')
@@ -36,7 +37,7 @@ export class CertificadosCatController {
   @ApiOperation({ summary: 'Consulta certificados com paginação e filtros.' })
   @ApiOkResponse({
     description: 'Lista de certificados paginada.',
-    type: PaginatedResponseDto(CertificadosCatEntity),
+    type: PaginatedResponseDto(ResCertificadosDto),
   })
   @Roles(CargoEnum.CATERPILLAR_USER, CargoEnum.ADMIN)
   @UseGuards(RolesGuard)
