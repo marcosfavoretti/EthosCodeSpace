@@ -1,5 +1,5 @@
 import { ProcessaCertificadoDTO } from "@app/modules/contracts/dto/ProcessaCertificado.dto";
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { ProcessadorCertificadoToJson } from "../@core/services/ProcessadorCertificadoToJson.service";
 import { CertificadoCatRepository } from "../infra/repository/CertificadoCat.repository";
 import { CertificadoNaoCriadoException } from "../@core/exceptions/CertificadoNaoCriado.exception";
@@ -16,10 +16,16 @@ export class ReprocessaCertificadoUseCase {
         try {
             // 1. Processa o arquivo para extrair os dados
             const certificadoData = await this.processador.parseFile(filepath);
-            const { serianumber, rops } = certificadoData.metadata;
+            const { serianumber, rops, start_timestamp } = certificadoData.metadata;
 
             if (!serianumber) {
                 throw new InternalServerErrorException('Não foi possível extrair o número de série do arquivo.');
+            }
+            if (!rops) {
+                throw new BadRequestException(`Arquivo ${filepath} não contém a informação de ROP's.`);
+            }
+            if (!start_timestamp) {
+                throw new BadRequestException(`Arquivo ${filepath} não contém a informação de data/hora de início.`);
             }
 
             // 2. Busca o certificado existente no banco
@@ -33,7 +39,7 @@ export class ReprocessaCertificadoUseCase {
             const pathParts = filepath.split('/');
             const produto = pathParts[pathParts.length - 2];
 
-            const certificadoServerTime = certificadoData.metadata.start_timestamp;
+            const certificadoServerTime = start_timestamp;
             if (!certificadoServerTime) throw new Error(`Problema ao processar data do arquivo ${filepath}`);
             const serverTime = new Date(certificadoServerTime);
             //converte o servertime para horario pt-br

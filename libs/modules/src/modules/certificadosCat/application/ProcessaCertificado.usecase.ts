@@ -17,9 +17,15 @@ export class ProcessaCertificadoUseCase {
             // 1. Processa o arquivo (Lê o TXT e transforma em JSON)
             const certificadoData = await this.processador.parseFile(filepath);
 
-            const { serianumber, rops } = certificadoData.metadata;
+            const { serianumber, rops, start_timestamp } = certificadoData.metadata;
             if (!serianumber) {
                 throw new InternalServerErrorException('Não foi possível extrair o número de série do arquivo.');
+            }
+            if (!rops) {
+                throw new BadRequestException(`Arquivo ${filepath} não contém a informação de ROP's.`);
+            }
+            if (!start_timestamp) {
+                throw new BadRequestException(`Arquivo ${filepath} não contém a informação de data/hora de início.`);
             }
 
             // 2. Verifica se o certificado já existe
@@ -29,7 +35,7 @@ export class ProcessaCertificadoUseCase {
             }
 
             // 3. Prepara os dados para salvar
-            const certificadoServerTime = certificadoData.metadata.start_timestamp;
+            const certificadoServerTime = start_timestamp;
             if (!certificadoServerTime) throw new Error(`Problema ao processar data do arquivo ${filepath}`);
             const serverTime = new Date(certificadoServerTime);
             //converte o servertime para horario pt-br
@@ -42,7 +48,7 @@ export class ProcessaCertificadoUseCase {
             const produto = pathParts[pathParts.length - 2];
             // const serialNumber = pathParts[pathParts.length - 1]; // Já extraído acima
             if (!pathParts || !produto) { // serialNumber já foi verificado
-                throw new Error('Problema ao processar nome do arquivo ou produto');
+                throw new Error(`Problema ao processar nome do arquivo: ${pathParts} ou produto ${produto}`);
             }
 
             // Cria uma nova instância da entidade
