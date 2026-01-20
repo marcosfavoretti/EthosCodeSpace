@@ -11,6 +11,7 @@ import { StorageModule } from '@app/modules/modules/storage/Storage.module';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module';
 
 @Module({
   imports: [
@@ -25,25 +26,14 @@ import { JwtModule } from '@nestjs/jwt';
       useFactory: (c: ConfigService) => typeormMongoConfig([CertificadosCatEntity], c),
       inject: [ConfigService],
     }),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      global: true,
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('SECRET'),
-        signOptions: {
-          expiresIn: parseInt(
-            configService.get<string>('EXPIREHOURS') || '3600',
-            10,
-          ),
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    SharedAuthModule.forRoot(),
     StorageModule,
     CertificadosCatModule,
   ],
-  providers: [DirWatcherService, JwtGuard],
+  providers: [
+    DirWatcherService,
+    JwtGuard
+  ],
   controllers: [CertificadosCatController],
 })
 export class CertificadosCatModuleApi { }

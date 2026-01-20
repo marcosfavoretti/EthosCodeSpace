@@ -10,4 +10,37 @@ export class ConsultaFuncionariosDTO extends PaginationDTO {
   @IsOptional()
   @IsString()
   RA_CC?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filtro por cpf',
+  })
+  @IsOptional()
+  @IsString()
+  CPF?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filtro por PIS',
+  })
+  @IsOptional()
+  @IsString()
+  PIS?: string;
+
+
+  @ApiProperty({
+    required: false,
+    description: 'Filtro por matricula',
+  })
+  @IsOptional()
+  @IsString()
+  matricula?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filtro por nome do funcionário',
+  })
+  @IsOptional()
+  @IsString()
+  nome?: string;
 }

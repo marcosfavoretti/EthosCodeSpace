@@ -1,0 +1,21 @@
+import { Inject } from '@nestjs/common';
+import { IConsultaRoteiro } from '../../@core/interfaces/IConsultaRoteiro';
+import { IConsultarRoteiroPrincipal } from '../../@core/interfaces/IConsultarRoteiroPrincipal';
+import { ItemEstruturado } from '../../@core/classes/ItemEstruturado';
+import { CODIGOSETOR } from '../../@core/enum/CodigoSetor.enum';
+
+export class RoteiroPrincipal implements IConsultarRoteiroPrincipal {
+  constructor(
+    @Inject(IConsultaRoteiro) private consultaRoteiro: IConsultaRoteiro,
+  ) {}
+
+  async roteiro(itemEstruturado: ItemEstruturado): Promise<CODIGOSETOR[]> {
+    const roteiroItemFinal = await this.consultaRoteiro.roteiro(
+      itemEstruturado.itemFinal,
+    );
+    const roteiroItemControle = await this.consultaRoteiro.roteiro(
+      itemEstruturado.itemRops,
+    );
+    return roteiroItemControle.concat(roteiroItemFinal);
+  }
+}

@@ -6,4 +6,8 @@ export class EmailHtml extends Email {
         super(to, from, subject)
         this.html = html
     }
+    //sobre carregamento do construtor
+    static fromConfigObject(props: { to: string[], from: string, subject: string, html: string }): EmailHtml {
+        return new EmailHtml(props.to, props.from, props.subject, props.html)
+    }
 }

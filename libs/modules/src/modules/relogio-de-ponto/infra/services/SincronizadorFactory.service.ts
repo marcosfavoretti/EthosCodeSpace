@@ -9,7 +9,7 @@ export class SincronizadorFactory {
   constructor(private confService: ConfigService) { }
 
   createSincronizadores(): ISincronizadorDePontos[] {
-    const mode = this.confService.get<string>('ENVIORMENT');
+    const mode = this.confService.get<string>('APP_MODE');
     const endpoints = this.confService.get<string[]>('RELOGIO_ENDPOINTS');
 
     if (!endpoints) {

@@ -15,26 +15,12 @@ import { ValidaCriacaoUsuarioUseCase } from './application/ValidaCriacaoUsuario.
 import { EmailHttpClient } from '@app/modules/contracts/clients/EmailHttp.client';
 import { IOnUserCreated } from './@core/interfaces/IOnUserCreated';
 import { EmailDeValidacaoService } from './infra/service/EmailDeValidacao.service';
+import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module';
 
 @Module({
   imports: [
     UserServiceModule,
     CargosServiceModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      global: true,
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('SECRET'),
-        signOptions: {
-          expiresIn: parseInt(
-            configService.get<string>('EXPIREHOURS') || '3600',
-            10,
-          ),
-        },
-      }),
-      inject: [ConfigService],
-    }),
   ],
   providers: [
     EmailHttpClient,
@@ -51,7 +37,6 @@ import { EmailDeValidacaoService } from './infra/service/EmailDeValidacao.servic
     JwtStrategy,
     JwtHandler,
     ValidaCriacaoUsuarioUseCase,
-    JwtGuard,
   ],
   exports: [
     ValidaCriacaoUsuarioUseCase,
@@ -61,7 +46,6 @@ import { EmailDeValidacaoService } from './infra/service/EmailDeValidacao.servic
     CheckUserTokenUsecase,
     JwtStrategy,
     JwtHandler,
-    JwtGuard,
   ],
 })
 export class UserModule { }

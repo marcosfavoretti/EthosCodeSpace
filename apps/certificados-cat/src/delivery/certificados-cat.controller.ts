@@ -4,8 +4,7 @@ import { Body, Controller, Get, Inject, Param, Post, Query, Res, StreamableFile,
 import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConsultaCertificadosUseCase } from '@app/modules/modules/certificadosCat/application/ConsultaCertificados.usecase';
 import { ConsultaCertificadosDTO } from '@app/modules/contracts/dto/ConsultaCertificados.dto';
-import { PaginatedResponseDto, ResponsePaginatorDTO } from '@app/modules/contracts/dto/ResponsePaginator.dto';
-import { CertificadosCatEntity } from '@app/modules/modules/certificadosCat/@core/entities/CertificadoCat.entity';
+import { PaginatedResponseDto } from '@app/modules/contracts/dto/ResponsePaginator.dto';
 import { ConsultaCertificadoTXTUsecase } from '@app/modules/modules/certificadosCat/application/ConsultaCertificadoTXT.usecase';
 import { ConsultaPorIdDto } from '@app/modules/contracts/dto/ConsultaPorId.dto';
 import type { Response } from 'express';

@@ -8,6 +8,7 @@ import {
   ParseArrayPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { PROCESSA_WORKER } from '../@core/symbols/symbols';
@@ -20,19 +21,18 @@ import { PaginatedResponseDto, ResponsePaginatorDTO } from '@app/modules/contrac
 import { TipoMarcacaoPonto } from '@app/modules/modules/relogio-de-ponto/@core/entities/TipoMarcacaoPonto.entity';
 import { ProcessaTipoMarcacaoUseCase } from '@app/modules/modules/relogio-de-ponto/application/ProcessaTipoMarcacao.usecase';
 import { ResRegistroPontoTurnoPontoDTO } from '@app/modules/contracts/dto/ResRegistroPontoTurno.dto';
-import { ConsultaFuncionariosDTO } from '@app/modules/contracts/dto/ConsultaFuncionarios.dto';
-import { ConsultaFuncionariosUseCase } from '@app/modules/modules/relogio-de-ponto/application/ConsultaFuncionarios.usecase';
 import { ResPontoFuncionarioDTO } from '@app/modules/contracts/dto/ResPontoFuncionario.dto';
+import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
+import { RolesGuard } from '@app/modules/shared/guards/VerificaCargo.guard';
+import { Roles } from '@app/modules/shared/decorators/Cargo.decorator';
+import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
 
-@Controller('/ponto')
+@Roles(CargoEnum.ADMIN)
+@UseGuards(JwtGuard, RolesGuard)
+@Controller()
 @ApiExtraModels(ResRegistroPontoTurnoPontoDTO, ResponsePaginatorDTO, ResPontoFuncionarioDTO)
 export class PontoController {
   constructor(@Inject(PROCESSA_WORKER) private client: ClientProxy) { }
-
-  @Get('send')
-  send() {
-    return this.client.send({ cmd: 'greeting' }, 'Hello from master');
-  }
 
   @Inject(SincronizaPontosUseCase)
   private sincronizaPontosUseCase: SincronizaPontosUseCase;
@@ -60,35 +60,23 @@ export class PontoController {
     return await this.consultaMarcacaoPonto.consulta(payload);
   }
 
-  @Inject(ConsultaFuncionariosUseCase)
-  private consultaFuncionariosUseCase: ConsultaFuncionariosUseCase;
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    type: PaginatedResponseDto(ResPontoFuncionarioDTO),
-  })
-  @Get('funcionarios')
-  async ConsultaFuncionariosMethod(
-    @Query() payload: ConsultaFuncionariosDTO,
-  ): Promise<ResponsePaginatorDTO<ResPontoFuncionarioDTO>> {
-    return await this.consultaFuncionariosUseCase.consulta(payload);
-  }
-
-  @Inject(ProcessaTipoMarcacaoUseCase)
-  private processaTipoMarcacaoUseCase: ProcessaTipoMarcacaoUseCase;
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    type: ResPontoRegistroDTO,
-    isArray: true,
-  })
-  @ApiBody({
-    isArray: true,
-    type: ResPontoRegistroDTO,
-  })
-  @Post('marcacao')
-  async processaTipoMarcacaoMethod(
-    @Body(new ParseArrayPipe({ items: ResPontoRegistroDTO })) payload: ResPontoRegistroDTO[],
-  ): Promise<ResponsePaginatorDTO<TipoMarcacaoPonto>> {
-    console.log(payload);
-    return await this.processaTipoMarcacaoUseCase.processa(payload);
-  }
+ 
+  // @Inject(ProcessaTipoMarcacaoUseCase)
+  // private processaTipoMarcacaoUseCase: ProcessaTipoMarcacaoUseCase;
+  // @HttpCode(HttpStatus.OK)
+  // @ApiResponse({
+  //   type: ResPontoRegistroDTO,
+  //   isArray: true,
+  // })
+  // @ApiBody({
+  //   isArray: true,
+  //   type: ResPontoRegistroDTO,
+  // })
+  // @Post('marcacao')
+  // async processaTipoMarcacaoMethod(
+  //   @Body(new ParseArrayPipe({ items: ResPontoRegistroDTO })) payload: ResPontoRegistroDTO[],
+  // ): Promise<ResponsePaginatorDTO<TipoMarcacaoPonto>> {
+  //   console.log(payload);
+  //   return await this.processaTipoMarcacaoUseCase.processa(payload);
+  // }
 }

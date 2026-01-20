@@ -5,6 +5,8 @@ export class ConsultaPorIdDto {
     @ApiProperty({
         description: 'classe de consulta generica por ID.',
     })
-    @IsString()
+    @IsString({
+        message: 'O id deve ser uma string válida.',
+    })
     id: string;
 }

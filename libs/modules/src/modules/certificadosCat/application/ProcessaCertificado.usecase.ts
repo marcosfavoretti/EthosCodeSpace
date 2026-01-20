@@ -45,22 +45,10 @@ export class ProcessaCertificadoUseCase {
 
             Logger.log(serverTime);
 
-            // const pathParts = filepath.split('/');
-            // console.log(pathParts)
-            // const produto = pathParts[pathParts.length - 2];
             const pastaDoArquivo = path.dirname(filepath);
             const produto = path.basename(pastaDoArquivo);
             // const serialNumber = pathParts[pathParts.length - 1]; // Já extraído acima
             
-            console.log({
-                serianumber, 
-                filepath,
-                produto,
-                rops, 
-                start_timestamp,
-            })
-
-
             if (!produto) { // serialNumber já foi verificado
                 throw new Error(`Problema ao processar nome do produto ${produto}`);
             }

@@ -6,4 +6,7 @@ export class ResPontoFuncionarioDTO{
 
     @ApiProperty()
     nome: string;
+
+    @ApiProperty()
+    setor: string;
 }

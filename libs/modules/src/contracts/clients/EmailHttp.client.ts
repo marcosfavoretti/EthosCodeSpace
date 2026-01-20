@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import { SendEmailDTO } from "../dto/SendEmail.dto";
+import { Email } from "@app/modules/modules/notificacao/@core/classes/Email";
 
 @Injectable()
 export class EmailHttpClient {
@@ -19,11 +20,10 @@ export class EmailHttpClient {
         });
     }
 
-    async sendEmail(payload: SendEmailDTO): Promise<void> {
+    async sendEmail(payload: SendEmailDTO | Email): Promise<void> {
         try {
             await this.emailClient.post('/email', payload);
         } catch (error) {
-            Logger.error(error);
             throw Error('Falha ao enviar email via serviço externo')
         }
     }

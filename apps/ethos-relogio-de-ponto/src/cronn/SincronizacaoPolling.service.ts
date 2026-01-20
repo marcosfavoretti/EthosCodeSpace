@@ -3,17 +3,16 @@ import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common'; // 1.
 import { PROCESSA_WORKER } from '../@core/symbols/symbols';
 import { ClientProxy } from '@nestjs/microservices';
 import { ResPontoRegistroDTO } from '@app/modules/contracts/dto/ResPontoRegistro.dto';
-import { Interval } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
-export class SincronizacaoPollingService implements OnModuleInit { // 2. Implemente a interface
+export class SincronizacaoPollingService implements OnModuleInit { 
   constructor(
     @Inject(SincronizaPontosUseCase)
     private sincronizacaoUseCase: SincronizaPontosUseCase,
     @Inject(PROCESSA_WORKER)
     private client: ClientProxy,
   ) { }
-  teste = true
   // 3. Force a conexão assim que o módulo iniciar
   async onModuleInit() {
     try {
@@ -25,7 +24,7 @@ export class SincronizacaoPollingService implements OnModuleInit { // 2. Impleme
     }
   }
 
-  @Interval(10_000 * 12)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async sincronizarPontos() {
     try {
       Logger.warn('POLLING INICIADO');

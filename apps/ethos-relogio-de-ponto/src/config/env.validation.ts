@@ -37,6 +37,21 @@ export const validationSchema = Joi.object({
     })
     .required(),
 
-  // Configurações de Armazenamento
-  LOCAL_STORAGE_PATH: Joi.string().required(),
+
+  APP_MODE: Joi.string().valid('DEV', 'PROD').default('DEV'),
+
+  // Configurações do TypeORM para Protheus
+  PROTHEUSSID: Joi.string().required(),
+  PROTHEUSUSER: Joi.string().required(),
+  PROTHEUSPASSWORD: Joi.string().required(),
+  PROTHEUSHOST: Joi.string().required(),
+
+  // Configurações do TypeORM para Oracle (Logix)
+  ORACLEHOST: Joi.string().required(),
+  ORACLEUSER: Joi.string().required(),
+  ORACLEPASSWORD: Joi.string().required(),
+  ORACLESID: Joi.string().required(),
+
+  // Outras configurações
+  HOURS_PER_DAY: Joi.number().required(),
 });

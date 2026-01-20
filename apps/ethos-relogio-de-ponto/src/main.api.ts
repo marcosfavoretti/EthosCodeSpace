@@ -3,10 +3,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiModule } from './api.module';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule);
 
+  app.setGlobalPrefix('api/ponto')
 
   const config = new DocumentBuilder()
     .setTitle('Ethos Relogio de Ponto API')
@@ -21,7 +23,8 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api/doc', app, document, {
+
+  SwaggerModule.setup('doc', app, document, {
     raw: ['yaml', 'json'],
     useGlobalPrefix: true,
   });
@@ -36,9 +39,10 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
   });
+  app.use(cookieParser());
 
   await app
     .listen(process.env.PORT ?? 3001, '0.0.0.0')
-    .then(() => Logger.log(`http://${host}:${port}/api/doc`));
+    .then(() => Logger.log(`http://${host}:${port}/api/ponto/doc`));
 }
 bootstrap();

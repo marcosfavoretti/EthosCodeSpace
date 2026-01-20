@@ -9,7 +9,7 @@ export function typeormOracleConfig(
   const config: TypeOrmModuleOptions = {
     type: 'oracle',
     name: 'logix',
-    logging: ['query'],
+    logging: false,
     useUTC: true,
     extra: {
       sessionTimezone: 'UTC',

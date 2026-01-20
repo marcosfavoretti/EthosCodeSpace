@@ -37,7 +37,7 @@ export class SincronizaPontosUseCase {
     try {
       Logger.debug('SYNC PONTOS');
       const dadosSincronizados: ArquivoPontoDado[] = [];
-      
+
       /**
        * dados que ainda nao foram processados
        */
@@ -55,16 +55,19 @@ export class SincronizaPontosUseCase {
        * pega do repositorio um range de dois mêses de
        * dados para assim ter certeza que o relogio nao vai dar a mais
        */
-      const dataAtual = endOfDay(new Date());
-      const dataInicio = dataAtual;
-      const datafim = subMonths(dataInicio, 2);
+      const hoje = new Date();
+      const dataFimBusca = endOfDay(hoje); // Hoje até 23:59:59
+      const dataInicioBusca = startOfDay(subMonths(hoje, 2)); // 2 meses atrás desde 00:00:00
+      Logger.debug(dataInicioBusca, dataFimBusca)
       const dbData = await this.registroPontoRepository.find({
-        where: { dataHoraAr: Between(datafim, dataInicio) },
+        where: {
+          dataHoraAr: Between(dataInicioBusca, dataFimBusca)
+        },
       });
 
       /**
        * colocar em um mapa os registros para otimizar
-       * consulta posteriors
+       * consulta posteriors usando como chave identificador+millis ou cpf+millis
        */
       const dbDataMap = new Map<string, RegistroPonto>();
       for (const registro of dbData) {
@@ -91,7 +94,7 @@ export class SincronizaPontosUseCase {
         dadosSincronizados.push(...(await sincronizadorService.sincroniza()));
       }
 
-
+      /**orderna para "agrupar" os semelhantes */
       const dadosOrdenadosPorIdentificador = dadosSincronizados.sort((a, b) =>
         a.identificador.localeCompare(b.identificador),
       );
@@ -116,20 +119,7 @@ export class SincronizaPontosUseCase {
       /**
        * dados dos funcionarios para completar os objetos
        */
-      const funcionarioData = await this.funcionarioRepository.find({
-        where: [
-          {
-            pis: Raw((alias) => `TRIM(${alias}) IN (:...pis)`, {
-              pis: identificadorUnico,
-            }), //In(identificadorUnico)
-          },
-          {
-            cic: Raw((alias) => `TRIM(${alias}) IN (:...cpf)`, {
-              cpf: identificadorUnico,
-            }), //In(identificadorUnico)
-          },
-        ],
-      });
+      const funcionarioData = await this.funcionarioRepository.buscarPoridentificador(identificadorUnico);
 
       /**
        * mapear os funcionarios para mais para frente ele serem usados para completar a dto de resposta
@@ -166,7 +156,7 @@ export class SincronizaPontosUseCase {
         [] as Partial<RegistroPonto>[],
       );
 
-      Logger.log(dadosDeResposta)
+      Logger.log(dadosDeResposta);
 
       const dadosSalvos =
         await this.registroPontoRepository.save(dadosDeResposta);
@@ -174,7 +164,6 @@ export class SincronizaPontosUseCase {
       /**
      * construcao do objeto de resposta
      */
-
 
       return dadosSalvos;
     } catch (error) {

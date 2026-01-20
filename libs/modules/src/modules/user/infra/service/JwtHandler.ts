@@ -1,5 +1,4 @@
 import { jwtWrapper } from '@app/modules/utils/jwt.wrapper';
-import { User } from '../../@core/entities/User.entity';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
 

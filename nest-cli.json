@@ -10,6 +10,15 @@
   "monorepo": true,
   "root": "apps/ethos-codespace",
   "projects": {
+    "app-ethos": {
+      "type": "application",
+      "root": "apps/app-ethos",
+      "entryFile": "main",
+      "sourceRoot": "apps/app-ethos/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/app-ethos/tsconfig.app.json"
+      }
+    },
     "buffer-api": {
       "type": "application",
       "root": "apps/buffer-api",
@@ -134,6 +143,24 @@
       "sourceRoot": "apps/notificacao-api/src",
       "compilerOptions": {
         "tsConfigPath": "apps/notificacao-api/tsconfig.app.json"
+      }
+    },
+    "planejador": {
+      "type": "application",
+      "root": "apps/planejador",
+      "entryFile": "main",
+      "sourceRoot": "apps/planejador/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/planejador/tsconfig.app.json"
+      }
+    },
+    "planejador-importador": {
+      "type": "application",
+      "root": "apps/planejador-importador",
+      "entryFile": "main.importador",
+      "sourceRoot": "apps/planejador/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/planejador/tsconfig.importador.json"
       }
     },
     "user-authenticator": {

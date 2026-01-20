@@ -1,0 +1,40 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { ItemResDto } from './ItemRes.dto';
+import { Pedido } from '@app/modules/modules/planejador/@core/entities/Pedido.entity';
+
+export class PedidoResponseDTO {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  codigo: string;
+
+  @ApiProperty()
+  dataEntrega: Date;
+
+  @ApiProperty()
+  isfake: boolean;
+
+  @ApiProperty()
+  lote: number;
+
+  @ApiProperty()
+  processado: boolean;
+
+  @ApiProperty()
+  item: ItemResDto;
+
+  static fromEntity(pedido: Pedido): PedidoResponseDTO {
+    const novo = new PedidoResponseDTO();
+    novo.codigo = pedido.codigo;
+    novo.dataEntrega = pedido.dataEntrega;
+    novo.id = pedido.id;
+    novo.item = {
+      Item: pedido.item?.Item || 'FALTANDO_CADASTRO',
+      tipo_item: pedido.item?.tipo_item || 'FALTANDO_CADASTRO',
+    };
+    novo.lote = pedido.lote;
+    novo.processado = pedido.processado;
+    return novo;
+  }
+}

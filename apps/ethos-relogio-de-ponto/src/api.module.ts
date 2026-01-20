@@ -12,6 +12,11 @@ import { typeormOracleConfig } from '@app/modules/config/TypeormOracleConfig.mod
 import { RegistroPonto } from '@app/modules/modules/relogio-de-ponto/@core/entities/RegistroPonto.entity';
 import { TipoMarcacaoPonto } from '@app/modules/modules/relogio-de-ponto/@core/entities/TipoMarcacaoPonto.entity';
 import { RelogioDePontoModule } from '@app/modules/modules/relogio-de-ponto/RelogioDePonto.module';
+import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module';
+import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
+import { CentroDeCusto } from '@app/modules/modules/relogio-de-ponto/@core/entities/CentroDeCusto.entity';
+import { FuncionarioController } from './delivery/Funcionario.controller';
+import { PontoKPIController } from './delivery/PontoKPI.controller';
 
 @Module({
   imports: [
@@ -20,7 +25,7 @@ import { RelogioDePontoModule } from '@app/modules/modules/relogio-de-ponto/Relo
     TypeOrmModule.forRootAsync({
       name: 'protheus',
       useFactory: (configService: ConfigService) =>
-        typeormProtheusConfig([Funcionario], configService),
+        typeormProtheusConfig([Funcionario, CentroDeCusto], configService),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
@@ -51,8 +56,9 @@ import { RelogioDePontoModule } from '@app/modules/modules/relogio-de-ponto/Relo
         inject: [ConfigService],
       },
     ]),
+    SharedAuthModule.forRoot()
   ],
-  controllers: [PontoController],
-  providers: [],
+  controllers: [PontoKPIController, PontoController, FuncionarioController],
+  providers: [JwtGuard],
 })
-export class ApiModule {}
+export class ApiModule { }

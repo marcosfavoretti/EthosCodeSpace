@@ -1,11 +1,12 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { UserAuthenticatorModule } from './user-authenticator.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
+import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { FastApiStyleLoggingInterceptor } from '@app/modules/shared/interceptor/FastApiStyleLoggingInterceptor.interceptor';
 
 const SERVICE_NAME = `
  __      _____          __  .__                     
@@ -29,7 +30,7 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, 'views'));
   app.setViewEngine('hbs');
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/auth');
 
   const config = new DocumentBuilder()
     .setTitle('User Authenticator API')
@@ -43,14 +44,26 @@ async function bootstrap() {
   const port = configService.get<number>('PORT') || 3000;
   const host = configService.get<string>('HOST')!;
   //
+  /**config */
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+      forbidNonWhitelisted: true,
+      whitelist: true,
+    }),
+  );
+
+  app.useGlobalInterceptors(
+    new FastApiStyleLoggingInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)));
+  //
   const document = SwaggerModule.createDocument(app, config);
-  // SwaggerModule.setup('api/doc', app, document, {
-  //   raw: ['yaml', 'json'],
-  //   useGlobalPrefix: true,
-  // });
-  SwaggerModule.setup('api/doc', app, document, {
+
+
+  SwaggerModule.setup('doc', app, document, {
     raw: ['yaml', 'json'],
-    useGlobalPrefix: false,
+    useGlobalPrefix: true,
   });
   //define politicas de cors seguras
   app.enableCors({

@@ -10,6 +10,8 @@ import { TipoMarcacaoPonto } from './@core/entities/TipoMarcacaoPonto.entity';
 import { FuncinarioRepository } from './infra/repository/Funcionario.repository';
 import { RegistroPontoRepository } from './infra/repository/RegistroPonto.repository';
 import { TipoMarcacaoPontoRepository } from './infra/repository/TipoMarcacaoPonto.repository';
+import { CentroDeCustoRepository } from './infra/repository/CentroDeCusto.repository';
+import { CheckInvalidHours } from './@core/services/CheckInvalidHours';
 
 const protheusTypeOrm = TypeOrmModule.forFeature([Funcionario], 'protheus');
 
@@ -21,7 +23,9 @@ const logixTypeOrm = TypeOrmModule.forFeature(
 @Module({
   imports: [protheusTypeOrm, logixTypeOrm],
   providers: [
+    CheckInvalidHours,
     SincronizaRelogioService,
+    CentroDeCustoRepository,
     SincronizaRelogioPorArquivoService,
     SincronizadorFactory,
     TipoMarcacaoPontoRepository,
@@ -30,9 +34,11 @@ const logixTypeOrm = TypeOrmModule.forFeature(
     ComputaMarcacaoService,
   ],
   exports: [
+    CentroDeCustoRepository,
     protheusTypeOrm,
     TipoMarcacaoPontoRepository,
     FuncinarioRepository,
+    CheckInvalidHours,
     RegistroPontoRepository,
     logixTypeOrm,
     ComputaMarcacaoService,

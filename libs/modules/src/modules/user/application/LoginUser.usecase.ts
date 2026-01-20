@@ -1,12 +1,10 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { JwtHandler } from '../infra/service/JwtHandler';
 import { IUserService } from '../@core/interfaces/IUserService';
 import { AuthDto } from '@app/modules/contracts/dto/Auth.dto';
@@ -33,9 +31,7 @@ export class LoginUserUsecase {
       Logger.error(error)
       if (error instanceof UnauthorizedException) throw error;
       if (error instanceof UserNotFoundException) throw error;
-        throw new InternalServerErrorException(
-          'problemas ao efetuar o login'
-        );
+      throw new InternalServerErrorException('problemas ao efetuar o login');
     }
   }
 

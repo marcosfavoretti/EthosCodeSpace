@@ -1,0 +1,89 @@
+version: '3.8'
+services:
+  user-auth:
+    container_name: user-auth
+    image: ethos-monorepo
+    env_file:
+      - ./apps/.env
+      - ./apps/user-authenticator/.env
+    environment:
+      - APP_NAME=user-authenticator # Mapeado de 'user-auth'
+    ports:
+      - "30002:30002"
+    extra_hosts:
+      - "cerberus:192.168.99.109"
+
+  app-route:
+    container_name: app-route
+    image: ethos-monorepo
+    env_file:
+      - ./apps/.env
+      - ./apps/app-ethos/.env
+    environment:
+      - APP_NAME=app-ethos # placeholder - Por favor, confirme o nome correto da aplicação de roteamento (pasta em apps/)
+    ports:
+      - "30005:30005" # Mapeia para uma porta diferente na host
+  #   # Adicione outras configurações
+
+  email-service:
+    container_name: email-service
+    image: ethos-monorepo
+    env_file:
+      - ./apps/.env
+      - ./apps/notificacao-api/.env
+    environment:
+      - APP_NAME=notificacao-api
+    ports:
+      - "30003:30003"
+    networks:
+      - backend-network
+    # O Outlook às vezes exige um MTU específico ou DNS claro
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  ponto-api:
+    container_name: ponto-api
+    image: ethos-monorepo
+    env_file:
+      - ./apps/.env
+      - ./apps/ethos-relogio-de-ponto/.env
+      
+    environment:
+      - APP_NAME=ethos-relogio-de-ponto-api
+      - APP_ENTRY_FILE=main.api.js
+    ports:
+      - "30006:30006"
+    networks:
+      - backend-network
+
+  ponto-worker:
+    container_name: ponto-worker
+    image: ethos-monorepo
+    env_file:
+      - ./apps/.env
+      - ./apps/ethos-relogio-de-ponto/.env
+    environment:
+      - APP_NAME=ethos-relogio-de-ponto-worker
+      - APP_ENTRY_FILE=main.worker.js
+    networks:
+      - backend-network
+
+  ponto-master:
+    container_name: ponto-master
+    image: ethos-monorepo
+    env_file:
+      - ./apps/.env
+      - ./apps/ethos-relogio-de-ponto/.env
+    environment:
+      - APP_NAME=ethos-relogio-de-ponto-master
+      - APP_ENTRY_FILE=main.master.js
+    networks:
+      - backend-network
+    dns:
+      - 192.168.99.110
+      - 192.168.99.106
+
+networks:
+  backend-network:
+    driver: bridge

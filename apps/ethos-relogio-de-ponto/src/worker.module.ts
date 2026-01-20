@@ -9,13 +9,14 @@ import { RegistroPonto } from '@app/modules/modules/relogio-de-ponto/@core/entit
 import { TipoMarcacaoPonto } from '@app/modules/modules/relogio-de-ponto/@core/entities/TipoMarcacaoPonto.entity';
 import { typeormProtheusConfig } from '@app/modules/config/TypeormProtheusConfig.module';
 import { typeormOracleConfig } from '@app/modules/config/TypeormOracleConfig.module';
+import { CentroDeCusto } from '@app/modules/modules/relogio-de-ponto/@core/entities/CentroDeCusto.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       name: 'protheus',
       useFactory: (configService: ConfigService) =>
-        typeormProtheusConfig([Funcionario], configService),
+        typeormProtheusConfig([Funcionario, CentroDeCusto], configService),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({

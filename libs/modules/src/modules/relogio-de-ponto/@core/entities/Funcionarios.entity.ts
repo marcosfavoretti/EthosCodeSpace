@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { CentroDeCusto } from './CentroDeCusto.entity';
 
 @Entity({ name: 'SRA010' })
 export class Funcionario {
@@ -14,8 +15,9 @@ export class Funcionario {
   @Column({ name: 'RA_MAT' })
   matricula: string;
 
-  @Column({ name: 'RA_CC' })
-  centroCusto: string;
+  @ManyToOne(()=> CentroDeCusto, { eager: true })
+  @JoinColumn({ name: 'RA_CC' })
+  centroDeCusto: CentroDeCusto;
 
   @Column({ name: 'RA_SITFOLH', type: 'char' })
   demitido: 'D' | null;
