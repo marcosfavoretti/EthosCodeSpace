@@ -1,4 +1,9 @@
-import { Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ComparaMudancaFabricaExecutorService } from '../@core/services/ComparaMudancaFabricaExecutor.service';
 import { FabricaService } from '../infra/service/Fabrica.service';
 import { ConsutlarFabricaDTO } from '@app/modules/contracts/dto/ConsultarFabrica.dto';
@@ -11,7 +16,7 @@ export class ConsultarHistoricoFabricaUseCase {
     @Inject(FabricaService) private fabricaService: FabricaService,
     @Inject(ComparaMudancaFabricaExecutorService)
     private comparaMudancaFabricaExecutorService: ComparaMudancaFabricaExecutorService,
-  ) { }
+  ) {}
 
   async executaComparacao(dto: ConsutlarFabricaDTO): Promise<MudancasResDto[]> {
     try {
@@ -21,10 +26,12 @@ export class ConsultarHistoricoFabricaUseCase {
       return mudancas.map((mud) => MudancasResDto.fromClass(mud));
     } catch (error) {
       Logger.error(error);
-      if(error instanceof FalhaAoMapearMudancasException){
+      if (error instanceof FalhaAoMapearMudancasException) {
         throw new InternalServerErrorException(error.message);
       }
-      throw new InternalServerErrorException('Falha ao consultar historico da fabrica')
+      throw new InternalServerErrorException(
+        'Falha ao consultar historico da fabrica',
+      );
     }
   }
 }

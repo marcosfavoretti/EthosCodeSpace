@@ -30,7 +30,7 @@ export class JwtHandler {
   }
 
   generateToken<T>(payload: T): string {
-    Logger.log(payload)
+    Logger.log(payload);
     return jwtWrapper().sign(JSON.stringify(payload), this.secretKey);
   }
 }

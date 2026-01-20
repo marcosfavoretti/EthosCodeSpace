@@ -5,10 +5,7 @@ import { ColorGenerator } from '@app/modules/shared/classes/GeradorDeCor';
 
 @Module({
   imports: [FabricaServiceModule],
-  providers: [
-    ColorGenerator,
-    ConsultarGraficoGanttUseCase,
-  ],
+  providers: [ColorGenerator, ConsultarGraficoGanttUseCase],
   exports: [ConsultarGraficoGanttUseCase],
 })
 export class KpiModule {}

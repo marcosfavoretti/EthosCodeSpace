@@ -2,7 +2,6 @@ import { User } from '@app/modules/modules/user/@core/entities/User.entity';
 
 import { Fabrica } from '../entities/Fabrica.entity';
 
-
 export class FabricaBuilder {
   private _principal: boolean;
   private _checkPoint: boolean;

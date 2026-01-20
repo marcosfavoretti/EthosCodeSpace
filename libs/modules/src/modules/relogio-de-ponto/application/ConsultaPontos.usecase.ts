@@ -28,7 +28,7 @@ export class ConsultaMarcacaoPontosUseCase {
     private checkHorasIrregulares: CheckInvalidHours,
     private tipoMarcacaoPontoRepository: TipoMarcacaoPontoRepository,
     private funcionarioRepository: FuncinarioRepository,
-  ) { }
+  ) {}
 
   /**
    * Método Orquestrador Principal
@@ -48,7 +48,11 @@ export class ConsultaMarcacaoPontosUseCase {
       }
 
       // 3. Construção da Query Base (Sem paginação, apenas filtros)
-      const qbBase = this.createBaseQueryBuilder(matriculasFiltradas, dto, dateRange);
+      const qbBase = this.createBaseQueryBuilder(
+        matriculasFiltradas,
+        dto,
+        dateRange,
+      );
 
       // 4. Contagem Total de Registros
       const total = await this.executeTotalCount(qbBase);
@@ -74,7 +78,6 @@ export class ConsultaMarcacaoPontosUseCase {
         total,
         totalPages: Math.ceil(total / pagination.limit),
       };
-
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
       this.logger.error(`Erro consulta ponto: ${error.message}`, error.stack);
@@ -94,7 +97,10 @@ export class ConsultaMarcacaoPontosUseCase {
   }
 
   private extractDateRangeParams(dto: ConsultaMarcacaoDTO) {
-    const { startFilterDate, endFilterDate } = this.parseDateRange(dto.dataInicio, dto.dataFim);
+    const { startFilterDate, endFilterDate } = this.parseDateRange(
+      dto.dataInicio,
+      dto.dataFim,
+    );
     if (startFilterDate && endFilterDate && startFilterDate > endFilterDate) {
       throw new BadRequestException('Data início maior que data fim.');
     }
@@ -104,7 +110,7 @@ export class ConsultaMarcacaoPontosUseCase {
   private createBaseQueryBuilder(
     matriculas: string[] | null,
     dto: ConsultaMarcacaoDTO,
-    dateRange: { start: Date | null, end: Date | null }
+    dateRange: { start: Date | null; end: Date | null },
   ): SelectQueryBuilder<RegistroPonto> {
     const qb = this.tipoMarcacaoPontoRepository.manager
       .createQueryBuilder(RegistroPonto, 'rp') // 'rp' é a PIXIE_ARQUIVO_AFD
@@ -132,18 +138,22 @@ export class ConsultaMarcacaoPontosUseCase {
    * Executa a contagem total de dias de trabalho (grupos únicos de Matrícula + DataTurno).
    * Usa SQL puro encapsulado para evitar que o TypeORM injete IDs indesejados.
    */
-  private async executeTotalCount(qbBase: SelectQueryBuilder<RegistroPonto>): Promise<number> {
+  private async executeTotalCount(
+    qbBase: SelectQueryBuilder<RegistroPonto>,
+  ): Promise<number> {
     const qbCount = qbBase.clone().orderBy(); // Remove ordenação para performance
     const [sqlQuery, sqlParams] = qbCount.getQueryAndParameters();
 
     // Envolve a query DISTINCT em um COUNT externo
-    Logger.debug(sqlQuery)
+    Logger.debug(sqlQuery);
     const countResult = await this.tipoMarcacaoPontoRepository.manager.query(
       `SELECT COUNT(1) AS "total" FROM (${sqlQuery})`,
-      sqlParams
+      sqlParams,
     );
 
-    const rawTotal = countResult[0] ? (countResult[0].total || countResult[0].TOTAL) : 0;
+    const rawTotal = countResult[0]
+      ? countResult[0].total || countResult[0].TOTAL
+      : 0;
     return parseInt(String(rawTotal), 10);
   }
 
@@ -152,11 +162,11 @@ export class ConsultaMarcacaoPontosUseCase {
    */
   private async fetchPaginatedKeys(
     qbBase: SelectQueryBuilder<RegistroPonto>,
-    pagination: { skip: number, limit: number }
+    pagination: { skip: number; limit: number },
   ): Promise<{ matricula: string; dataturno: Date }[]> {
     return qbBase
       .orderBy(this.ORACLE_SHIFT_DATE_EXPR, 'DESC') // Ordena por Data Calculada
-      .addOrderBy('rp.mat', 'ASC')                  // Desempate por Matrícula
+      .addOrderBy('rp.mat', 'ASC') // Desempate por Matrícula
       .offset(pagination.skip)
       .limit(pagination.limit)
       .getRawMany<{ matricula: string; dataturno: Date }>();
@@ -166,7 +176,9 @@ export class ConsultaMarcacaoPontosUseCase {
   // BLOCO 3: Filtros e Lógica de Negócio (WHERE)
   // ===========================================================================
 
-  private async resolveEmployeeFilter(dto: ConsultaMarcacaoDTO): Promise<string[] | null> {
+  private async resolveEmployeeFilter(
+    dto: ConsultaMarcacaoDTO,
+  ): Promise<string[] | null> {
     if (!dto.ccid && !dto.indetificador) return null;
     return this.getMatriculasFilter(dto);
   }
@@ -181,7 +193,9 @@ export class ConsultaMarcacaoPontosUseCase {
     // 1. Filtro de Lista de Matrículas (Chunking para evitar ORA-01795)
     if (matriculasFiltradas && matriculasFiltradas.length > 0) {
       if (matriculasFiltradas.length > 1000) {
-        qb.andWhere('rp.mat IN (:...mats)', { mats: matriculasFiltradas.slice(0, 1000) });
+        qb.andWhere('rp.mat IN (:...mats)', {
+          mats: matriculasFiltradas.slice(0, 1000),
+        });
       } else {
         qb.andWhere('rp.mat IN (:...mats)', { mats: matriculasFiltradas });
       }
@@ -191,21 +205,26 @@ export class ConsultaMarcacaoPontosUseCase {
       const term = dto.indetificador.trim();
       qb.andWhere(
         new Brackets((sub) => {
-          sub.where('rp.mat = :id', { id: term })
+          sub
+            .where('rp.mat = :id', { id: term })
             .orWhere('rp.cpf = :id', { id: term })
             .orWhere('rp.pis = :id', { id: term });
-        })
+        }),
       );
     }
 
     // 3. Filtros de Data (Performance Index + Lógica de Negócio)
     if (startFilterDate) {
       qb.andWhere('rp.data >= :idxStart', { idxStart: startFilterDate });
-      qb.andWhere(`${this.ORACLE_SHIFT_DATE_EXPR} >= :realStart`, { realStart: startFilterDate });
+      qb.andWhere(`${this.ORACLE_SHIFT_DATE_EXPR} >= :realStart`, {
+        realStart: startFilterDate,
+      });
     }
     if (endFilterDate) {
       qb.andWhere('rp.data <= :idxEnd', { idxEnd: addDays(endFilterDate, 2) });
-      qb.andWhere(`${this.ORACLE_SHIFT_DATE_EXPR} <= :realEnd`, { realEnd: endFilterDate });
+      qb.andWhere(`${this.ORACLE_SHIFT_DATE_EXPR} <= :realEnd`, {
+        realEnd: endFilterDate,
+      });
     }
   }
 
@@ -213,39 +232,57 @@ export class ConsultaMarcacaoPontosUseCase {
   // BLOCO 4: Hidratação de Dados e Mapping (DTOs)
   // ===========================================================================
 
-  private async fetchFullDataByTimeRange(keys: { matricula: string; dataturno: Date }[]): Promise<TipoMarcacaoPonto[]> {
+  private async fetchFullDataByTimeRange(
+    keys: { matricula: string; dataturno: Date }[],
+  ): Promise<TipoMarcacaoPonto[]> {
     if (!keys.length) return [];
 
-    const qb = this.tipoMarcacaoPontoRepository.createQueryBuilder('tmp')
+    const qb = this.tipoMarcacaoPontoRepository
+      .createQueryBuilder('tmp')
       .innerJoinAndSelect('tmp.registroPonto', 'rp')
-      .where(new Brackets((qbWhere) => {
-        keys.forEach((key, index) => {
-          const baseDate = new Date(key.dataturno);
-          // Recria a janela de 24h exata do turno (05:00 D até 05:00 D+1)
-          const startWindow = addHours(startOfDay(baseDate), this.WORKDAY_CUTOFF_HOUR);
-          const endWindow = addDays(startWindow, 1);
+      .where(
+        new Brackets((qbWhere) => {
+          keys.forEach((key, index) => {
+            const baseDate = new Date(key.dataturno);
+            // Recria a janela de 24h exata do turno (05:00 D até 05:00 D+1)
+            const startWindow = addHours(
+              startOfDay(baseDate),
+              this.WORKDAY_CUTOFF_HOUR,
+            );
+            const endWindow = addDays(startWindow, 1);
 
-          const paramMat = `mat_${index}`;
-          const paramStart = `start_${index}`;
-          const paramEnd = `end_${index}`;
+            const paramMat = `mat_${index}`;
+            const paramStart = `start_${index}`;
+            const paramEnd = `end_${index}`;
 
-          qbWhere.orWhere(
-            `(rp.mat = :${paramMat} AND rp.dataHoraAr >= :${paramStart} AND rp.dataHoraAr < :${paramEnd})`,
-            { [paramMat]: key.matricula, [paramStart]: startWindow, [paramEnd]: endWindow }
-          );
-        });
-      }))
+            qbWhere.orWhere(
+              `(rp.mat = :${paramMat} AND rp.dataHoraAr >= :${paramStart} AND rp.dataHoraAr < :${paramEnd})`,
+              {
+                [paramMat]: key.matricula,
+                [paramStart]: startWindow,
+                [paramEnd]: endWindow,
+              },
+            );
+          });
+        }),
+      )
       .orderBy('rp.dataHoraAr', 'ASC');
 
     return qb.getMany();
   }
 
-  private async mapToResponseDTO(marcacoes: TipoMarcacaoPonto[]): Promise<ResRegistroPontoTurnoPontoDTO[]> {
+  private async mapToResponseDTO(
+    marcacoes: TipoMarcacaoPonto[],
+  ): Promise<ResRegistroPontoTurnoPontoDTO[]> {
     const marcacaoMap = new Map<string, TipoMarcacaoPonto[]>();
     const matriculasUnicas = new Set<string>();
 
     // Ordenação inicial
-    marcacoes.sort((a, b) => a.registroPonto.dataHoraAr.getTime() - b.registroPonto.dataHoraAr.getTime());
+    marcacoes.sort(
+      (a, b) =>
+        a.registroPonto.dataHoraAr.getTime() -
+        b.registroPonto.dataHoraAr.getTime(),
+    );
 
     // Agrupamento em Memória
     for (const item of marcacoes) {
@@ -267,7 +304,9 @@ export class ConsultaMarcacaoPontosUseCase {
     }
 
     // Busca dados complementares (Nome, Setor)
-    const funcionariosDict = await this.fetchEmployeeDetails(Array.from(matriculasUnicas));
+    const funcionariosDict = await this.fetchEmployeeDetails(
+      Array.from(matriculasUnicas),
+    );
 
     // Construção do Resultado
     const result: ResRegistroPontoTurnoPontoDTO[] = [];
@@ -283,7 +322,7 @@ export class ConsultaMarcacaoPontosUseCase {
   private buildSingleDto(
     groupKey: string,
     lista: TipoMarcacaoPonto[],
-    funcionariosDict: Record<string, Funcionario>
+    funcionariosDict: Record<string, Funcionario>,
   ): ResRegistroPontoTurnoPontoDTO {
     const header = lista[0].registroPonto;
     const datePart = groupKey.split('|')[1];
@@ -293,7 +332,7 @@ export class ConsultaMarcacaoPontosUseCase {
     const setorDesc = funcionario?.centroDeCusto?.descricao || 'N/A';
     const nomeFunc = funcionario?.nome || header.nome || 'Desconhecido';
 
-    const registrosDePonto = lista.map(m => ({
+    const registrosDePonto = lista.map((m) => ({
       id: m.id,
       data: m.registroPonto.dataHoraAr,
       dataStr: m.registroPonto.dataHoraAr.toLocaleString('pt-BR'),
@@ -305,12 +344,14 @@ export class ConsultaMarcacaoPontosUseCase {
     return {
       matricula: header.mat.trim(),
       nome: nomeFunc.trim(),
-      horasIrregulares: this.checkHorasIrregulares.checkInvalidHours({ workedhours: horasTrabalhadas }),
+      horasIrregulares: this.checkHorasIrregulares.checkInvalidHours({
+        workedhours: horasTrabalhadas,
+      }),
       qtdHoras: horasTrabalhadas,
       setor: setorDesc.trim(),
       turnoDiaStr: turnoDia.toLocaleDateString('pt-BR', { timeZone: 'UTC' }),
       turnoDia: turnoDia,
-      registros: registrosDePonto
+      registros: registrosDePonto,
     };
   }
 
@@ -321,7 +362,10 @@ export class ConsultaMarcacaoPontosUseCase {
   private calculateWorkdayDate(eventTime: Date, tipoMarcacao: string): Date {
     let workdayDate = startOfDay(eventTime);
     // Se for antes das 05:00 e não for a primeira entrada, pertence tecnicamente ao dia anterior
-    if (eventTime.getHours() < this.WORKDAY_CUTOFF_HOUR && !tipoMarcacao.endsWith('1E')) {
+    if (
+      eventTime.getHours() < this.WORKDAY_CUTOFF_HOUR &&
+      !tipoMarcacao.endsWith('1E')
+    ) {
       workdayDate = addDays(workdayDate, -1);
     }
     return workdayDate;
@@ -332,7 +376,9 @@ export class ConsultaMarcacaoPontosUseCase {
   }
 
   private deltaHours(registros: ResTipoMarcacaoDTO[]): number {
-    const registrosOrdenados = [...registros].sort((a, b) => a.data.getTime() - b.data.getTime());
+    const registrosOrdenados = [...registros].sort(
+      (a, b) => a.data.getTime() - b.data.getTime(),
+    );
     let msTrabalhados = 0;
     let entradaAtual: Date | null = null;
     let pares = 0;
@@ -365,31 +411,41 @@ export class ConsultaMarcacaoPontosUseCase {
   // BLOCO 6: Repositórios Auxiliares e Parsing
   // ===========================================================================
 
-  private async getMatriculasFilter(dto: ConsultaMarcacaoDTO): Promise<string[] | null> {
-    const qb = this.funcionarioRepository.createQueryBuilder('f').select('f.matricula');
+  private async getMatriculasFilter(
+    dto: ConsultaMarcacaoDTO,
+  ): Promise<string[] | null> {
+    const qb = this.funcionarioRepository
+      .createQueryBuilder('f')
+      .select('f.matricula');
     let applied = false;
 
     if (dto.ccid) {
-      qb.innerJoin('f.centroDeCusto', 'cc')
-        .andWhere('TRIM(f.RA_CC) = TRIM(:cc)', { cc: dto.ccid });
+      qb.innerJoin('f.centroDeCusto', 'cc').andWhere(
+        'TRIM(f.RA_CC) = TRIM(:cc)',
+        { cc: dto.ccid },
+      );
       applied = true;
     }
 
     if (dto.indetificador && isNaN(Number(dto.indetificador.trim()))) {
       const term = dto.indetificador.trim();
-      qb.andWhere('UPPER(TRIM(f.nome)) LIKE UPPER(:nome)', { nome: `%${term}%` })
-        .andWhere('f.demitido != :demitido', { demitido: 'D' });
+      qb.andWhere('UPPER(TRIM(f.nome)) LIKE UPPER(:nome)', {
+        nome: `%${term}%`,
+      }).andWhere('f.demitido != :demitido', { demitido: 'D' });
       applied = true;
     }
 
     if (!applied) return null;
     const result = await qb.getMany();
-    return result.map(f => f.matricula.trim());
+    return result.map((f) => f.matricula.trim());
   }
 
-  private async fetchEmployeeDetails(matriculas: string[]): Promise<Record<string, Funcionario>> {
+  private async fetchEmployeeDetails(
+    matriculas: string[],
+  ): Promise<Record<string, Funcionario>> {
     if (!matriculas.length) return {};
-    const lista = await this.funcionarioRepository.buscarPoridentificador(matriculas);
+    const lista =
+      await this.funcionarioRepository.buscarPoridentificador(matriculas);
     const mapa: Record<string, Funcionario> = {};
     for (const f of lista) mapa[f.matricula.trim()] = f;
     return mapa;
@@ -400,18 +456,29 @@ export class ConsultaMarcacaoPontosUseCase {
     const pEnd = this.parseDateString(endStr);
     return {
       startFilterDate: pStart ? startOfDay(pStart) : null,
-      endFilterDate: pEnd ? new Date(pEnd.setHours(23, 59, 59, 999)) : null
+      endFilterDate: pEnd ? new Date(pEnd.setHours(23, 59, 59, 999)) : null,
     };
   }
 
   private parseDateString(dateStr?: string): Date | null {
     if (!dateStr) return null;
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return parse(dateStr, 'dd/MM/yyyy', new Date());
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return parse(dateStr, 'yyyy-MM-dd', new Date());
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr))
+      return parse(dateStr, 'dd/MM/yyyy', new Date());
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr))
+      return parse(dateStr, 'yyyy-MM-dd', new Date());
     return null;
   }
 
-  private createEmptyResponse(pagination: { page: number, limit: number }): ResponsePaginatorDTO<ResRegistroPontoTurnoPontoDTO> {
-    return { data: [], limit: pagination.limit, page: pagination.page, total: 0, totalPages: 0 };
+  private createEmptyResponse(pagination: {
+    page: number;
+    limit: number;
+  }): ResponsePaginatorDTO<ResRegistroPontoTurnoPontoDTO> {
+    return {
+      data: [],
+      limit: pagination.limit,
+      page: pagination.page,
+      total: 0,
+      totalPages: 0,
+    };
   }
 }

@@ -61,7 +61,6 @@ export class Fabrica {
   // })
   // mercadoSnapShots: MercadoSnapShot[];
 
-
   enableCheckPoint(): void {
     this.checkPoint = true;
     1;

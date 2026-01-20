@@ -7,7 +7,7 @@ import * as nodemailer from 'nodemailer';
     {
       provide: 'NODEMAILER_TRANSPORTER',
       useFactory: async (configService: ConfigService) => {
-        Logger.debug('Tentar conexão com o email')
+        Logger.debug('Tentar conexão com o email');
         const emailConfig = {
           host: configService.get<string>('MAIL_HOST'),
           port: configService.get<number>('MAIL_PORT'),
@@ -21,7 +21,7 @@ import * as nodemailer from 'nodemailer';
           },
           connectionTimeout: 5000,
           greetingTimeout: 5000,
-        }
+        };
         const connection = await nodemailer.createTransport(emailConfig);
 
         try {
@@ -43,4 +43,4 @@ import * as nodemailer from 'nodemailer';
   ],
   exports: ['NODEMAILER_TRANSPORTER'],
 })
-export class NodemailerProviderModule { }
+export class NodemailerProviderModule {}

@@ -1,20 +1,23 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { IOnUserCreated } from "../../@core/interfaces/IOnUserCreated";
-import { User } from "../../@core/entities/User.entity";
-import { EmailHttpClient } from "@app/modules/contracts/clients/EmailHttp.client";
-import { ConfigService } from "@nestjs/config";
-import { ethos_logox64 } from "@app/modules/utils/ethos_logox64";
+import { Injectable, Logger } from '@nestjs/common';
+import { IOnUserCreated } from '../../@core/interfaces/IOnUserCreated';
+import { User } from '../../@core/entities/User.entity';
+import { EmailHttpClient } from '@app/modules/contracts/clients/EmailHttp.client';
+import { ConfigService } from '@nestjs/config';
+import { ethos_logox64 } from '@app/modules/utils/ethos_logox64';
 
 @Injectable()
 export class EmailDeValidacaoService implements IOnUserCreated {
-    constructor(private emailHttpClient: EmailHttpClient, private configService: ConfigService) { }
-    async oncreate(props: { user: User; code: string; }): Promise<void> {
-        try {
-            await this.emailHttpClient.sendEmail({
-                to: [props.user.email],
-                subject: 'Valide suas credenciais',
-                attachments: [],
-                html: `
+  constructor(
+    private emailHttpClient: EmailHttpClient,
+    private configService: ConfigService,
+  ) {}
+  async oncreate(props: { user: User; code: string }): Promise<void> {
+    try {
+      await this.emailHttpClient.sendEmail({
+        to: [props.user.email],
+        subject: 'Valide suas credenciais',
+        attachments: [],
+        html: `
                 <!-- Email bonito de valicao de credenciais com botao com hook para o webhook de valicao de usuario -->
                 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
                         <h2>Validação de Credenciais</h2>
@@ -33,11 +36,10 @@ export class EmailDeValidacaoService implements IOnUserCreated {
     
                     </div>
                     
-                    `
-            });
-        } catch (error) {
-            Logger.error(error, EmailDeValidacaoService.name);
-        }
-
+                    `,
+      });
+    } catch (error) {
+      Logger.error(error, EmailDeValidacaoService.name);
     }
+  }
 }

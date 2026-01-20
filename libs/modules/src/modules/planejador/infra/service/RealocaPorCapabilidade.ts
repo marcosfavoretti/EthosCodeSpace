@@ -1,4 +1,3 @@
-
 import { Logger } from '@nestjs/common';
 import {
   addBusinessDays,
@@ -7,7 +6,11 @@ import {
   isSameDay,
   subBusinessDays,
 } from 'date-fns';
-import { MetodoDeReAlocacao, RealocacaoComDepedenciaProps, RealocacaoSemDependenciaProps } from '../../@core/abstract/MetodoDeReAlocacao';
+import {
+  MetodoDeReAlocacao,
+  RealocacaoComDepedenciaProps,
+  RealocacaoSemDependenciaProps,
+} from '../../@core/abstract/MetodoDeReAlocacao';
 import { IGerenciadorPlanejamentConsulta } from '../../@core/interfaces/IGerenciadorPlanejamentoConsulta';
 import { ISelecionarItem } from '../../@core/interfaces/ISelecionarItem';
 import { RealocacaoParcial } from '../../@core/classes/RealocacaoParcial';

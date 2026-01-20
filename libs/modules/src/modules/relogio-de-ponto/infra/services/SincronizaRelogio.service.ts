@@ -21,7 +21,7 @@ export class SincronizaRelogioService implements ISincronizadorDePontos {
 
   async sincroniza(): Promise<ArquivoPontoDado[]> {
     const dayProcess = 1;
-    const MonthProcess = new Date().getMonth()+1;//.getMonth vai de 0~11, somo mais um para normalizar entre 1~12
+    const MonthProcess = new Date().getMonth() + 1; //.getMonth vai de 0~11, somo mais um para normalizar entre 1~12
     const YearProcess = new Date().getFullYear();
     //
     const sessionToken = await this.loginNoRelogio();
@@ -31,7 +31,9 @@ export class SincronizaRelogioService implements ISincronizadorDePontos {
       YearProcess,
       session: sessionToken.token,
     });
-    Logger.debug(`arquivo carregado do relogio ${new Date().toLocaleDateString()}`);
+    Logger.debug(
+      `arquivo carregado do relogio ${new Date().toLocaleDateString()}`,
+    );
 
     const dadosSincronizados = this.processaTexto({ data: geraArquivo.data });
 
@@ -61,7 +63,7 @@ export class SincronizaRelogioService implements ISincronizadorDePontos {
           data: parse(dataString, dataFormat, new Date()), // Corrigido
           identificador: linha.slice(23, 34),
         });
-        console.log(registro.data)
+        console.log(registro.data);
         resultados.push(registro);
         continue;
       }
@@ -78,7 +80,7 @@ export class SincronizaRelogioService implements ISincronizadorDePontos {
           identificador: linha.slice(35, 46),
         });
         resultados.push(registro);
-        console.log(registro.data)
+        console.log(registro.data);
         continue;
       }
     }

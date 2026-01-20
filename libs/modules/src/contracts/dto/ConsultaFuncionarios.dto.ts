@@ -27,7 +27,6 @@ export class ConsultaFuncionariosDTO extends PaginationDTO {
   @IsString()
   PIS?: string;
 
-
   @ApiProperty({
     required: false,
     description: 'Filtro por matricula',

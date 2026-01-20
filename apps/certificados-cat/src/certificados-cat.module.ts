@@ -23,17 +23,15 @@ import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module'
     TypeOrmModule.forRootAsync({
       name: 'mongo',
       imports: [ConfigModule],
-      useFactory: (c: ConfigService) => typeormMongoConfig([CertificadosCatEntity], c),
+      useFactory: (c: ConfigService) =>
+        typeormMongoConfig([CertificadosCatEntity], c),
       inject: [ConfigService],
     }),
     SharedAuthModule.forRoot(),
     StorageModule,
     CertificadosCatModule,
   ],
-  providers: [
-    DirWatcherService,
-    JwtGuard
-  ],
+  providers: [DirWatcherService, JwtGuard],
   controllers: [CertificadosCatController],
 })
-export class CertificadosCatModuleApi { }
+export class CertificadosCatModuleApi {}

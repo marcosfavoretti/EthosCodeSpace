@@ -10,7 +10,7 @@ async function bootstrap() {
   const host = configService.get('HOST');
   const port = configService.get('PORT') ?? 3000;
 
-  app.setGlobalPrefix('api')
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Certificados CAT')

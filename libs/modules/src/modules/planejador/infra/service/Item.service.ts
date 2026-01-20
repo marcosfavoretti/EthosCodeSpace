@@ -17,7 +17,7 @@ export class ItemService {
       },
     });
   }
-  
+
   async consultarItens(itensIds: string[]): Promise<ItemComCapabilidade[]> {
     return await this.itemRepository.find({
       where: {

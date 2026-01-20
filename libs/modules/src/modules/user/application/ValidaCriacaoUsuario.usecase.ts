@@ -5,18 +5,17 @@ import { ISetUserCargo } from '../@core/interfaces/ISetUserCargo';
 import { CargoEnum } from '../@core/enum/CARGOS.enum';
 import { boolean, string } from 'joi';
 
-
 export class ValidaCriacaoUsuarioUseCase {
   constructor(
     @Inject(ISetUserCargo) private readonly setUserCargoService: ISetUserCargo,
     @Inject(IUserService) private readonly userService: IUserService,
     @Inject(IUsuarioPendentes)
     private readonly usuarioPendentesService: IUsuarioPendentes,
-  ) { }
+  ) {}
 
   async execute(dto: {
     token: string;
-  }): Promise<{ success: boolean, message: string }> {
+  }): Promise<{ success: boolean; message: string }> {
     const { token } = dto;
     const pendingUser = await this.usuarioPendentesService.get(token);
     if (!pendingUser) {
@@ -30,10 +29,11 @@ export class ValidaCriacaoUsuarioUseCase {
       //se regex nao for email @ethos.ind.br ele da outro cargo sem ser user
       if (pendingUser.email.includes('@ethos.ind.br')) {
         await this.setUserCargoService.setUserCargo(user, CargoEnum.USER);
-      }
-
-      else {
-        await this.setUserCargoService.setUserCargo(user, CargoEnum.CATERPILLAR_USER);
+      } else {
+        await this.setUserCargoService.setUserCargo(
+          user,
+          CargoEnum.CATERPILLAR_USER,
+        );
       }
 
       await this.usuarioPendentesService.remove(token);

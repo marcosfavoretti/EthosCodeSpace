@@ -1,10 +1,10 @@
-import { Calendario } from "@app/modules/shared/classes/Calendario";
-import { RealocacaoProps } from "../classes/RealocaacoProps";
-import { RealocacaoParcial } from "../classes/RealocacaoParcial";
-import { ItemComCapabilidade } from "../entities/Item.entity";
-import { CODIGOSETOR } from "../enum/CodigoSetor.enum";
-import { IGerenciadorPlanejamentConsulta } from "../interfaces/IGerenciadorPlanejamentoConsulta";
-import { ISelecionarItem } from "../interfaces/ISelecionarItem";
+import { Calendario } from '@app/modules/shared/classes/Calendario';
+import { RealocacaoProps } from '../classes/RealocaacoProps';
+import { RealocacaoParcial } from '../classes/RealocacaoParcial';
+import { ItemComCapabilidade } from '../entities/Item.entity';
+import { CODIGOSETOR } from '../enum/CodigoSetor.enum';
+import { IGerenciadorPlanejamentConsulta } from '../interfaces/IGerenciadorPlanejamentoConsulta';
+import { ISelecionarItem } from '../interfaces/ISelecionarItem';
 
 export type HookRealocacaoProps = RealocacaoProps & {
   setor: CODIGOSETOR;

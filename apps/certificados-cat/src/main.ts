@@ -11,7 +11,7 @@ async function bootstrap() {
   const host = configService.get('HOST');
   const port = configService.get('PORT') ?? 3000;
 
-  app.setGlobalPrefix('api')
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Certificados CAT')
@@ -31,9 +31,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/doc', app, documentFactory, {

@@ -1,8 +1,12 @@
-import { Calendario } from "@app/modules/shared/classes/Calendario";
-import { IGerenciadorPlanejamentConsulta } from "../../@core/interfaces/IGerenciadorPlanejamentoConsulta";
-import { ISelecionarItem } from "../../@core/interfaces/ISelecionarItem";
-import { MetodoDeReAlocacao, RealocacaoComDepedenciaProps, RealocacaoSemDependenciaProps } from "../../@core/abstract/MetodoDeReAlocacao";
-import { RealocacaoParcial } from "../../@core/classes/RealocacaoParcial";
+import { Calendario } from '@app/modules/shared/classes/Calendario';
+import { IGerenciadorPlanejamentConsulta } from '../../@core/interfaces/IGerenciadorPlanejamentoConsulta';
+import { ISelecionarItem } from '../../@core/interfaces/ISelecionarItem';
+import {
+  MetodoDeReAlocacao,
+  RealocacaoComDepedenciaProps,
+  RealocacaoSemDependenciaProps,
+} from '../../@core/abstract/MetodoDeReAlocacao';
+import { RealocacaoParcial } from '../../@core/classes/RealocacaoParcial';
 
 export class RealocaDependenciaService extends MetodoDeReAlocacao {
   constructor(

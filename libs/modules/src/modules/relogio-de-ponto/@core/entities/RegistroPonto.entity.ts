@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { TipoMarcacaoPonto } from './TipoMarcacaoPonto.entity';
 
 @Entity({ name: 'PIXIE_ARQUIVO_AFD' })
@@ -38,7 +45,6 @@ export class RegistroPonto {
 
   @Column({ name: 'DATA_HORA_ARQ', type: 'timestamp', nullable: true })
   dataHoraAr: Date;
-
 
   @ManyToOne(() => TipoMarcacaoPonto)
   @JoinColumn({ name: 'ID' })

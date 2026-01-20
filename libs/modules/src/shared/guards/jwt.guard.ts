@@ -1,7 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
-  UnauthorizedException, 
+  UnauthorizedException,
   Injectable,
   Logger,
   Inject,
@@ -13,8 +13,8 @@ import { IJwtValidate } from '../interfaces/IJwtValidate';
 export class JwtGuard implements CanActivate {
   constructor(
     @Inject(IJwtValidate)
-    private jwtValidate: IJwtValidate
-  ) { }
+    private jwtValidate: IJwtValidate,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();

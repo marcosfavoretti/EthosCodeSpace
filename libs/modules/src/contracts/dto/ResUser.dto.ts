@@ -11,8 +11,8 @@ export class UserResponseDTO {
   @ApiProperty()
   avatar: string;
   @ApiProperty({
-      type: String,
-      isArray: true
+    type: String,
+    isArray: true,
   })
   cargosLista: string[];
 

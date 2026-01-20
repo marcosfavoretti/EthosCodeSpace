@@ -1,4 +1,3 @@
-
 import { ApiProperty } from '@nestjs/swagger';
 import { ObjectId } from 'mongodb';
 import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
@@ -24,7 +23,7 @@ export class ResAppRouteAppDTO {
 
   @ApiProperty({
     type: AppSubRouteRes,
-    isArray: true
+    isArray: true,
   })
   subRoutes: AppSubRouteRes[];
 
@@ -50,13 +49,15 @@ export class ResAppRouteAppDTO {
     dto.route = entity.route;
     dto.desc = entity.desc;
     dto.cargos = entity.cargos;
-    dto.subRoutes = entity?.subRoutes && entity?.subRoutes.map((subRoute) => {
-      const subRouteDto = new AppSubRouteRes();
-      subRouteDto.name = subRoute.name;
-      subRouteDto.route = subRoute.route;
-      subRouteDto.desc = subRoute.desc;
-      return subRouteDto;
-    });
+    dto.subRoutes =
+      entity?.subRoutes &&
+      entity?.subRoutes.map((subRoute) => {
+        const subRouteDto = new AppSubRouteRes();
+        subRouteDto.name = subRoute.name;
+        subRouteDto.route = subRoute.route;
+        subRouteDto.desc = subRoute.desc;
+        return subRouteDto;
+      });
     return dto;
   }
 }

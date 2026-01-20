@@ -1,10 +1,10 @@
-import { SetorService } from "./@core/abstract/SetorService";
-import { SetorBanho } from "./@core/services/SetorBanho";
-import { SetorLixa } from "./@core/services/SetorLixa";
-import { SetorMontagem } from "./@core/services/SetorMontagem";
-import { SetorPinturaLiq } from "./@core/services/SetorPinturaliq";
-import { SetorPinturaPo } from "./@core/services/SetorPinturaPo";
-import { SetorSolda } from "./@core/services/SetorSolda";
+import { SetorService } from './@core/abstract/SetorService';
+import { SetorBanho } from './@core/services/SetorBanho';
+import { SetorLixa } from './@core/services/SetorLixa';
+import { SetorMontagem } from './@core/services/SetorMontagem';
+import { SetorPinturaLiq } from './@core/services/SetorPinturaliq';
+import { SetorPinturaPo } from './@core/services/SetorPinturaPo';
+import { SetorSolda } from './@core/services/SetorSolda';
 
 export const PIPE_FABRICACAO = Symbol('PIPE_FABRICACAO');
 

@@ -31,7 +31,9 @@ export class RequestFabricaForkUseCase {
       return await this.fabricaService.saveFabrica(fabricafork);
     } catch (error) {
       Logger.error(error);
-      throw new InternalServerErrorException('falha ao requerir fork da fabrica');
+      throw new InternalServerErrorException(
+        'falha ao requerir fork da fabrica',
+      );
     }
   }
 }

@@ -14,7 +14,7 @@ import { UsuarioPendentesMemoriaRepository } from './infra/repository/UsuarioPen
   providers: [
     {
       provide: IUsuarioPendentes,
-      useClass: UsuarioPendentesMemoriaRepository
+      useClass: UsuarioPendentesMemoriaRepository,
     },
     {
       provide: IUserService,
@@ -25,4 +25,4 @@ import { UsuarioPendentesMemoriaRepository } from './infra/repository/UsuarioPen
   ],
   exports: [AutenticationService, IUserService, IUsuarioPendentes],
 })
-export class UserServiceModule { }
+export class UserServiceModule {}

@@ -1,4 +1,7 @@
-import { Mudancas, TipoMudancas } from '@app/modules/modules/planejador/@core/classes/Mudancas';
+import {
+  Mudancas,
+  TipoMudancas,
+} from '@app/modules/modules/planejador/@core/classes/Mudancas';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class MudancasResDto {

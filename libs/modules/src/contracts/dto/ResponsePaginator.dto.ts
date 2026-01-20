@@ -1,5 +1,5 @@
-import { Type } from "@nestjs/common";
-import { ApiProperty } from "@nestjs/swagger";
+import { Type } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponsePaginatorDTO<T> {
   // A propriedade 'data' é definida AQUI para satisfazer o TypeScript
@@ -9,13 +9,13 @@ export class ResponsePaginatorDTO<T> {
 
   @ApiProperty()
   total: number;
-  
+
   @ApiProperty()
   page: number;
-  
+
   @ApiProperty()
   limit: number;
-  
+
   @ApiProperty()
   totalPages: number;
 
@@ -28,12 +28,12 @@ export class ResponsePaginatorDTO<T> {
   }
 }
 
-
 // Função de fábrica permanece a mesma para adicionar o @ApiProperty() condicionalmente.
-export function PaginatedResponseDto<T>(classRef: Type<T>): Type<ResponsePaginatorDTO<T>> {
-  
+export function PaginatedResponseDto<T>(
+  classRef: Type<T>,
+): Type<ResponsePaginatorDTO<T>> {
   class ResponsePaginatorHost extends ResponsePaginatorDTO<T> {
-    // Aqui, o @ApiProperty() é APENAS para o Swagger, 
+    // Aqui, o @ApiProperty() é APENAS para o Swagger,
     // forçando a tipagem correta de T[] para a documentação.
     @ApiProperty({
       type: [classRef],

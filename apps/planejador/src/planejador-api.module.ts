@@ -69,16 +69,15 @@ const entities = [
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: (config: ConfigService) => typeormSynecoConfig(entities, config),
+      useFactory: (config: ConfigService) =>
+        typeormSynecoConfig(entities, config),
       imports: [ConfigModule],
       inject: [ConfigService],
-      name: 'syneco_database'
+      name: 'syneco_database',
     }),
     //services para guards
   ],
-  providers: [
-    DonoDaFabricaGuard
-  ],
+  providers: [DonoDaFabricaGuard],
   controllers: [
     ItemController,
     HealthController,
@@ -89,4 +88,4 @@ const entities = [
     PlanejamentoController,
   ],
 })
-export class PlanejadorApiModule { }
+export class PlanejadorApiModule {}

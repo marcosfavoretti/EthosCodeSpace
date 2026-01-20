@@ -1,5 +1,5 @@
-import { ItemComCapabilidade } from "@app/modules/modules/planejador/@core/entities/Item.entity";
-import { Pedido } from "@app/modules/modules/planejador/@core/entities/Pedido.entity";
+import { ItemComCapabilidade } from '@app/modules/modules/planejador/@core/entities/Item.entity';
+import { Pedido } from '@app/modules/modules/planejador/@core/entities/Pedido.entity';
 
 export class PedidoLogixDTO {
   codigo: string;

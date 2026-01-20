@@ -4,7 +4,15 @@ import { SetUseCargoUseCase } from '@app/modules/modules/user/application/SetUse
 import { Roles } from '@app/modules/shared/decorators/Cargo.decorator';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
 import { RolesGuard } from '@app/modules/shared/guards/VerificaCargo.guard';
-import { Body, Controller, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Cargo')

@@ -6,21 +6,26 @@ import { ResPontoRegistroDTO } from '@app/modules/contracts/dto/ResPontoRegistro
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
-export class SincronizacaoPollingService implements OnModuleInit { 
+export class SincronizacaoPollingService implements OnModuleInit {
   constructor(
     @Inject(SincronizaPontosUseCase)
     private sincronizacaoUseCase: SincronizaPontosUseCase,
     @Inject(PROCESSA_WORKER)
     private client: ClientProxy,
-  ) { }
+  ) {}
   // 3. Force a conexão assim que o módulo iniciar
   async onModuleInit() {
     try {
       await this.client.connect();
-      Logger.log('Conectado ao RabbitMQ com sucesso!', 'SincronizacaoPollingService');
-    }
-    catch (error) {
-      Logger.error('Falha fatal ao conectar no RabbitMQ na inicialização', error);
+      Logger.log(
+        'Conectado ao RabbitMQ com sucesso!',
+        'SincronizacaoPollingService',
+      );
+    } catch (error) {
+      Logger.error(
+        'Falha fatal ao conectar no RabbitMQ na inicialização',
+        error,
+      );
     }
   }
 
@@ -28,13 +33,14 @@ export class SincronizacaoPollingService implements OnModuleInit {
   async sincronizarPontos() {
     try {
       Logger.warn('POLLING INICIADO');
-      const pontosSincronizados = await this.sincronizacaoUseCase.sincronizarPontos();
+      const pontosSincronizados =
+        await this.sincronizacaoUseCase.sincronizarPontos();
 
       if (!pontosSincronizados || pontosSincronizados.length === 0) {
         Logger.warn('Nenhum ponto novo foi sincronizado. Nada para enviar.');
         return;
       }
-      
+
       // (Lógica de agrupamento mantida...)
       const pontosPorUsuarioMap = new Map<string, ResPontoRegistroDTO[]>();
 
@@ -47,7 +53,9 @@ export class SincronizacaoPollingService implements OnModuleInit {
       });
 
       if (pontosPorUsuarioMap.size === 0) {
-        Logger.warn('Mapa de pontos por usuário está vazio. Nenhum evento para emitir.');
+        Logger.warn(
+          'Mapa de pontos por usuário está vazio. Nenhum evento para emitir.',
+        );
         return;
       }
 
@@ -55,18 +63,19 @@ export class SincronizacaoPollingService implements OnModuleInit {
         Logger.warn(`pontos da matricula ${key} enviados para processamento`);
 
         // 4. Tratamento correto do envio
-        this.client.emit('ponto.processar', value)
-          .subscribe({
-            next: () => {
-              // O 'next' no emit geralmente é vazio, mas confirma que foi despachado para o broker
-              Logger.debug(`Lote ${key} despachado para a fila`);
-            },
-            error: (err) => {
-              // 5. AQUI você garante que sabe se a conexão caiu ou falhou
-              Logger.error(`ERRO ao enviar matricula ${key} para fila: ${err.message}`);
-              // Opcional: Salvar em um banco para retentativa (Dead Letter local)
-            },
-          });
+        this.client.emit('ponto.processar', value).subscribe({
+          next: () => {
+            // O 'next' no emit geralmente é vazio, mas confirma que foi despachado para o broker
+            Logger.debug(`Lote ${key} despachado para a fila`);
+          },
+          error: (err) => {
+            // 5. AQUI você garante que sabe se a conexão caiu ou falhou
+            Logger.error(
+              `ERRO ao enviar matricula ${key} para fila: ${err.message}`,
+            );
+            // Opcional: Salvar em um banco para retentativa (Dead Letter local)
+          },
+        });
       });
 
       Logger.warn('POLLING FINALIZADO');

@@ -11,7 +11,7 @@ import { PlanejamentoTemporario } from '../@core/classes/PlanejamentoTemporario'
 
 export class RemoverPlanejamentoUseCase {
   constructor(
-    @Inject(FabricaService) 
+    @Inject(FabricaService)
     private fabricaService: FabricaService,
     @Inject(GerenciaDividaService)
     private gerenciaDividaService: GerenciaDividaService,

@@ -12,7 +12,6 @@ import { Channel, Message } from 'amqplib';
 
 @Controller()
 export class WorkerController {
-
   @Inject(ProcessaTipoMarcacaoUseCase)
   private processaTipoMarcacaoUseCase: ProcessaTipoMarcacaoUseCase;
 

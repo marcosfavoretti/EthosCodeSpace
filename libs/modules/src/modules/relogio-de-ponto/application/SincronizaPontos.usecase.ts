@@ -58,10 +58,10 @@ export class SincronizaPontosUseCase {
       const hoje = new Date();
       const dataFimBusca = endOfDay(hoje); // Hoje até 23:59:59
       const dataInicioBusca = startOfDay(subMonths(hoje, 2)); // 2 meses atrás desde 00:00:00
-      Logger.debug(dataInicioBusca, dataFimBusca)
+      Logger.debug(dataInicioBusca, dataFimBusca);
       const dbData = await this.registroPontoRepository.find({
         where: {
-          dataHoraAr: Between(dataInicioBusca, dataFimBusca)
+          dataHoraAr: Between(dataInicioBusca, dataFimBusca),
         },
       });
 
@@ -71,20 +71,22 @@ export class SincronizaPontosUseCase {
        */
       const dbDataMap = new Map<string, RegistroPonto>();
       for (const registro of dbData) {
-        registro?.cpf && dbDataMap.set(
-          this.genCustomKey({
-            identificador: registro.cpf,
-            dataInMillis: registro.dataHoraAr.getTime(),
-          }),
-          registro,
-        );
-        registro?.pis && dbDataMap.set(
-          this.genCustomKey({
-            identificador: registro.pis,
-            dataInMillis: registro.dataHoraAr.getTime(),
-          }),
-          registro,
-        );
+        registro?.cpf &&
+          dbDataMap.set(
+            this.genCustomKey({
+              identificador: registro.cpf,
+              dataInMillis: registro.dataHoraAr.getTime(),
+            }),
+            registro,
+          );
+        registro?.pis &&
+          dbDataMap.set(
+            this.genCustomKey({
+              identificador: registro.pis,
+              dataInMillis: registro.dataHoraAr.getTime(),
+            }),
+            registro,
+          );
       }
 
       /**
@@ -119,7 +121,10 @@ export class SincronizaPontosUseCase {
       /**
        * dados dos funcionarios para completar os objetos
        */
-      const funcionarioData = await this.funcionarioRepository.buscarPoridentificador(identificadorUnico);
+      const funcionarioData =
+        await this.funcionarioRepository.buscarPoridentificador(
+          identificadorUnico,
+        );
 
       /**
        * mapear os funcionarios para mais para frente ele serem usados para completar a dto de resposta
@@ -130,7 +135,6 @@ export class SincronizaPontosUseCase {
         funcionarioMap.set(funcionario.pis.trim(), funcionario);
         funcionarioMap.set(funcionario.cic.trim(), funcionario);
       }
-
 
       const dadosDeResposta: Partial<RegistroPonto>[] = dadosFiltrados.reduce(
         (acc, dado) => {
@@ -162,8 +166,8 @@ export class SincronizaPontosUseCase {
         await this.registroPontoRepository.save(dadosDeResposta);
 
       /**
-     * construcao do objeto de resposta
-     */
+       * construcao do objeto de resposta
+       */
 
       return dadosSalvos;
     } catch (error) {

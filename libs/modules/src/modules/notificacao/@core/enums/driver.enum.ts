@@ -1,4 +1,4 @@
 export enum Driver {
-    SMTP = 'smtp',
-    TEST = 'test'
+  SMTP = 'smtp',
+  TEST = 'test',
 }

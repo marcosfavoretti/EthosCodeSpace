@@ -6,7 +6,7 @@ import { SincronizaRelogioService } from './SincronizaRelogio.service';
 
 @Injectable()
 export class SincronizadorFactory {
-  constructor(private confService: ConfigService) { }
+  constructor(private confService: ConfigService) {}
 
   createSincronizadores(): ISincronizadorDePontos[] {
     const mode = this.confService.get<string>('APP_MODE');
@@ -22,17 +22,15 @@ export class SincronizadorFactory {
         Logger.debug(`observer para DEV MODE criado`);
         return [mock];
       case 'PROD':
-        const syncService = endpoints.map(endpoint => {
+        const syncService = endpoints.map((endpoint) => {
           const service = new SincronizaRelogioService(this.confService);
           service.setBaseUrl({ baseUrl: endpoint });
           Logger.debug(`observer para ${endpoint} criado`);
           return service;
-        })
+        });
         return syncService;
       default:
-        throw new Error(
-          'O contexto (modo) da aplicação precisa ser definido',
-        );
+        throw new Error('O contexto (modo) da aplicação precisa ser definido');
     }
   }
 }

@@ -19,23 +19,21 @@ export class FuncinarioRepository extends Repository<Funcionario> {
           pis: Raw((alias) => `TRIM(${alias}) IN (:...pis)`, {
             pis: identificador,
           }), //In(identificadorUnico)
-          demitido: Not('D')
+          demitido: Not('D'),
         },
         {
           cic: Raw((alias) => `TRIM(${alias}) IN (:...cpf)`, {
             cpf: identificador,
           }), //In(identificadorUnico)
-          demitido: Not('D')
-
+          demitido: Not('D'),
         },
         {
           matricula: Raw((alias) => `TRIM(${alias}) IN (:...matricula)`, {
             matricula: identificador,
           }),
-          demitido: Not('D')
+          demitido: Not('D'),
         },
       ],
-
     });
   }
 }

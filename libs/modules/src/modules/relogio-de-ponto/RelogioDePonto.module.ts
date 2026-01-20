@@ -26,4 +26,4 @@ import { MaisHorasIrregularesKPIUseCase } from './application/MaisHorasIrregular
     ProcessaTipoMarcacaoUseCase,
   ],
 })
-export class RelogioDePontoModule { }
+export class RelogioDePontoModule {}

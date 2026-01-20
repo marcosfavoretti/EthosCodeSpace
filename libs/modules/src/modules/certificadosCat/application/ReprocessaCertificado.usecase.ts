@@ -1,70 +1,87 @@
-import { ProcessaCertificadoDTO } from "@app/modules/contracts/dto/ProcessaCertificado.dto";
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
-import { ProcessadorCertificadoToJson } from "../@core/services/ProcessadorCertificadoToJson.service";
-import { CertificadoCatRepository } from "../infra/repository/CertificadoCat.repository";
-import { CertificadoNaoCriadoException } from "../@core/exceptions/CertificadoNaoCriado.exception";
+import { ProcessaCertificadoDTO } from '@app/modules/contracts/dto/ProcessaCertificado.dto';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { ProcessadorCertificadoToJson } from '../@core/services/ProcessadorCertificadoToJson.service';
+import { CertificadoCatRepository } from '../infra/repository/CertificadoCat.repository';
+import { CertificadoNaoCriadoException } from '../@core/exceptions/CertificadoNaoCriado.exception';
 
 @Injectable()
 export class ReprocessaCertificadoUseCase {
-    constructor(
-        private processador: ProcessadorCertificadoToJson,
-        private certificadosRepo: CertificadoCatRepository
-    ) { }
+  constructor(
+    private processador: ProcessadorCertificadoToJson,
+    private certificadosRepo: CertificadoCatRepository,
+  ) {}
 
-    async execute(dto: ProcessaCertificadoDTO): Promise<any> {
-        const { filepath } = dto;
-        try {
-            // 1. Processa o arquivo para extrair os dados
-            const certificadoData = await this.processador.parseFile(filepath);
-            const { serianumber, rops, start_timestamp } = certificadoData.metadata;
+  async execute(dto: ProcessaCertificadoDTO): Promise<any> {
+    const { filepath } = dto;
+    try {
+      // 1. Processa o arquivo para extrair os dados
+      const certificadoData = await this.processador.parseFile(filepath);
+      const { serianumber, rops, start_timestamp } = certificadoData.metadata;
 
-            if (!serianumber) {
-                throw new InternalServerErrorException('Não foi possível extrair o número de série do arquivo.');
-            }
-            if (!rops) {
-                throw new BadRequestException(`Arquivo ${filepath} não contém a informação de ROP's.`);
-            }
-            if (!start_timestamp) {
-                throw new BadRequestException(`Arquivo ${filepath} não contém a informação de data/hora de início.`);
-            }
+      if (!serianumber) {
+        throw new InternalServerErrorException(
+          'Não foi possível extrair o número de série do arquivo.',
+        );
+      }
+      if (!rops) {
+        throw new BadRequestException(
+          `Arquivo ${filepath} não contém a informação de ROP's.`,
+        );
+      }
+      if (!start_timestamp) {
+        throw new BadRequestException(
+          `Arquivo ${filepath} não contém a informação de data/hora de início.`,
+        );
+      }
 
-            // 2. Busca o certificado existente no banco
-            const certificadoExistente = await this.certificadosRepo.findOne({ where: { serialNumber: serianumber, produto: rops} });
+      // 2. Busca o certificado existente no banco
+      const certificadoExistente = await this.certificadosRepo.findOne({
+        where: { serialNumber: serianumber, produto: rops },
+      });
 
-            if (!certificadoExistente) {
-                throw new CertificadoNaoCriadoException(`Certificado com serial number ${serianumber} e produto ${rops} não encontrado para reprocessamento`);
-            }
+      if (!certificadoExistente) {
+        throw new CertificadoNaoCriadoException(
+          `Certificado com serial number ${serianumber} e produto ${rops} não encontrado para reprocessamento`,
+        );
+      }
 
-            // 3. Atualiza os dados do certificado existente
-            const pathParts = filepath.split('/');
-            const produto = pathParts[pathParts.length - 2];
+      // 3. Atualiza os dados do certificado existente
+      const pathParts = filepath.split('/');
+      const produto = pathParts[pathParts.length - 2];
 
-            const certificadoServerTime = start_timestamp;
-            if (!certificadoServerTime) throw new Error(`Problema ao processar data do arquivo ${filepath}`);
-            const serverTime = new Date(certificadoServerTime);
-            //converte o servertime para horario pt-br
-            const offset = -3 * 60; // GMT-3
-            serverTime.setMinutes(serverTime.getMinutes() + offset);
+      const certificadoServerTime = start_timestamp;
+      if (!certificadoServerTime)
+        throw new Error(`Problema ao processar data do arquivo ${filepath}`);
+      const serverTime = new Date(certificadoServerTime);
+      //converte o servertime para horario pt-br
+      const offset = -3 * 60; // GMT-3
+      serverTime.setMinutes(serverTime.getMinutes() + offset);
 
+      certificadoExistente.produto = certificadoData.metadata.rops || produto;
+      certificadoExistente.serverTime = serverTime;
+      // Outros campos que precisem ser atualizados podem ser adicionados aqui
 
-            certificadoExistente.produto = certificadoData.metadata.rops || produto;
-            certificadoExistente.serverTime = serverTime;
-            // Outros campos que precisem ser atualizados podem ser adicionados aqui
+      await this.certificadosRepo.save(certificadoExistente);
+      Logger.log(`Certificado ${serianumber} atualizado com sucesso.`);
 
-            await this.certificadosRepo.save(certificadoExistente);
-            Logger.log(`Certificado ${serianumber} atualizado com sucesso.`);
-
-            return certificadoData;
-
-        } catch (error) {
-            Logger.error(`Erro ao reprocessar o arquivo ${filepath}`, error.stack);
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            if (error instanceof CertificadoNaoCriadoException) {
-                throw error;
-            }
-            throw new InternalServerErrorException('Erro ao reprocessar o certificado: ' + error.message);
-        }
+      return certificadoData;
+    } catch (error) {
+      Logger.error(`Erro ao reprocessar o arquivo ${filepath}`, error.stack);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      if (error instanceof CertificadoNaoCriadoException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Erro ao reprocessar o certificado: ' + error.message,
+      );
     }
+  }
 }

@@ -27,14 +27,11 @@ export class UserService implements IUserService {
 
   async systemAuth(): Promise<User> {
     try {
-      return await this.userRepo
-        .findOneOrFail(
-          {
-            where: {
-              id: this.configService.get('SYSTEM_USER_ID')
-            }
-          }
-        )
+      return await this.userRepo.findOneOrFail({
+        where: {
+          id: this.configService.get('SYSTEM_USER_ID'),
+        },
+      });
     } catch (error) {
       throw new Error('nao foi possível autenticar o sistema');
     }
@@ -57,10 +54,10 @@ export class UserService implements IUserService {
       })) ||
       (await this.userRepo.existsBy({
         email: userdto.email,
-      }))
-      ||
+      })) ||
       //valida se o dominio do email é @ethos.ind.br ou @caterpillar.com
-      (!userdto.email.includes('@ethos.ind.br') && !userdto.email.includes('@cat.com'))
+      (!userdto.email.includes('@ethos.ind.br') &&
+        !userdto.email.includes('@cat.com'))
     );
   }
 

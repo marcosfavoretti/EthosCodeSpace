@@ -37,5 +37,4 @@ export class EnvDTO {
 
   @IsNumber()
   EXPIREHOURS: number;
-
 }

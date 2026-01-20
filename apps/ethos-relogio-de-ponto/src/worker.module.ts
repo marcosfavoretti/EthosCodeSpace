@@ -25,7 +25,7 @@ import { CentroDeCusto } from '@app/modules/modules/relogio-de-ponto/@core/entit
         typeormOracleConfig([RegistroPonto, TipoMarcacaoPonto], configService),
       inject: [ConfigService],
     }),
-      ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/ethos-relogio-de-ponto/.env',
       validationSchema,

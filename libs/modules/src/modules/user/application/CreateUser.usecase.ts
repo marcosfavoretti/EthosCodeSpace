@@ -8,12 +8,12 @@ import { IOnUserCreated } from '../@core/interfaces/IOnUserCreated';
 
 @Injectable()
 export class CreateUserUsecase {
-  
   constructor(
-    @Inject(IUsuarioPendentes) private usuarioPendentesRepository: IUsuarioPendentes,
+    @Inject(IUsuarioPendentes)
+    private usuarioPendentesRepository: IUsuarioPendentes,
     @Inject(IUserService) private userService: IUserService,
     @Inject(IOnUserCreated) private onUserCreated: IOnUserCreated[],
-  ) { }
+  ) {}
 
   async execute(dto: CreateUserDto): Promise<string> {
     try {
@@ -25,15 +25,13 @@ export class CreateUserUsecase {
 
       if (await this.userService.validUser(user)) {
         const code = randomUUID();
-        await this.usuarioPendentesRepository.add(code, user),
+        (await this.usuarioPendentesRepository.add(code, user),
           Promise.all([
-            this.onUserCreated.map(event =>
-              event
-                .oncreate({ user, code }))
-          ]);
+            this.onUserCreated.map((event) => event.oncreate({ user, code })),
+          ]));
         return code;
       }
-      
+
       throw new Error('usuario inválido, nome ou email já existe');
     } catch (error) {
       throw new BadRequestException(

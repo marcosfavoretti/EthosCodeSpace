@@ -55,11 +55,9 @@ export class User {
   })
   cargos: GerenciaCargo[];
 
-
   get cargosLista(): string[] {
-    return this.cargos?.map((c) => c.cargo?.nome) ?? []
+    return this.cargos?.map((c) => c.cargo?.nome) ?? [];
   }
-
 
   @BeforeInsert()
   @BeforeUpdate()

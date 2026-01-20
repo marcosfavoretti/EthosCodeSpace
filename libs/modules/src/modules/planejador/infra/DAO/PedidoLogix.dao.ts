@@ -4,12 +4,14 @@ import { addYears, format } from 'date-fns';
 import { PedidoLogixDTO } from '@app/modules/contracts/dto/PedidoLogix.dto';
 
 export class PedidoLogixDAO {
-    constructor(@InjectDataSource('syneco_database') private dtMainDB: DataSource) { }
+  constructor(
+    @InjectDataSource('syneco_database') private dtMainDB: DataSource,
+  ) {}
 
-    async search(dataCorte: Date): Promise<PedidoLogixDTO[]> {
-        const dataBase = format(dataCorte, 'dd/MM/yyyy');
-        const dataTeto = format(addYears(dataCorte, 1), 'dd/MM/yyyy');
-        const pedidosLogix = await this.dtMainDB.query<PedidoLogixDTO[]>(`
+  async search(dataCorte: Date): Promise<PedidoLogixDTO[]> {
+    const dataBase = format(dataCorte, 'dd/MM/yyyy');
+    const dataTeto = format(addYears(dataCorte, 1), 'dd/MM/yyyy');
+    const pedidosLogix = await this.dtMainDB.query<PedidoLogixDTO[]>(`
                 SELECT 
                     o.identificador,
                     o.codigo,
@@ -51,6 +53,6 @@ export class PedidoLogixDAO {
                     *);
                 */
             `);
-        return pedidosLogix;
-    }
+    return pedidosLogix;
+  }
 }

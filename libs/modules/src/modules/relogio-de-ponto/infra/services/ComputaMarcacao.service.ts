@@ -8,12 +8,11 @@ import { differenceInMinutes, hoursToMilliseconds } from 'date-fns';
  * processa os pontos
  */
 @Injectable()
-export class ComputaMarcacaoService
-  implements IComputacaoPontos {
+export class ComputaMarcacaoService implements IComputacaoPontos {
   private readonly INTERVALO_CORTE: number = 9;
 
   async processar(props: {
-    contextoMarcacao: TipoMarcacaoPonto[],
+    contextoMarcacao: TipoMarcacaoPonto[];
     pontos: RegistroPonto;
   }): Promise<Partial<TipoMarcacaoPonto>[]> {
     const listaMarcacao: Partial<TipoMarcacaoPonto>[] = [];
@@ -23,9 +22,9 @@ export class ComputaMarcacaoService
 
     Logger.debug(pontos, contextoMarcacao);
 
-    const ultPonto = !contextoMarcacao.length? undefined : contextoMarcacao[0];
+    const ultPonto = !contextoMarcacao.length ? undefined : contextoMarcacao[0];
     const ehNovo = this.ehNovoPeriodo(pontos, ultPonto?.registroPonto);
-    contadorSufixo = ehNovo? 0 : contextoMarcacao.length;
+    contadorSufixo = ehNovo ? 0 : contextoMarcacao.length;
     listaMarcacao.push({
       registroPonto: pontos,
       marcacao: this.setSufixo(contadorSufixo++),

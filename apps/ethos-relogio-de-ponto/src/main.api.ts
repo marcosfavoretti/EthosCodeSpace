@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule);
 
-  app.setGlobalPrefix('api/ponto')
+  app.setGlobalPrefix('api/ponto');
 
   const config = new DocumentBuilder()
     .setTitle('Ethos Relogio de Ponto API')
@@ -23,7 +23,6 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-
   SwaggerModule.setup('doc', app, document, {
     raw: ['yaml', 'json'],
     useGlobalPrefix: true,
@@ -37,7 +36,7 @@ async function bootstrap() {
       'http://192.168.99.129:30001', // Outra origem possível (Vue/Webpack)
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
+    credentials: true,
   });
   app.use(cookieParser());
 

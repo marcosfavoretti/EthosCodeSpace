@@ -51,11 +51,7 @@ import { ItemServiceModule } from './ItemService.module';
 import { PlanejamentoRepository } from './infra/repository/Planejamento.repository';
 config();
 @Module({
-  imports: [
-    PlanejamentoServiceModule,
-    PedidoServiceModule,
-    ItemServiceModule
-  ],
+  imports: [PlanejamentoServiceModule, PedidoServiceModule, ItemServiceModule],
   providers: [
     ComparaMudancaFabricaExecutorService,
     MergeRequestService,
@@ -149,4 +145,4 @@ config();
     PipeFrabricacaoProvider,
   ],
 })
-export class FabricaServiceModule { }
+export class FabricaServiceModule {}

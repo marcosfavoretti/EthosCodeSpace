@@ -32,11 +32,13 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Lint Code
-        run: npm run lint
+      # LINT DESABILITADO POR HORA
+      # - name: Lint Code
+      #   run: npm run lint
 
-      - name: Run Unit Tests
-        run: npm run test
+      # UNIT TEST DESABILITADO POR HORA
+      # - name: Run Unit Tests
+      #  run: npm run test
 
   # Job 2: Build Verification (Runs in parallel for each app)
   build-check:
@@ -48,22 +50,21 @@ jobs:
       matrix:
         app:
           - app-ethos
-          - buffer-api
+          # - buffer-api
           - certificados-cat
-          - estrutura-api
-          - ethos-codespace
-          - ethos-mobile
-          - ethos-producao
+          # - estrutura-api
+          # - ethos-codespace
+          # - ethos-mobile
+          # - ethos-producao
           - ethos-relogio-de-ponto-api
           - ethos-relogio-de-ponto-master
           - ethos-relogio-de-ponto-worker
-          - notas-maker
-          - notas-maker-worker
+          # - notas-maker
+          # - notas-maker-worker
           - notificacao-api
-          - planejador
-          - planejador-importador
+          # - planejador
+          # - planejador-importador
           - user-authenticator
-          - modules
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

@@ -1,4 +1,9 @@
-import { Inject, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ISetUserCargo } from '../@core/interfaces/ISetUserCargo';
 import { IUserService } from '../@core/interfaces/IUserService';
 import { SetUserCargoDTO } from '@app/modules/contracts/dto/SetUserCargo.dto';
@@ -15,11 +20,13 @@ export class SetUseCargoUseCase {
       const user = await this.userService.getUser(dto.userId);
       await this.setUserCargoService.setUserCargo(user, dto.cargo);
     } catch (error) {
-      if(error instanceof EntityNotFoundError){
+      if (error instanceof EntityNotFoundError) {
         throw new NotFoundException('Usuário não encontrado');
       }
       Logger.error(error, SetUseCargoUseCase.name);
-      throw new InternalServerErrorException('falha ao atualizar cargo do usuário');
+      throw new InternalServerErrorException(
+        'falha ao atualizar cargo do usuário',
+      );
     }
   }
 }

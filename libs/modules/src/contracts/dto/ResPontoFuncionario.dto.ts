@@ -1,12 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class ResPontoFuncionarioDTO{
-    @ApiProperty()
-    matricula: string;
+export class ResPontoFuncionarioDTO {
+  @ApiProperty()
+  matricula: string;
 
-    @ApiProperty()
-    nome: string;
+  @ApiProperty()
+  nome: string;
 
-    @ApiProperty()
-    setor: string;
+  @ApiProperty()
+  setor: string;
 }

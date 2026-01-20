@@ -70,7 +70,6 @@ export class Pedido {
     return datefns.startOfDay(datefns.subDays(this.dataEntrega, 0));
   }
 
-
   pedidoEhValido(): boolean {
     return !!this.item && !!this.item.itemCapabilidade;
   }

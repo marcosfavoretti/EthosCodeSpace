@@ -2,7 +2,11 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { UserAuthenticatorModule } from './user-authenticator.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -56,10 +60,10 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(
     new FastApiStyleLoggingInterceptor(),
-    new ClassSerializerInterceptor(app.get(Reflector)));
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
   //
   const document = SwaggerModule.createDocument(app, config);
-
 
   SwaggerModule.setup('doc', app, document, {
     raw: ['yaml', 'json'],

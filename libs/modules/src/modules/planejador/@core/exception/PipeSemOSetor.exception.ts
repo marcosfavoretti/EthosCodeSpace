@@ -1,4 +1,4 @@
-import { CODIGOSETOR } from "../enum/CodigoSetor.enum";
+import { CODIGOSETOR } from '../enum/CodigoSetor.enum';
 
 export class PipeSemSetorException extends Error {
   constructor(codigo: CODIGOSETOR) {

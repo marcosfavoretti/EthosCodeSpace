@@ -1,29 +1,32 @@
-import { Inject, InternalServerErrorException, Logger } from "@nestjs/common";
-import { IBuscarItemDependecias } from "../../@core/interfaces/IBuscarItemDependecias";
-import { IConsultaRoteiro } from "../../@core/interfaces/IConsultaRoteiro";
-import { IConverteItem } from "../../@core/interfaces/IConverteItem";
-import { IMontaEstrutura } from "../../@core/interfaces/IMontaEstrutura.ts";
-import { ItemService } from "./Item.service";
-import { ItemComCapabilidade } from "../../@core/entities/Item.entity";
-import { CODIGOSETOR } from "../../@core/enum/CodigoSetor.enum";
-import { ItemEstruturado } from "../../@core/classes/ItemEstruturado";
-import { EstruturaHttpClient } from "@app/modules/contracts/clients/EstruturaHttp.client";
+import { Inject, InternalServerErrorException, Logger } from '@nestjs/common';
+import { IBuscarItemDependecias } from '../../@core/interfaces/IBuscarItemDependecias';
+import { IConsultaRoteiro } from '../../@core/interfaces/IConsultaRoteiro';
+import { IConverteItem } from '../../@core/interfaces/IConverteItem';
+import { IMontaEstrutura } from '../../@core/interfaces/IMontaEstrutura.ts';
+import { ItemService } from './Item.service';
+import { ItemComCapabilidade } from '../../@core/entities/Item.entity';
+import { CODIGOSETOR } from '../../@core/enum/CodigoSetor.enum';
+import { ItemEstruturado } from '../../@core/classes/ItemEstruturado';
+import { EstruturaHttpClient } from '@app/modules/contracts/clients/EstruturaHttp.client';
 
 export class EstruturaNeo4jApiService
   implements
-  IConsultaRoteiro,
-  IConverteItem,
-  IBuscarItemDependecias,
-  IMontaEstrutura {
-    
+    IConsultaRoteiro,
+    IConverteItem,
+    IBuscarItemDependecias,
+    IMontaEstrutura
+{
   @Inject(ItemService) private itemService: ItemService;
   @Inject(EstruturaHttpClient) private estruturaHttpClient: EstruturaHttpClient;
 
   async roteiro(partcode: ItemComCapabilidade): Promise<CODIGOSETOR[]> {
     try {
-      const { data } = await this.estruturaHttpClient.client.get<string[]>('/estrutura/roteiro', {
-        params: { partcode: partcode.getCodigo() },
-      });
+      const { data } = await this.estruturaHttpClient.client.get<string[]>(
+        '/estrutura/roteiro',
+        {
+          params: { partcode: partcode.getCodigo() },
+        },
+      );
       return data as CODIGOSETOR[];
     } catch (error) {
       console.error(`item com problema`, partcode);
@@ -47,12 +50,11 @@ export class EstruturaNeo4jApiService
 
   async buscar(item: ItemComCapabilidade): Promise<ItemComCapabilidade[]> {
     try {
-      const itensDeControle = await this.estruturaHttpClient.buscarItemDeControle({
-        partcode: item.getCodigo(),
-      });
-      const itens = await this.itemService.consultarItens(
-        itensDeControle,
-      );
+      const itensDeControle =
+        await this.estruturaHttpClient.buscarItemDeControle({
+          partcode: item.getCodigo(),
+        });
+      const itens = await this.itemService.consultarItens(itensDeControle);
       const itensSequence = itensDeControle.map(
         (dado) => itens.find((i) => i.getCodigo() === dado)!,
       );
@@ -67,9 +69,11 @@ export class EstruturaNeo4jApiService
 
   async converter(partcode: string): Promise<ItemComCapabilidade> {
     try {
-      const itensControle = await this.estruturaHttpClient.buscarItemDeControle({
-        partcode,
-      })
+      const itensControle = await this.estruturaHttpClient.buscarItemDeControle(
+        {
+          partcode,
+        },
+      );
       const partcode_resolved = itensControle.at(itensControle.length - 1);
       if (!partcode_resolved)
         throw new InternalServerErrorException(

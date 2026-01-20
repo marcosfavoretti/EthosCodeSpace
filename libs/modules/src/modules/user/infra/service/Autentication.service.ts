@@ -19,8 +19,8 @@ export class AutenticationService implements IAutentication {
         cargos: {
           user: false,
           cargo: true,
-        }
-      }
+        },
+      },
     });
 
     if (!targetUser) {

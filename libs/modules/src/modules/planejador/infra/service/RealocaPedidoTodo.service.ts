@@ -1,6 +1,10 @@
 import { differenceInBusinessDays, isAfter, isSameDay } from 'date-fns';
 import { Logger } from '@nestjs/common';
-import { MetodoDeReAlocacao, RealocacaoComDepedenciaProps, RealocacaoSemDependenciaProps } from '../../@core/abstract/MetodoDeReAlocacao';
+import {
+  MetodoDeReAlocacao,
+  RealocacaoComDepedenciaProps,
+  RealocacaoSemDependenciaProps,
+} from '../../@core/abstract/MetodoDeReAlocacao';
 import { IGerenciadorPlanejamentConsulta } from '../../@core/interfaces/IGerenciadorPlanejamentoConsulta';
 import { ISelecionarItem } from '../../@core/interfaces/ISelecionarItem';
 import { PlanejamentoTemporario } from '../../@core/classes/PlanejamentoTemporario';

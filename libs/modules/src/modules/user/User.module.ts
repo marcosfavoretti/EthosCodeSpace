@@ -18,10 +18,7 @@ import { EmailDeValidacaoService } from './infra/service/EmailDeValidacao.servic
 import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module';
 
 @Module({
-  imports: [
-    UserServiceModule,
-    CargosServiceModule,
-  ],
+  imports: [UserServiceModule, CargosServiceModule],
   providers: [
     EmailHttpClient,
     EmailDeValidacaoService,
@@ -48,4 +45,4 @@ import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module'
     JwtHandler,
   ],
 })
-export class UserModule { }
+export class UserModule {}

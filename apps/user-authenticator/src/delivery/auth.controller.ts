@@ -44,7 +44,7 @@ export class AuthController {
     private checkUserTokenUsecase: CheckUserTokenUsecase,
     @Inject(ValidaCriacaoUsuarioUseCase)
     private validaCriacaoUsuarioUseCase: ValidaCriacaoUsuarioUseCase,
-  ) { }
+  ) {}
 
   /**
    * @param createUserDto
@@ -178,7 +178,9 @@ export class AuthController {
     schema: { example: { isValid: true } },
   })
   async checkToken(@Req() req: CustomRequest) {
-    const isValid = this.checkUserTokenUsecase.execute(req.cookies.access_token);
+    const isValid = this.checkUserTokenUsecase.execute(
+      req.cookies.access_token,
+    );
     return { isValid };
   }
 }

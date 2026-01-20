@@ -35,7 +35,9 @@ export class ConsultarTabelaCapabilidadeDTO {
   @IsObject()
   leadtime: Record<CODIGOSETOR, number>;
 
-  static fromEntities(item: ItemComCapabilidade): ConsultarTabelaCapabilidadeDTO {
+  static fromEntities(
+    item: ItemComCapabilidade,
+  ): ConsultarTabelaCapabilidadeDTO {
     const capabilidade_00011 = item.itemCapabilidade.find(
       (cap) => cap.setor.codigo === CODIGOSETOR.DOBRA,
     );

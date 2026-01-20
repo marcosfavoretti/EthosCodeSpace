@@ -15,7 +15,7 @@ export class Funcionario {
   @Column({ name: 'RA_MAT' })
   matricula: string;
 
-  @ManyToOne(()=> CentroDeCusto, { eager: true })
+  @ManyToOne(() => CentroDeCusto, { eager: true })
   @JoinColumn({ name: 'RA_CC' })
   centroDeCusto: CentroDeCusto;
 

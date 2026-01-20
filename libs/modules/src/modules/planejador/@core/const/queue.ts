@@ -1,3 +1,3 @@
 export const queues = {
-    planejamento: 'planejamento',
-}
+  planejamento: 'planejamento',
+};

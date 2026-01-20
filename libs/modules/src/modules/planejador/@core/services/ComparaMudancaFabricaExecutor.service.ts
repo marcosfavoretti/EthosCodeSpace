@@ -20,8 +20,7 @@ export class ComparaMudancaFabricaExecutorService {
         ),
       );
       return estrategiasResolvedPromises.flat();
-    } 
-    catch (error) {
+    } catch (error) {
       Logger.error(error);
       throw new FalhaAoMapearMudancasException(fabricaAlvo);
     }

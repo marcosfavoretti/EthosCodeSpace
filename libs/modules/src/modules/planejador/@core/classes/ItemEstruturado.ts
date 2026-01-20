@@ -1,4 +1,4 @@
-import { ItemComCapabilidade } from "../entities/Item.entity";
+import { ItemComCapabilidade } from '../entities/Item.entity';
 
 export class ItemEstruturado {
   itemFinal: ItemComCapabilidade;

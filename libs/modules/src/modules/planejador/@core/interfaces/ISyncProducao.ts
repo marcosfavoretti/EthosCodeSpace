@@ -1,4 +1,4 @@
-import { Setor } from "../entities/Setor.entity";
+import { Setor } from '../entities/Setor.entity';
 
 export interface ISyncProducao {
   // syncProducao(setor: Setor, date: Date): Mercado | Promise<Mercado>;

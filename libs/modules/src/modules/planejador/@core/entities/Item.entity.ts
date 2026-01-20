@@ -4,8 +4,7 @@ import { ItemXQtdSemana } from '@app/modules/modules/@syneco/@core/entities/Item
 import { CODIGOSETOR } from '../enum/CodigoSetor.enum';
 
 @Entity({ name: 'item_x_qtdsemana', synchronize: false })
-export class ItemComCapabilidade extends ItemXQtdSemana{
-
+export class ItemComCapabilidade extends ItemXQtdSemana {
   @OneToMany(() => ItemCapabilidade, (item) => item.item, {
     eager: true,
     cascade: true,

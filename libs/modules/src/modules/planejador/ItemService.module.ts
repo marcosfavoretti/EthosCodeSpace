@@ -16,7 +16,7 @@ import { SharedContractsModule } from '@app/modules/shared/modules/SharedContrac
   imports: [
     SharedContractsModule.forRoot(),
     SetorServiceModule,
-    SharedContractsModule
+    SharedContractsModule,
   ],
   providers: [
     ItemRepository,
@@ -54,4 +54,4 @@ import { SharedContractsModule } from '@app/modules/shared/modules/SharedContrac
     ItemRepository,
   ],
 })
-export class ItemServiceModule { }
+export class ItemServiceModule {}

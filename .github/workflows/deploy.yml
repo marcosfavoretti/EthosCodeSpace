@@ -29,20 +29,20 @@ jobs:
       matrix:
         app:
           - app-ethos
-          - buffer-api
+          # - buffer-api
           - certificados-cat
-          - estrutura-api
-          - ethos-codespace
-          - ethos-mobile
-          - ethos-producao
+          # - estrutura-api
+          # - ethos-codespace
+          # - ethos-mobile
+          # - ethos-producao
           - ethos-relogio-de-ponto-api
           - ethos-relogio-de-ponto-master
           - ethos-relogio-de-ponto-worker
-          - notas-maker
-          - notas-maker-worker
+          # - notas-maker
+          # - notas-maker-worker
           - notificacao-api
-          - planejador
-          - planejador-importador
+          # - planejador
+          # - planejador-importador
           - user-authenticator
 
     steps:

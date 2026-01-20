@@ -6,7 +6,11 @@ import {
   isSameDay,
   subBusinessDays,
 } from 'date-fns';
-import { MetodoDeReAlocacao, RealocacaoComDepedenciaProps, RealocacaoSemDependenciaProps } from '../../@core/abstract/MetodoDeReAlocacao';
+import {
+  MetodoDeReAlocacao,
+  RealocacaoComDepedenciaProps,
+  RealocacaoSemDependenciaProps,
+} from '../../@core/abstract/MetodoDeReAlocacao';
 import { IGerenciadorPlanejamentConsulta } from '../../@core/interfaces/IGerenciadorPlanejamentoConsulta';
 import { ISelecionarItem } from '../../@core/interfaces/ISelecionarItem';
 import { Calendario } from '@app/modules/shared/classes/Calendario';

@@ -3,19 +3,21 @@ import { PlanejadorApiModule } from './planejador-api.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { FastApiStyleLoggingInterceptor } from '@app/modules/shared/interceptor/FastApiStyleLoggingInterceptor.interceptor';
 
-
 const SERVICE_NAME = `
   Swagger planejador fabril
-`
+`;
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(
-    PlanejadorApiModule,
-  );
+  const app =
+    await NestFactory.create<NestExpressApplication>(PlanejadorApiModule);
 
   app.setGlobalPrefix('api/planejador');
   app.useGlobalInterceptors(
@@ -48,7 +50,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   //
   const document = SwaggerModule.createDocument(app, config);
-
 
   SwaggerModule.setup('doc', app, document, {
     raw: ['yaml', 'json'],

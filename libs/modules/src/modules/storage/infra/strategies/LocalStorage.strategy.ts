@@ -72,11 +72,11 @@ export class LocalStorageStrategy implements IStorageStrategy {
     const root = this.getRootPath();
     const filePath = path.join(root, folder, filename);
     /**verifica se o arquivo existe */
-    Logger.debug(`arquivo ${filePath} requisitado`)
+    Logger.debug(`arquivo ${filePath} requisitado`);
     const fileExists = await this.checkPathExists(filePath);
     if (!fileExists) {
       this.logger.warn(`File not found: ${filePath}`);
-      throw new Error('Arquivo não existe')
+      throw new Error('Arquivo não existe');
     }
     return createReadStream(filePath);
   }

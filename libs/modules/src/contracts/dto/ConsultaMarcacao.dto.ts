@@ -11,7 +11,6 @@ export class ConsultaMarcacaoDTO extends PaginationDTO {
   @IsString()
   indetificador?: string;
 
-
   @ApiProperty({
     required: false,
     description: 'Identificador do centro de custo',

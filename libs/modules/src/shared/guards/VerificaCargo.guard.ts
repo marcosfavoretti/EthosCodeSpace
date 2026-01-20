@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CargoInapropriadoException } from '../../modules/user/@core/exception/CargoInapropriado.exception';
 import { ROLES_KEY } from '@app/modules/shared/decorators/Cargo.decorator';
@@ -7,7 +12,10 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector, private configService: ConfigService) { }
+  constructor(
+    private reflector: Reflector,
+    private configService: ConfigService,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const mode = this.configService.get<string>('APP_MODE')?.toLowerCase();
@@ -18,7 +26,7 @@ export class RolesGuard implements CanActivate {
     );
     const request = context.switchToHttp().getRequest();
     const user: User = request.user;
-    console.log(requiredRoles, user)
+    console.log(requiredRoles, user);
     if (!requiredRoles) return true;
     if (user?.cargosLista === undefined) throw new CargoInapropriadoException();
     const ok = requiredRoles.some((role) => user?.cargosLista.includes(role));

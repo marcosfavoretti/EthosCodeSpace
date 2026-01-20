@@ -8,20 +8,20 @@ import { ResCertificadosDto } from '@app/modules/contracts/dto/ResCertificados.d
 
 @Injectable()
 export class ConsultaCertificadosUseCase {
-  constructor(private readonly certificadoRepository: CertificadoCatRepository) { }
+  constructor(
+    private readonly certificadoRepository: CertificadoCatRepository,
+  ) {}
 
   async execute(
     query: ConsultaCertificadosDTO,
   ): Promise<ResponsePaginatorDTO<ResCertificadosDto>> {
-
-    let { page, limit, } = query;
+    let { page, limit } = query;
     const { produto, seriaNumber } = query;
 
     page = Number(page ?? 0);
     limit = Number(limit ?? 5);
 
     const where: FindManyOptions<CertificadosCatEntity>['where'] = {};
-
 
     if (produto) {
       where.produto = new RegExp(`^${produto}`) as any;
@@ -31,16 +31,20 @@ export class ConsultaCertificadosUseCase {
       where.serialNumber = new RegExp(`^${seriaNumber}`) as any;
     }
 
-    const [certificados, total] = await this.certificadoRepository.findAndCount({
-      where,
-      take: limit,
-      skip: page * limit,
-      order: {
-        serverTime: 'DESC',
+    const [certificados, total] = await this.certificadoRepository.findAndCount(
+      {
+        where,
+        take: limit,
+        skip: page * limit,
+        order: {
+          serverTime: 'DESC',
+        },
       },
-    });
+    );
     //
-    const certificadosDTO = certificados.map(certificado => ResCertificadosDto.fromEntity(certificado));
+    const certificadosDTO = certificados.map((certificado) =>
+      ResCertificadosDto.fromEntity(certificado),
+    );
     return new ResponsePaginatorDTO(certificadosDTO, total, page, limit);
   }
 }

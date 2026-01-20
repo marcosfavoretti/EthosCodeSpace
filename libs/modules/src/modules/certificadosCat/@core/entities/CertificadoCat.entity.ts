@@ -1,20 +1,20 @@
-import { Column, Entity, ObjectId, ObjectIdColumn, Index } from "typeorm";
+import { Column, Entity, ObjectId, ObjectIdColumn, Index } from 'typeorm';
 
-@Entity({name: 'CertificadosCat'})
+@Entity({ name: 'CertificadosCat' })
 export class CertificadosCatEntity {
-    @ObjectIdColumn()
-    _id: ObjectId;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
-    @Column()
-    produto: string;
+  @Column()
+  produto: string;
 
-    @Index({ unique: true }) // Adiciona a restrição de unicidade aqui
-    @Column()
-    serialNumber: string;
+  @Index({ unique: true }) // Adiciona a restrição de unicidade aqui
+  @Column()
+  serialNumber: string;
 
-    @Column()
-    serverTime: Date;
+  @Column()
+  serverTime: Date;
 
-    @Column()
-    certificadoPath: string;
+  @Column()
+  certificadoPath: string;
 }

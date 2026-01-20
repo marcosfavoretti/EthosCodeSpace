@@ -28,16 +28,21 @@ import { PlanejadorNotificaLoggerService } from './infra/service/PlanejadorNotif
   ],
   providers: [
     EmailHttpClient,
-    //injecao da dependencia responsavel por mandar a causa do problema de importacao do pedido 
+    //injecao da dependencia responsavel por mandar a causa do problema de importacao do pedido
     {
       provide: INotificaFalhas,
-      useClass: PlanejadorNotificaLoggerService
+      useClass: PlanejadorNotificaLoggerService,
     },
     ConsultaItensDoPedidoUseCase,
     ConsultarPedidosUseCase,
     ImportaPedidoLogixUseCase,
-    BuscarPedidosLogixUseCase
+    BuscarPedidosLogixUseCase,
   ],
-  exports: [ConsultaItensDoPedidoUseCase, ConsultarPedidosUseCase, ImportaPedidoLogixUseCase, BuscarPedidosLogixUseCase],
+  exports: [
+    ConsultaItensDoPedidoUseCase,
+    ConsultarPedidosUseCase,
+    ImportaPedidoLogixUseCase,
+    BuscarPedidosLogixUseCase,
+  ],
 })
-export class PedidoModule { }
+export class PedidoModule {}

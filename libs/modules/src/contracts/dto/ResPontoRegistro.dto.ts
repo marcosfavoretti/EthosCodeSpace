@@ -29,7 +29,7 @@ export class ResPontoRegistroDTO {
 
   @ApiProperty()
   @Type(() => Date) // <--- Transforma string ISO em objeto Date
-  @IsDate()         // <--- Valida se é uma data válida
+  @IsDate() // <--- Valida se é uma data válida
   data: Date;
 
   @ApiProperty()
@@ -43,6 +43,6 @@ export class ResPontoRegistroDTO {
 
   @ApiProperty()
   @Type(() => Date) // <--- Transforma string ISO em objeto Date
-  @IsDate()         // <--- Valida se é uma data válida
+  @IsDate() // <--- Valida se é uma data válida
   dataHoraAr: Date;
 }

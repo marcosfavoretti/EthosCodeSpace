@@ -19,7 +19,27 @@ import { UserFabricaResponseDto } from '@app/modules/contracts/dto/UserFabricaRe
 import { Fabrica } from '@app/modules/modules/planejador/@core/entities/Fabrica.entity';
 import { DonoDaFabricaGuard } from '@app/modules/modules/planejador/@core/guard/dono-da-fabrica.guard';
 import { NaPrincipalNao } from '@app/modules/modules/planejador/@core/guard/na-princiapal-nao.guard';
-import { AdicionarPlanejamentoManualUseCase, AtualizarPlanejamentoUseCase, ConsultaMergeRequestUseCase, ConsultarFabricaUseCase, ConsultarHistoricoFabricaUseCase, ConsultarPedidosPlanejadosUseCase, ConsultarPlanejamentosUseCase, ConsutlarFabricaPrincipalAtualUseCase, ConsutlarFabricasDoUsuarioUseCase, DeletarFabricaUseCase, DesplanejarPedidoUseCase, MergeFabricaUseCase, PlanejarPedidoUseCase, RemoverPlanejamentoUseCase, ReplanejarPedidoUseCase, RequestFabricaForkUseCase, RequestFabricaMergeUseCase, ResetaFabricaUseCase, SincronizarFabricaPrivadaUseCase } from '@app/modules/modules/planejador/application';
+import {
+  AdicionarPlanejamentoManualUseCase,
+  AtualizarPlanejamentoUseCase,
+  ConsultaMergeRequestUseCase,
+  ConsultarFabricaUseCase,
+  ConsultarHistoricoFabricaUseCase,
+  ConsultarPedidosPlanejadosUseCase,
+  ConsultarPlanejamentosUseCase,
+  ConsutlarFabricaPrincipalAtualUseCase,
+  ConsutlarFabricasDoUsuarioUseCase,
+  DeletarFabricaUseCase,
+  DesplanejarPedidoUseCase,
+  MergeFabricaUseCase,
+  PlanejarPedidoUseCase,
+  RemoverPlanejamentoUseCase,
+  ReplanejarPedidoUseCase,
+  RequestFabricaForkUseCase,
+  RequestFabricaMergeUseCase,
+  ResetaFabricaUseCase,
+  SincronizarFabricaPrivadaUseCase,
+} from '@app/modules/modules/planejador/application';
 import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
 import { Roles } from '@app/modules/shared/decorators/Cargo.decorator';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
@@ -41,12 +61,10 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-
 @UseGuards(JwtGuard)
 @ApiTags('Fabrica')
 @Controller('fabrica')
 export class FabricaController {
-  
   @Inject(ConsutlarFabricaPrincipalAtualUseCase)
   consutlarFabricaPrincipalAtualUseCase: ConsutlarFabricaPrincipalAtualUseCase;
   @Get('/principal')
@@ -61,9 +79,7 @@ export class FabricaController {
   private planejamentoUseCase: PlanejarPedidoUseCase;
   @HttpCode(HttpStatus.OK)
   @Post('/planejamentos')
-  async planejarPedidoMethod(
-    @Body() dto: InputPedidosDTO,
-  ): Promise<void> {
+  async planejarPedidoMethod(@Body() dto: InputPedidosDTO): Promise<void> {
     return this.planejamentoUseCase.planeje(dto);
   }
 

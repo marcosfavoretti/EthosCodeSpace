@@ -1,6 +1,6 @@
-import { ReadStream } from "fs"
+import { ReadStream } from 'fs';
 
 export class AttachmentsFile {
-    filename: string
-    content: ReadStream
+  filename: string;
+  content: ReadStream;
 }

@@ -1,7 +1,23 @@
 import { ProcessaCertificadoDTO } from '@app/modules/contracts/dto/ProcessaCertificado.dto';
 import { ProcessaCertificadoUseCase } from '@app/modules/modules/certificadosCat/application/ProcessaCertificado.usecase';
-import { Body, Controller, Get, Inject, Param, Post, Query, Res, StreamableFile, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+  Res,
+  StreamableFile,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ConsultaCertificadosUseCase } from '@app/modules/modules/certificadosCat/application/ConsultaCertificados.usecase';
 import { ConsultaCertificadosDTO } from '@app/modules/contracts/dto/ConsultaCertificados.dto';
 import { PaginatedResponseDto } from '@app/modules/contracts/dto/ResponsePaginator.dto';
@@ -18,14 +34,15 @@ import { ResCertificadosDto } from '@app/modules/contracts/dto/ResCertificados.d
 @ApiTags('Certificados CAT')
 @Controller('certificados')
 export class CertificadosCatController {
-
   @Inject(ProcessaCertificadoUseCase)
   private readonly processaCertificadoUseCase: ProcessaCertificadoUseCase;
   @Roles(CargoEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Post('')
   @ApiOperation({ summary: 'Processa um arquivo de certificado bruto.' })
-  async processarCertificado(@Body() dto: ProcessaCertificadoDTO): Promise<any> {
+  async processarCertificado(
+    @Body() dto: ProcessaCertificadoDTO,
+  ): Promise<any> {
     const resultado = await this.processaCertificadoUseCase.execute(dto);
     return resultado;
   }
@@ -55,8 +72,11 @@ export class CertificadosCatController {
   @UseGuards(RolesGuard)
   async retornaArquivoCertificadoTxt(
     @Res({ passthrough: true }) res: Response,
-    @Param() query: ConsultaPorIdDto): Promise<StreamableFile> {
-    const fileStream = await this.consultaCertificadoTXTUsecase.consultaTXT(query.id);
+    @Param() query: ConsultaPorIdDto,
+  ): Promise<StreamableFile> {
+    const fileStream = await this.consultaCertificadoTXTUsecase.consultaTXT(
+      query.id,
+    );
     res.set({
       'Content-Type': 'text/plain',
       'Content-Disposition': `attachment; filename="certificado_${query.id}.txt"`,

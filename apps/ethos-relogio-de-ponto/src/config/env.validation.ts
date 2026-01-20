@@ -37,7 +37,6 @@ export const validationSchema = Joi.object({
     })
     .required(),
 
-
   APP_MODE: Joi.string().valid('DEV', 'PROD').default('DEV'),
 
   // Configurações do TypeORM para Protheus

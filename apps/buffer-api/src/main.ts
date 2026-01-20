@@ -17,8 +17,6 @@ async function bootstrap() {
 
   await app
     .listen(process.env.port ?? 3000)
-    .then(
-      () => Logger.debug('http://localhost:3000/api/doc')
-    );
+    .then(() => Logger.debug('http://localhost:3000/api/doc'));
 }
 bootstrap();

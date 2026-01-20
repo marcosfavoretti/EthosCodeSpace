@@ -4,13 +4,7 @@ import { PlanejamentoService } from './infra/service/Planejamento.service';
 
 @Module({
   imports: [],
-  providers: [
-    PlanejamentoRepository,
-    PlanejamentoService,
-  ],
-  exports: [
-    PlanejamentoService,
-    PlanejamentoRepository,
-  ],
+  providers: [PlanejamentoRepository, PlanejamentoService],
+  exports: [PlanejamentoService, PlanejamentoRepository],
 })
 export class PlanejamentoServiceModule {}

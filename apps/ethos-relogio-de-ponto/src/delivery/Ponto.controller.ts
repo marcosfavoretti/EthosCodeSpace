@@ -17,7 +17,10 @@ import { ResPontoRegistroDTO } from '@app/modules/contracts/dto/ResPontoRegistro
 import { ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { ConsultaMarcacaoPontosUseCase } from '@app/modules/modules/relogio-de-ponto/application/ConsultaPontos.usecase';
 import { ConsultaMarcacaoDTO } from '@app/modules/contracts/dto/ConsultaMarcacao.dto';
-import { PaginatedResponseDto, ResponsePaginatorDTO } from '@app/modules/contracts/dto/ResponsePaginator.dto';
+import {
+  PaginatedResponseDto,
+  ResponsePaginatorDTO,
+} from '@app/modules/contracts/dto/ResponsePaginator.dto';
 import { TipoMarcacaoPonto } from '@app/modules/modules/relogio-de-ponto/@core/entities/TipoMarcacaoPonto.entity';
 import { ProcessaTipoMarcacaoUseCase } from '@app/modules/modules/relogio-de-ponto/application/ProcessaTipoMarcacao.usecase';
 import { ResRegistroPontoTurnoPontoDTO } from '@app/modules/contracts/dto/ResRegistroPontoTurno.dto';
@@ -30,9 +33,13 @@ import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
 @Roles(CargoEnum.ADMIN)
 @UseGuards(JwtGuard, RolesGuard)
 @Controller()
-@ApiExtraModels(ResRegistroPontoTurnoPontoDTO, ResponsePaginatorDTO, ResPontoFuncionarioDTO)
+@ApiExtraModels(
+  ResRegistroPontoTurnoPontoDTO,
+  ResponsePaginatorDTO,
+  ResPontoFuncionarioDTO,
+)
 export class PontoController {
-  constructor(@Inject(PROCESSA_WORKER) private client: ClientProxy) { }
+  constructor(@Inject(PROCESSA_WORKER) private client: ClientProxy) {}
 
   @Inject(SincronizaPontosUseCase)
   private sincronizaPontosUseCase: SincronizaPontosUseCase;
@@ -50,7 +57,8 @@ export class PontoController {
   private consultaMarcacaoPonto: ConsultaMarcacaoPontosUseCase;
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
-    type: PaginatedResponseDto(ResRegistroPontoTurnoPontoDTO), isArray: true,
+    type: PaginatedResponseDto(ResRegistroPontoTurnoPontoDTO),
+    isArray: true,
   })
   @Get('registro')
   async consultaMarcacaoMethod(
@@ -60,7 +68,6 @@ export class PontoController {
     return await this.consultaMarcacaoPonto.consulta(payload);
   }
 
- 
   // @Inject(ProcessaTipoMarcacaoUseCase)
   // private processaTipoMarcacaoUseCase: ProcessaTipoMarcacaoUseCase;
   // @HttpCode(HttpStatus.OK)

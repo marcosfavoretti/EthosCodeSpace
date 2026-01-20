@@ -20,7 +20,7 @@ export class LoginUserUsecase {
     private autenticationService: AutenticationService,
     @Inject(IUserService) private userService: IUserService,
     private jwtGen: JwtHandler,
-  ) { }
+  ) {}
 
   async login(dto: AuthDto): Promise<string> {
     try {
@@ -28,7 +28,7 @@ export class LoginUserUsecase {
       const userObject = UserResponseDTO.fromEntity(user);
       return this.jwtGen.generateToken(userObject);
     } catch (error) {
-      Logger.error(error)
+      Logger.error(error);
       if (error instanceof UnauthorizedException) throw error;
       if (error instanceof UserNotFoundException) throw error;
       throw new InternalServerErrorException('problemas ao efetuar o login');

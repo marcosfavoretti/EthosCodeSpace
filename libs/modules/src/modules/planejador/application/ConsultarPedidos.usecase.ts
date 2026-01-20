@@ -1,10 +1,13 @@
 import { Inject, InternalServerErrorException, Logger } from '@nestjs/common';
 import { PedidoService } from '../infra/service/Pedido.service';
-import { ConsultarPedidosDTO, TIPO_CONSULTA } from '@app/modules/contracts/dto/ConsultarPedidos.dto';
+import {
+  ConsultarPedidosDTO,
+  TIPO_CONSULTA,
+} from '@app/modules/contracts/dto/ConsultarPedidos.dto';
 import { PedidoResponseDTO } from '@app/modules/contracts/dto/PedidoResponse.dto';
 
 export class ConsultarPedidosUseCase {
-  constructor(@Inject(PedidoService) private pedidoService: PedidoService) { }
+  constructor(@Inject(PedidoService) private pedidoService: PedidoService) {}
 
   private readonly paramMatrix: Record<TIPO_CONSULTA, boolean | 'TODOS'> = {
     n_planejados: false,
@@ -18,8 +21,8 @@ export class ConsultarPedidosUseCase {
         this.paramMatrix[dto.tipoConsulta] === 'TODOS'
           ? await this.pedidoService.consultarPedidosNoPeriodo()
           : await this.pedidoService.consultaPedidosPlanejadosOuNPlanejados(
-            Boolean(this.paramMatrix[dto.tipoConsulta]),
-          );
+              Boolean(this.paramMatrix[dto.tipoConsulta]),
+            );
       return result.map((res) => PedidoResponseDTO.fromEntity(res));
     } catch (error) {
       Logger.error(error);

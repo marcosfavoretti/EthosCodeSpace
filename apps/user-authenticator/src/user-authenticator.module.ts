@@ -10,7 +10,7 @@ import { User } from '@app/modules/modules/user/@core/entities/User.entity';
 import { Cargo } from '@app/modules/modules/user/@core/entities/Cargo.entity';
 import { GerenciaCargo } from '@app/modules/modules/user/@core/entities/GerenciaCargo.entity';
 import { validationSchema } from './config/env.validation';
-import { HttpModule } from "@nestjs/axios"
+import { HttpModule } from '@nestjs/axios';
 import { CargoController } from './delivery/Cargo.controller';
 import { CargosModule } from '@app/modules/modules/user/Cargos.module';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
@@ -47,4 +47,4 @@ import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module'
   controllers: [AuthController, CargoController],
   providers: [JwtGuard],
 })
-export class UserAuthenticatorModule { }
+export class UserAuthenticatorModule {}

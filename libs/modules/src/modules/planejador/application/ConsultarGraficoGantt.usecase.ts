@@ -8,7 +8,11 @@ import { ColorGenerator } from '@app/modules/shared/classes/GeradorDeCor';
 import { FabricaService } from '../infra/service/Fabrica.service';
 import { CODIGOSETOR } from '../@core/enum/CodigoSetor.enum';
 import { ConsultarGanttDTO } from '@app/modules/contracts/dto/ConsultarGantt.dto';
-import { GanttData, GanttLegendaDto, GetGanttInformationDto } from '@app/modules/contracts/dto/GetGanttInformation.dto';
+import {
+  GanttData,
+  GanttLegendaDto,
+  GetGanttInformationDto,
+} from '@app/modules/contracts/dto/GetGanttInformation.dto';
 import { PlanejamentoOverWriteByPedidoService } from '../@core/services/PlanejamentoOverWriteByPedido.service';
 import { Calendario } from '@app/modules/shared/classes/Calendario';
 import { PlanejamentoResponseDTO } from '@app/modules/contracts/dto/PlanejamentoResponse.dto';

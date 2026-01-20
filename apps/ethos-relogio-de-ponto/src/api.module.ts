@@ -56,9 +56,9 @@ import { PontoKPIController } from './delivery/PontoKPI.controller';
         inject: [ConfigService],
       },
     ]),
-    SharedAuthModule.forRoot()
+    SharedAuthModule.forRoot(),
   ],
   controllers: [PontoKPIController, PontoController, FuncionarioController],
   providers: [JwtGuard],
 })
-export class ApiModule { }
+export class ApiModule {}

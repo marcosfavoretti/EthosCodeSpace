@@ -1,4 +1,3 @@
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppRouteRepository } from '../infra/repository/AppRoute.repository';
@@ -9,23 +8,28 @@ import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class AtualizaRotaUseCase {
-    constructor(
-        @InjectRepository(AppRouteRepository)
-        private readonly appRouteRepository: AppRouteRepository,
-    ) { }
+  constructor(
+    @InjectRepository(AppRouteRepository)
+    private readonly appRouteRepository: AppRouteRepository,
+  ) {}
 
-    async execute(input: {id: ConsultaPorIdDto, data: AtualizaAppRouteReqDTO}): Promise<ResAppRouteAppDTO> {
-        const { id } = input.id;
-        const {...updateData} = input.data;
-        
-        const route = await this.appRouteRepository.findOne({ where: { _id: new ObjectId(id)} });
+  async execute(input: {
+    id: ConsultaPorIdDto;
+    data: AtualizaAppRouteReqDTO;
+  }): Promise<ResAppRouteAppDTO> {
+    const { id } = input.id;
+    const { ...updateData } = input.data;
 
-        if (!route) {
-            throw new NotFoundException(`Rota com id ${id} não encontrada`);
-        }
+    const route = await this.appRouteRepository.findOne({
+      where: { _id: new ObjectId(id) },
+    });
 
-        Object.assign(route, updateData);
-        const updatedRoute = await this.appRouteRepository.save(route);
-        return ResAppRouteAppDTO.fromEntity(updatedRoute);
+    if (!route) {
+      throw new NotFoundException(`Rota com id ${id} não encontrada`);
     }
+
+    Object.assign(route, updateData);
+    const updatedRoute = await this.appRouteRepository.save(route);
+    return ResAppRouteAppDTO.fromEntity(updatedRoute);
+  }
 }

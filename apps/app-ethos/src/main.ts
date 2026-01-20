@@ -1,17 +1,18 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppEthosApiModule } from './app-ethos-api.module';
 
-
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppEthosApiModule,
-  );
-
+  const app =
+    await NestFactory.create<NestExpressApplication>(AppEthosApiModule);
 
   app.setGlobalPrefix('api/route/');
 

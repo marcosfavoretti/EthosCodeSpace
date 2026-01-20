@@ -1,9 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { IsNumber, IsString, validateSync } from 'class-validator';
 
-
 class EnvironmentVariables {
-
   @IsString()
   MAIL_HOST: string;
 

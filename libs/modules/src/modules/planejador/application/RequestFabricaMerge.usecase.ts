@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { MergeRequestService } from '../infra/service/MergeRequest.service';
 import { User } from '../../user/@core/entities/User.entity';
 import { FabricaService } from '../infra/service/Fabrica.service';
@@ -38,11 +43,13 @@ export class RequestFabricaMergeUseCase {
       //
       await this.mergeRequestService.createMerge(fabrica, props.user);
     } catch (error) {
-      if(error instanceof FabricaPlanejadaErradaException){
-        throw new BadRequestException(error.message);;
+      if (error instanceof FabricaPlanejadaErradaException) {
+        throw new BadRequestException(error.message);
       }
       Logger.error(error);
-      throw new InternalServerErrorException('problemas ao solicitar merge da fabrica');
+      throw new InternalServerErrorException(
+        'problemas ao solicitar merge da fabrica',
+      );
     }
   }
 }

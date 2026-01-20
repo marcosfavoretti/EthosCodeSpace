@@ -1,5 +1,9 @@
-
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppRouteRepository } from '../infra/repository/AppRoute.repository';
 import { ConsultaPorIdDto } from '@app/modules/contracts/dto/ConsultaPorId.dto';
@@ -9,7 +13,7 @@ export class DeletaRotaUseCase {
   constructor(
     @InjectRepository(AppRouteRepository)
     private readonly appRouteRepository: AppRouteRepository,
-  ) { }
+  ) {}
 
   async execute(input: ConsultaPorIdDto): Promise<void> {
     try {

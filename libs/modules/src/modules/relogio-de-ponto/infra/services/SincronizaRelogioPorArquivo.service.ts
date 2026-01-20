@@ -3,7 +3,8 @@ import { ArquivoPontoDado } from '../../@core/class/ArquivoPontoDado.entity';
 import { ISincronizadorDePontos } from '../../@core/interfaces/ISincronizadorDePontos';
 
 export class SincronizaRelogioPorArquivoService
-  implements ISincronizadorDePontos {
+  implements ISincronizadorDePontos
+{
   arquivo = `
 `;
   async sincroniza(): Promise<ArquivoPontoDado[]> {

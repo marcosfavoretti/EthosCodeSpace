@@ -8,7 +8,7 @@ import {
 import { Setor } from './Setor.entity';
 import { ItemComCapabilidade } from './Item.entity';
 
-@Entity({name: 'item_capabilidade'})
+@Entity({ name: 'item_capabilidade' })
 export class ItemCapabilidade {
   @PrimaryGeneratedColumn()
   itemDetailId: number;

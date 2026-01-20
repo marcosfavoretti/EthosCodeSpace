@@ -4,12 +4,11 @@ import { Body, Controller, Get, HttpCode, Inject, Post } from '@nestjs/common';
 
 @Controller('/email')
 export class NotificacaoApiEmailController {
-
-    @Inject(NotificaPorEmailUseCase) private notificaPorEmailUseCase: NotificaPorEmailUseCase
-    @Post()
-    @HttpCode(200)
-    async sendEmail(@Body() sendEmailDto: SendEmailDTO) {
-        await this.notificaPorEmailUseCase.send(sendEmailDto);
-    }
-
+  @Inject(NotificaPorEmailUseCase)
+  private notificaPorEmailUseCase: NotificaPorEmailUseCase;
+  @Post()
+  @HttpCode(200)
+  async sendEmail(@Body() sendEmailDto: SendEmailDTO) {
+    await this.notificaPorEmailUseCase.send(sendEmailDto);
+  }
 }
