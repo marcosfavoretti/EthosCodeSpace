@@ -1,0 +1,78 @@
+# `deploy.yml` (Continuous Delivery - A "Fábrica")
+#    * Quando roda: Apenas quando entra código na branch main (a versão final).
+#    * O que faz:
+#        1. Login: Conecta no GitHub Container Registry (GHCR).
+#        2. Matriz de Build: Para cada app listado (ex: app-ethos, user-authenticator), ele dispara um job.
+#        3. Docker Build: Usa o seu Dockerfile da raiz. Ele passa o argumento APP_NAME para o Dockerfile, criando uma imagem super leve e específica para aquele app.
+#        4. Push: Envia a imagem pronta para a nuvem (GHCR) com a tag latest.
+#    * Objetivo: Transformar seu código em "caixas fechadas" (Imagens Docker) prontas para uso e armazená-las na nuvem.
+name: Build and Publish Monorepo Apps
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - app-ethos
+          - buffer-api
+          - certificados-cat
+          - estrutura-api
+          - ethos-codespace
+          - ethos-mobile
+          - ethos-producao
+          - ethos-relogio-de-ponto-api
+          - ethos-relogio-de-ponto-master
+          - ethos-relogio-de-ponto-worker
+          - notas-maker
+          - notas-maker-worker
+          - notificacao-api
+          - planejador
+          - planejador-importador
+          - user-authenticator
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # Generate tags: :<app-name>-latest and :<app-name>-<sha>
+          tags: |
+            type=raw,value=${{ matrix.app }}-latest
+            type=sha,prefix=${{ matrix.app }}-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_NAME=${{ matrix.app }}

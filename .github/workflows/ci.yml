@@ -1,0 +1,81 @@
+# `ci.yml` (Continuous Integration - O "Fiscal de Qualidade")
+#  * Quando roda: Sempre que você faz um Pull Request ou um push para branches de desenvolvimento (develop, master, etc).
+#  * O que faz:
+#      1. Testa: Roda seus testes unitários (npm run test) e verifica o estilo de código (lint).
+#      2. Verifica Build: Tenta compilar cada aplicação do monorepo para garantir que ninguém quebrou o código.
+#  * Objetivo: Garantir que o código está saudável antes de ser aprovado. Ele não gera imagens Docker, apenas diz "O código está OK".
+
+name: CI - Code Quality & Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Job 1: Lint & Test (Runs once for the whole repo)
+  validate:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22" # Using latest LTS compatible with your types
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint Code
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm run test
+
+  # Job 2: Build Verification (Runs in parallel for each app)
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - app-ethos
+          - buffer-api
+          - certificados-cat
+          - estrutura-api
+          - ethos-codespace
+          - ethos-mobile
+          - ethos-producao
+          - ethos-relogio-de-ponto-api
+          - ethos-relogio-de-ponto-master
+          - ethos-relogio-de-ponto-worker
+          - notas-maker
+          - notas-maker-worker
+          - notificacao-api
+          - planejador
+          - planejador-importador
+          - user-authenticator
+          - modules
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npx nest build ${{ matrix.app }}

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # Exemplo baseado no seu 124.docker-compose.yml antigo
+  # Ajuste o APP_NAME para o nome real do seu app de frontend no monorepo
+  frontend:
+    # Substitua 'seu-usuario' pelo seu usuário do GitHub
+    image: ghcr.io/seu-usuario/ethos-codespace:ethos-frontend-latest
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+      # Injete estas variáveis no Portainer
+      - API_URL=${API_URL}
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge

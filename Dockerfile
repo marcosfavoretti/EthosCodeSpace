@@ -1,43 +1,46 @@
 # Stage 1: Builder
-FROM node:lts-alpine as builder
+FROM node:22-alpine AS builder
 
-WORKDIR /app
+# Argument to specify which app to build
+ARG APP_NAME
 
-# Copy package.json and package-lock.json
+WORKDIR /usr/src/app
+
+# Copy dependency definitions
 COPY package*.json ./
+COPY nest-cli.json ./
+COPY tsconfig*.json ./
 
-# Install dependencies, including devDependencies for building
-# If you are using npm, change 'pnpm install' to 'npm install'
-RUN npm install
+# Install all dependencies (including dev) for build
+RUN npm ci
 
-# Copy the entire project
-COPY . .
+# Copy source code
+COPY apps/ apps/
+COPY libs/ libs/
 
-# Build all applications and libraries
-# This assumes 'nest build' compiles everything into the 'dist' directory
-RUN npm run build
+# Build the specific application
+RUN npx nest build ${APP_NAME}
 
-# Stage 2: Runner
-FROM node:lts-alpine as runner
+# Remove dev dependencies before final stage copy (optional strategy, 
+# but often better to just install prod deps in a clean stage or prune)
+# Here we will use a separate install for prod deps to ensure cleanliness
 
-WORKDIR /app
+# Stage 2: Production
+FROM node:22-alpine AS production
 
-# Copy only production dependencies from the builder stage
-COPY --from=builder /app/package*.json ./
-# If you are using npm, change 'pnpm install --prod' to 'npm install --prod'
-RUN npm install --prod --omit=dev
+ARG APP_NAME
+ENV NODE_ENV=production
 
-# Copy the built applications and libraries from the builder stage
-COPY --from=builder /app/dist ./dist
+WORKDIR /usr/src/app
 
-# Expose the port your NestJS application listens on
-EXPOSE 3000
+# Install production dependencies only
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
-# Define the command to run the application
-# Use APP_NAME environment variable to specify which app to run
-# Example: docker run -p 3000:3000 -e APP_NAME=app-ethos your-image-name
-CMD ["sh", "-c", "node dist/apps/${APP_NAME}/${APP_ENTRY_FILE}"]
+# Copy built assets from builder
+# Adjust path based on how nest build outputs. 
+# Standard Nest monorepo: dist/apps/<app-name>
+COPY --from=builder /usr/src/app/dist/apps/${APP_NAME} ./dist
 
-# Default environment variable for APP_NAME (optional, can be overridden)
-ENV APP_NAME=app-ethos
-ENV APP_ENTRY_FILE=main.js
+# Start the application
+CMD ["node", "dist/main"]

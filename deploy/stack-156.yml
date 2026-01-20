@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  user-auth:
+    # Substitua 'seu-usuario' pelo seu usuário do GitHub
+    image: ghcr.io/seu-usuario/ethos-codespace:user-authenticator-latest
+    restart: always
+    ports:
+      - "30002:30002"
+    environment:
+      - NODE_ENV=production
+      # Variaveis de Banco e Configurações (Preencher no Portainer)
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - JWT_SECRET=${JWT_SECRET}
+    extra_hosts:
+      - "cerberus:192.168.99.109"
+    networks:
+      - backend-network
+
+  app-route:
+    image: ghcr.io/seu-usuario/ethos-codespace:app-ethos-latest
+    restart: always
+    ports:
+      - "30005:30005"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=${DB_HOST} # Reutilize variáveis se for o mesmo banco
+      - DB_PASS=${DB_PASS}
+    networks:
+      - backend-network
+
+  email-service:
+    image: ghcr.io/seu-usuario/ethos-codespace:notificacao-api-latest
+    restart: always
+    ports:
+      - "30003:30003"
+    environment:
+      - NODE_ENV=production
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+    networks:
+      - backend-network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  ponto-api:
+    image: ghcr.io/seu-usuario/ethos-codespace:ethos-relogio-de-ponto-api-latest
+    restart: always
+    ports:
+      - "30006:30006"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=${DB_HOST}
+      - DB_PASS=${DB_PASS}
+    networks:
+      - backend-network
+
+  ponto-worker:
+    image: ghcr.io/seu-usuario/ethos-codespace:ethos-relogio-de-ponto-worker-latest
+    restart: always
+    # Workers geralmente não precisam de portas expostas se só processam filas/cron
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=${DB_HOST}
+      - DB_PASS=${DB_PASS}
+    networks:
+      - backend-network
+
+  ponto-master:
+    image: ghcr.io/seu-usuario/ethos-codespace:ethos-relogio-de-ponto-master-latest
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=${DB_HOST}
+      - DB_PASS=${DB_PASS}
+    networks:
+      - backend-network
+    dns:
+      - 192.168.99.110
+      - 192.168.99.106
+
+networks:
+  backend-network:
+    driver: bridge
