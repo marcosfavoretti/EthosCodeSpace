@@ -32,6 +32,7 @@ services:
     ports:
       - "30006:30006"
     environment:
+      - APP_ENTRY_FILE=main.api.js
       - NODE_ENV=production
       - HOST=0.0.0.0
       - PORT=30006
@@ -78,6 +79,7 @@ services:
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-worker-latest
     restart: always
     environment:
+      - APP_ENTRY_FILE=main.worker.js
       - NODE_ENV=production
       - PORT=30006 # Necessário para validação, mesmo que não escute HTTP externamente
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
@@ -124,6 +126,7 @@ services:
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-master-latest
     restart: always
     environment:
+      - APP_ENTRY_FILE=main.master.js
       - NODE_ENV=production
       - PORT=30006 # Necessário para validação
       - NODE_TLS_REJECT_UNAUTHORIZED=0

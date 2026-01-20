@@ -42,5 +42,7 @@ RUN npm ci --only=production && npm cache clean --force
 # Standard Nest monorepo: dist/apps/<app-name>
 COPY --from=builder /usr/src/app/dist/apps/${APP_NAME} ./dist
 
+ENV APP_ENTRY_FILE=main.js
+
 # Start the application
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "node dist/${APP_ENTRY_FILE}"]
