@@ -1,21 +1,64 @@
 version: '3.8'
 
 services:
-  # Exemplo baseado no seu 124.docker-compose.yml antigo
-  # Ajuste o APP_NAME para o nome real do seu app de frontend no monorepo
-  frontend:
-    # Substitua 'seu-usuario' pelo seu usuário do GitHub
-    image: ghcr.io/seu-usuario/ethos-codespace:ethos-frontend-latest
+  user-auth:
+    container_name: user-auth
+    # Imagem específica gerada pelo CI/CD para o app 'user-authenticator'
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:user-authenticator-latest
     restart: always
     ports:
-      - "80:80"
+      - "30002:30002"
     environment:
       - NODE_ENV=production
-      # Injete estas variáveis no Portainer
-      - API_URL=${API_URL}
+      - HOST=0.0.0.0
+      - PORT=30002
+      
+      # Syneco DB (SQL Server)
+      - SQLHOST=${SQLHOST}
+      - SQLUSER=${SQLUSER}
+      - SQLSENHA=${SQLSENHA}
+      - SQLDATABASE=${SQLDATABASE}
+      
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      
+      # App Mode
+      - APP_MODE=${APP_MODE}
+
+    extra_hosts:
+      - "cerberus:192.168.99.109"
     networks:
-      - frontend-network
+      - backend-network
+
+  app-route:
+    container_name: app-route
+    # Imagem específica para 'app-ethos'
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:app-ethos-latest
+    restart: always
+    ports:
+      - "30005:30005"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=30005
+      
+      # Mongo DB
+      - MONGOHOST=${MONGOHOST}
+      - MONGOUSER=${MONGOUSER}
+      - MONGOPASSWORD=${MONGOPASSWORD}
+      - MONGODATABASE=${MONGODATABASE}
+      
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      
+      # App Mode
+      - APP_MODE=${APP_MODE}
+
+    networks:
+      - backend-network
 
 networks:
-  frontend-network:
+  backend-network:
     driver: bridge

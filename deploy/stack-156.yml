@@ -1,47 +1,23 @@
 version: '3.8'
 
 services:
-  user-auth:
-    # Substitua 'seu-usuario' pelo seu usuário do GitHub
-    image: ghcr.io/seu-usuario/ethos-codespace:user-authenticator-latest
-    restart: always
-    ports:
-      - "30002:30002"
-    environment:
-      - NODE_ENV=production
-      # Variaveis de Banco e Configurações (Preencher no Portainer)
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - JWT_SECRET=${JWT_SECRET}
-    extra_hosts:
-      - "cerberus:192.168.99.109"
-    networks:
-      - backend-network
-
-  app-route:
-    image: ghcr.io/seu-usuario/ethos-codespace:app-ethos-latest
-    restart: always
-    ports:
-      - "30005:30005"
-    environment:
-      - NODE_ENV=production
-      - DB_HOST=${DB_HOST} # Reutilize variáveis se for o mesmo banco
-      - DB_PASS=${DB_PASS}
-    networks:
-      - backend-network
-
   email-service:
-    image: ghcr.io/seu-usuario/ethos-codespace:notificacao-api-latest
+    container_name: email-service
+    # Imagem específica para 'notificacao-api'
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:notificacao-api-latest
     restart: always
     ports:
       - "30003:30003"
     environment:
       - NODE_ENV=production
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASS=${SMTP_PASS}
+      - HOST=0.0.0.0
+      - PORT=30003
+      # Configurações de Email
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASS=${MAIL_PASS}
+      - MAIL_FROM=${MAIL_FROM}
     networks:
       - backend-network
     dns:
@@ -49,35 +25,142 @@ services:
       - 1.1.1.1
 
   ponto-api:
-    image: ghcr.io/seu-usuario/ethos-codespace:ethos-relogio-de-ponto-api-latest
+    container_name: ponto-api
+    # Imagem específica para 'ethos-relogio-de-ponto-api'
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:ethos-relogio-de-ponto-api-latest
     restart: always
     ports:
       - "30006:30006"
     environment:
       - NODE_ENV=production
-      - DB_HOST=${DB_HOST}
-      - DB_PASS=${DB_PASS}
+      - HOST=0.0.0.0
+      - PORT=30006
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # Configurações do Relógio
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      
+      # RabbitMQ
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      
+      # App Mode
+      - APP_MODE=PROD
+      
+      # Protheus DB
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      
+      # Oracle/Logix DB
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      
+      # Outras Configurações
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
     networks:
       - backend-network
 
   ponto-worker:
-    image: ghcr.io/seu-usuario/ethos-codespace:ethos-relogio-de-ponto-worker-latest
+    container_name: ponto-worker
+    # Imagem específica para 'ethos-relogio-de-ponto-worker'
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:ethos-relogio-de-ponto-worker-latest
     restart: always
-    # Workers geralmente não precisam de portas expostas se só processam filas/cron
     environment:
       - NODE_ENV=production
-      - DB_HOST=${DB_HOST}
-      - DB_PASS=${DB_PASS}
+      - PORT=30006 # Necessário para validação, mesmo que não escute HTTP externamente
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      
+      # Configurações do Relógio
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      
+      # RabbitMQ
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      
+      # App Mode
+      - APP_MODE=PROD
+      
+      # Protheus DB
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      
+      # Oracle/Logix DB
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      
+      # Outras Configurações
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
     networks:
       - backend-network
 
   ponto-master:
-    image: ghcr.io/seu-usuario/ethos-codespace:ethos-relogio-de-ponto-master-latest
+    container_name: ponto-master
+    # Imagem específica para 'ethos-relogio-de-ponto-master'
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:ethos-relogio-de-ponto-master-latest
     restart: always
     environment:
       - NODE_ENV=production
-      - DB_HOST=${DB_HOST}
-      - DB_PASS=${DB_PASS}
+      - PORT=30006 # Necessário para validação
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      
+      # Configurações do Relógio
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      
+      # RabbitMQ
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      
+      # App Mode
+      - APP_MODE=PROD
+      
+      # Protheus DB
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      
+      # Oracle/Logix DB
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      
+      # Outras Configurações
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
     networks:
       - backend-network
     dns:
