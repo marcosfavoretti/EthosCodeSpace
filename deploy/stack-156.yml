@@ -4,7 +4,7 @@ services:
   email-service:
     container_name: email-service
     # Imagem específica para 'notificacao-api'
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:notificacao-api-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:notificacao-api-latest
     restart: always
     ports:
       - "30003:30003"
@@ -27,7 +27,7 @@ services:
   ponto-api:
     container_name: ponto-api
     # Imagem específica para 'ethos-relogio-de-ponto-api'
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:ethos-relogio-de-ponto-api-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-api-latest
     restart: always
     ports:
       - "30006:30006"
@@ -75,7 +75,7 @@ services:
   ponto-worker:
     container_name: ponto-worker
     # Imagem específica para 'ethos-relogio-de-ponto-worker'
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:ethos-relogio-de-ponto-worker-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-worker-latest
     restart: always
     environment:
       - NODE_ENV=production
@@ -121,7 +121,7 @@ services:
   ponto-master:
     container_name: ponto-master
     # Imagem específica para 'ethos-relogio-de-ponto-master'
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethos-codespace:ethos-relogio-de-ponto-master-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-master-latest
     restart: always
     environment:
       - NODE_ENV=production
