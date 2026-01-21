@@ -35,7 +35,6 @@ export class EmailDeValidacaoService implements IOnUserCreated {
                         <img src='${ethos_logox64}'></img>
     
                     </div>
-                    
                     `,
       });
     } catch (error) {

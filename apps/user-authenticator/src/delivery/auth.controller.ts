@@ -34,7 +34,7 @@ import {
 import { ValidaCriacaoUsuarioUseCase } from '@app/modules/modules/user/application/ValidaCriacaoUsuario.usecase';
 
 @ApiTags('Authentication')
-@Controller('auth')
+@Controller('')
 export class AuthController {
   constructor(
     @Inject(CreateUserUsecase) private createUserUsecase: CreateUserUsecase,
