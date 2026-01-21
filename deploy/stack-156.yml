@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 # Definindo um "template" para evitar repetição de fuso horário
 x-common-tz: &common-tz
@@ -46,28 +46,35 @@ services:
       - HOST=0.0.0.0
       - PORT=30006
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+        # Configurações do Relógio
       - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
       - RELOGIO_SENHA=${RELOGIO_SENHA}
       - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      # RabbitMQ
       - RABBITHOST=${RABBITHOST}
       - RABBITPORT=${RABBITPORT}
       - RABBITUSER=${RABBITUSER}
       - RABBITPASSWORD=${RABBITPASSWORD}
       - RABBITMQ_URL=${RABBITMQ_URL}
+
       - APP_MODE=PROD
+        # Protheus DB
       - PROTHEUSSID=${PROTHEUSSID}
       - PROTHEUSUSER=${PROTHEUSUSER}
       - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
       - PROTHEUSHOST=${PROTHEUSHOST}
+        # Oracle/Logix DB
       - ORACLEHOST=${ORACLEHOST}
       - ORACLEUSER=${ORACLEUSER}
       - ORACLEPASSWORD=${ORACLEPASSWORD}
       - ORACLESID=${ORACLESID}
+
       - HOURS_PER_DAY=${HOURS_PER_DAY}
+        # Auth
       - SECRET=${SECRET}
       - EXPIREHOURS=${EXPIREHOURS}
       # Se sua app usa Mongo, aponte para o nome do container que conectamos:
-      - MONGO_URL=mongodb://mongodb:27017/seu_banco 
+      - MONGO_URL=mongodb://mongodb:27017/seu_banco
     networks:
       - backend-network
 
@@ -82,11 +89,40 @@ services:
       - NODE_ENV=production
       - PORT=30006
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      #
+      # Configurações do Relógio
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+
+      # RabbitMQ
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
       - RABBITMQ_URL=${RABBITMQ_URL}
+
+      # App Mode
+      - APP_MODE=PROD
+
+      # Protheus DB
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+
+      # Oracle/Logix DB
       - ORACLEHOST=${ORACLEHOST}
       - ORACLEUSER=${ORACLEUSER}
       - ORACLEPASSWORD=${ORACLEPASSWORD}
       - ORACLESID=${ORACLESID}
+
+      # Outras Configurações
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
     networks:
       - backend-network
 
@@ -100,11 +136,41 @@ services:
       - APP_ENTRY_FILE=main.worker.js
       - NODE_ENV=production
       - PORT=30006
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      #
+      # Configurações do Relógio
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+
+      # RabbitMQ
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
       - RABBITMQ_URL=${RABBITMQ_URL}
+
+      # App Mode
+      - APP_MODE=PROD
+
+      # Protheus DB
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+
+      # Oracle/Logix DB
       - ORACLEHOST=${ORACLEHOST}
       - ORACLEUSER=${ORACLEUSER}
       - ORACLEPASSWORD=${ORACLEPASSWORD}
       - ORACLESID=${ORACLESID}
+
+      # Outras Configurações
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
     networks:
       - backend-network
 
@@ -114,15 +180,44 @@ services:
     restart: always
     <<: *common-tz
     environment:
-      - TZ=America/Sao_Paulo
       - APP_ENTRY_FILE=main.master.js
       - NODE_ENV=production
-      - PORT=30006
+      - PORT=30006 # Necessário para validação
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      
+      # Configurações do Relógio
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      
+      # RabbitMQ
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
       - RABBITMQ_URL=${RABBITMQ_URL}
+      
+      # App Mode
+      - APP_MODE=PROD
+      
+      # Protheus DB
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      
+      # Oracle/Logix DB
       - ORACLEHOST=${ORACLEHOST}
       - ORACLEUSER=${ORACLEUSER}
       - ORACLEPASSWORD=${ORACLEPASSWORD}
       - ORACLESID=${ORACLESID}
+      
+      # Outras Configurações
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      
+      # Auth
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
     networks:
       - backend-network
     dns:
