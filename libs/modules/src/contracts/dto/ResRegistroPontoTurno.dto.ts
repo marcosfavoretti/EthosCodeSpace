@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ResTipoMarcacaoDTO } from './ResTipoMarcacao.dto';
-import { number } from 'joi';
 
 export class ResRegistroPontoTurnoPontoDTO {
   @ApiProperty()
@@ -24,9 +23,7 @@ export class ResRegistroPontoTurnoPontoDTO {
   })
   registros: ResTipoMarcacaoDTO[];
 
-  @ApiProperty({
-    type: number,
-  })
+  @ApiProperty()
   qtdHoras: number;
 
   @ApiProperty()

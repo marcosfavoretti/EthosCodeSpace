@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
-  ParseArrayPipe,
   Post,
   Query,
   UseGuards,
@@ -14,15 +13,13 @@ import { ClientProxy } from '@nestjs/microservices';
 import { PROCESSA_WORKER } from '../@core/symbols/symbols';
 import { SincronizaPontosUseCase } from '@app/modules/modules/relogio-de-ponto/application/SincronizaPontos.usecase';
 import { ResPontoRegistroDTO } from '@app/modules/contracts/dto/ResPontoRegistro.dto';
-import { ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
+import {  ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { ConsultaMarcacaoPontosUseCase } from '@app/modules/modules/relogio-de-ponto/application/ConsultaPontos.usecase';
 import { ConsultaMarcacaoDTO } from '@app/modules/contracts/dto/ConsultaMarcacao.dto';
 import {
   PaginatedResponseDto,
   ResponsePaginatorDTO,
 } from '@app/modules/contracts/dto/ResponsePaginator.dto';
-import { TipoMarcacaoPonto } from '@app/modules/modules/relogio-de-ponto/@core/entities/TipoMarcacaoPonto.entity';
-import { ProcessaTipoMarcacaoUseCase } from '@app/modules/modules/relogio-de-ponto/application/ProcessaTipoMarcacao.usecase';
 import { ResRegistroPontoTurnoPontoDTO } from '@app/modules/contracts/dto/ResRegistroPontoTurno.dto';
 import { ResPontoFuncionarioDTO } from '@app/modules/contracts/dto/ResPontoFuncionario.dto';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
@@ -39,7 +36,6 @@ import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
   ResPontoFuncionarioDTO,
 )
 export class PontoController {
-  constructor(@Inject(PROCESSA_WORKER) private client: ClientProxy) {}
 
   @Inject(SincronizaPontosUseCase)
   private sincronizaPontosUseCase: SincronizaPontosUseCase;
