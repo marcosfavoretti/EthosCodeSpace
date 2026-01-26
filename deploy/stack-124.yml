@@ -132,7 +132,6 @@ services:
   planejador-worker:
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-latest
     restart: always
-    container_name: 'planejador-worker' 
     deploy:
       replicas: 2
     environment:
