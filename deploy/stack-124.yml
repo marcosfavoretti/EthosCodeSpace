@@ -1,5 +1,17 @@
 version: '3.8'
 
+x-network-backend: &network-backend
+  networks:
+    - backend-network
+
+x-extra_hosts-planejador: &extra_hosts-planejador
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+x-extra_hosts-user-auth: &extra_hosts-user-auth
+  extra_hosts:
+    - "cerberus:192.168.99.109"
+
 services:
   user-auth:
     container_name: user-auth
@@ -26,11 +38,7 @@ services:
       
       # App Mode
       - APP_MODE=${APP_MODE}
-
-    extra_hosts:
-      - "cerberus:192.168.99.109"
-    networks:
-      - backend-network
+    <<: [*network-backend, *extra_hosts-user-auth]
 
   app-route:
     container_name: app-route
@@ -56,9 +64,7 @@ services:
       
       # App Mode
       - APP_MODE=${APP_MODE}
-
-    networks:
-      - backend-network
+    <<: [*network-backend]
 
   planejador-api:
     container_name: planejador-api
@@ -90,8 +96,7 @@ services:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
-    networks:
-      - backend-network
+    <<: [*network-backend, *extra_hosts-planejador]
 
   planejador-master:
     container_name: planejador-master
@@ -122,12 +127,12 @@ services:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
-    networks:
-      - backend-network
+    <<: [*network-backend, *extra_hosts-planejador]
 
   planejador-worker:
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-latest
     restart: always
+    container_name: 'planejador-worker' 
     deploy:
       replicas: 2
     environment:
@@ -155,8 +160,7 @@ services:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
-    networks:
-      - backend-network
+    <<: [*network-backend, *extra_hosts-planejador]
 
 networks:
   backend-network:
