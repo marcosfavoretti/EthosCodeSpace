@@ -30,6 +30,7 @@ export class PlanejarPedidoUseCase {
     try {
       const pedidos = await this.pedidoService.consultarPedidos(dto.pedidoIds);
 
+      
       if (pedidos.some((pedido) => !pedido.pedidoEhValido()))
         throw new Error('Um dos pedidos está faltando dependencias');
 
@@ -54,6 +55,8 @@ export class PlanejarPedidoUseCase {
       let fabricaVersionada: Fabrica | undefined = undefined;
 
       for (const pedido of pedidos) {
+
+        if(pedido.processado) continue;
         //requisao para alocacao do pedido
         const { planejamentos: planejamentosTemporarios } =
           await this.fabricaSimulacaoService.planejamento(

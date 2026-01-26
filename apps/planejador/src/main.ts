@@ -12,7 +12,18 @@ import cookieParser from 'cookie-parser';
 import { FastApiStyleLoggingInterceptor } from '@app/modules/shared/interceptor/FastApiStyleLoggingInterceptor.interceptor';
 
 const SERVICE_NAME = `
-  Swagger planejador fabril
+__________.__                            __            .___            
+\\______   \\  | _____    ____   ____     |__|____     __| _/___________ 
+ |     ___/  | \\__  \\  /    \\_/ __ \\    |  \\__  \\   / __ |/  _ \\_  __ \\
+ |    |   |  |__/ __ \\|   |  \\  ___/    |  |/ __ \\_/ /_/ (  <_> )  | \\/
+ |____|   |____(____  /___|  /\\___  >\\__|  (____  /\\____ |\\____/|__|   
+                    \\/     \\/     \\/\\______|    \\/      \\/             
+              .__                                                      
+_____  ______ |__|                                                     
+\\__  \\ \\____ \\|  |                                                     
+ / __ \\|  |_> >  |                                                     
+(____  /   __/|__|                                                     
+     \\/|__|                                                            
 `;
 
 async function bootstrap() {
@@ -68,7 +79,7 @@ async function bootstrap() {
   app.use(cookieParser());
   await app.listen(port, host).then(() => {
     Logger.debug(SERVICE_NAME, 'SERVICE NAME');
-    Logger.log(`http://${host || 'localhost'}:${port}/api/doc`);
+    Logger.log(`http://${host || 'localhost'}:${port}/api/planejador/doc`);
   });
 }
 bootstrap();

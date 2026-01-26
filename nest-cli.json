@@ -154,6 +154,15 @@
         "tsConfigPath": "apps/planejador/tsconfig.app.json"
       }
     },
+    "planejador-worker": {
+      "type": "application",
+      "root": "apps/planejador-worker",
+      "entryFile": "main.worker",
+      "sourceRoot": "apps/planejador/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/planejador/tsconfig.worker.json"
+      }
+    },
     "planejador-importador": {
       "type": "application",
       "root": "apps/planejador-importador",

@@ -6,14 +6,14 @@ import { Interval } from '@nestjs/schedule';
 export class ImportacaoPolling {
   constructor(
     @Inject(ImportaPedidoLogixUseCase)
-    private importaPedidoLoixUseCase: ImportaPedidoLogixUseCase,
+    private importaPedidoLogixUseCase: ImportaPedidoLogixUseCase,
   ) {}
 
   @Interval(30000)
   async handleImportacaoPooling() {
     try {
       Logger.log('Iniciando importação de pedidos Logix...');
-      await this.importaPedidoLoixUseCase.execute();
+      await this.importaPedidoLogixUseCase.execute();
     } catch (error) {
       Logger.error(`falha na importação \n${error}`, ImportacaoPolling.name);
     }

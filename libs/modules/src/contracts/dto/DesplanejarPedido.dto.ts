@@ -3,7 +3,10 @@ import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString, } from 'class-validator';
 
 export class DesplanejarPedidoDto {
-  @ApiProperty({ isArray: true })
+  @ApiProperty({
+    isArray: true,
+    type: () => Number
+  })
   @IsArray()
   @IsNumber({}, { each: true }) // valida cada item do array
   @Type(() => Number) // garante que cada item venha convertido para número

@@ -19,6 +19,7 @@ export class FastApiStyleLoggingInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse();
     const { method, originalUrl } = request;
     const IP = context.switchToHttp().getRequest().ip;
+    //TOOD colocar o ip real da request usando x-forwarded-for//
     return next.handle().pipe(
       tap(() => {
         const statusCode = response.statusCode;

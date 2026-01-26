@@ -48,9 +48,9 @@ export class PedidoLogixDAO {
                     WHERE p.hash = o.identificador
                 ) 
                 /*
-                    *and o.item IN (
-                    *select * from itens_to_import
-                    *);
+                *and o.item IN (
+                *select * from itens_to_import
+                *);
                 */
             `);
     return pedidosLogix;

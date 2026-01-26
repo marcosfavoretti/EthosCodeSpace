@@ -1,0 +1,5 @@
+//queues configs
+export const PLANEJADOR_QUEUE = 'PLANEJAMENTO_QUEUE';
+export const PLANEJADOR_WORKER = 'PLANEJAMENTO_WORKER';
+//events
+export const PLANEJADOR_PLANEJAR = 'PLANEJAMENTO_QUEUE.planejar'

@@ -17,9 +17,14 @@ import { Pedido } from '@app/modules/modules/planejador/@core/entities/Pedido.en
 import { ItemComCapabilidade } from '@app/modules/modules/planejador/@core/entities/Item.entity';
 import { ItemCapabilidade } from '@app/modules/modules/planejador/@core/entities/ItemCapabilidade.entity';
 import { Setor } from '@app/modules/modules/planejador/@core/entities/Setor.entity';
-import { BullModule } from '@nestjs/bull';
-import { queues } from '@app/modules/modules/planejador/@core/const/queue';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PLANEJADOR_QUEUE } from './@core/const/planejador.const';
+import { ImportaPedidoLogixUseCase } from '@app/modules/modules/planejador/application/ImportaPedidosLogix.usecase';
+import { PedidoServiceModule } from '@app/modules/modules/planejador/PedidoService.module';
+import { INotificaFalhas } from '@app/modules/modules/planejador/@core/interfaces/INotificaFalhas';
+import { PlanejadorNotificaLoggerService } from '@app/modules/modules/planejador/infra/service/PlanejadorNotificaLogger.service';
+import { ItemServiceModule } from '@app/modules/modules/planejador/ItemService.module';
 
 const entities = [
   Cargo,
@@ -41,6 +46,8 @@ const entities = [
   imports: [
     ScheduleModule.forRoot(),
     PedidoModule,
+    ItemServiceModule,
+    PedidoServiceModule,
     ConfigModule.forRoot({
       envFilePath: 'apps/planejador/.env',
       isGlobal: true,
@@ -52,17 +59,31 @@ const entities = [
       inject: [ConfigService],
       name: 'syneco_database',
     }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST, // nome do serviço do docker-compose
-        port: +process.env.REDIS_PORT!,
+    ClientsModule.registerAsync([
+      {
+        name: PLANEJADOR_QUEUE,
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('RABBITMQ_URL')!],
+            queue: PLANEJADOR_QUEUE,
+            queueOptions: {
+              durable: true,
+            }
+          },
+        }),
+
+        inject: [ConfigService],
       },
-    }),
-    BullModule.registerQueue({
-      name: queues.planejamento,
-    }),
+    ]),
   ],
-  providers: [ImportacaoPolling],
+  providers: [
+    {
+      provide: INotificaFalhas,
+      useClass: PlanejadorNotificaLoggerService,
+    },
+    ImportacaoPolling, ImportaPedidoLogixUseCase],
   controllers: [],
 })
-export class ImportadorModule {}
+export class ImportadorModule { }

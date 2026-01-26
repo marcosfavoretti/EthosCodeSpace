@@ -3,13 +3,10 @@ import { BuscarPedidosLogixUseCase } from './BuscarPedidoLogix.usecase';
 import { PedidoService } from '../infra/service/Pedido.service';
 import { Pedido } from '../@core/entities/Pedido.entity';
 import { ItemService } from '../infra/service/Item.service';
-import type { Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
-import { EmailHtml } from '../../notificacao/@core/classes/EmailHtml';
+import { ClientProxy } from '@nestjs/microservices';
 import { differenceInHours, format } from 'date-fns';
-import { queues } from '../@core/const/queue';
-import { EmailHttpClient } from '@app/modules/contracts/clients/EmailHttp.client';
 import { INotificaFalhas } from '../@core/interfaces/INotificaFalhas';
+import { PLANEJADOR_PLANEJAR, PLANEJADOR_QUEUE } from 'apps/planejador/src/@core/const/planejador.const';
 
 @Injectable()
 export class ImportaPedidoLogixUseCase {
@@ -18,7 +15,7 @@ export class ImportaPedidoLogixUseCase {
   private falhaNoPlanejar: Pedido[] = [];
 
   constructor(
-    @InjectQueue(queues.planejamento) private planejamentoQueue: Queue,
+    @Inject(PLANEJADOR_QUEUE) private planejamentoQueue: ClientProxy,
     @Inject(INotificaFalhas) private emailSenderService: INotificaFalhas,
     @Inject(ItemService) private itemService: ItemService,
     @Inject(BuscarPedidosLogixUseCase)
@@ -37,7 +34,7 @@ export class ImportaPedidoLogixUseCase {
       );
       //tentar planejar
       Logger.log(pedidosSalvos.length, ImportaPedidoLogixUseCase.name);
-      // await this.executarPlanejamento(pedidosSalvos, this.falhaNoPlanejar);
+      await this.executarPlanejamento(pedidosSalvos, this.falhaNoPlanejar);
     } catch (error) {
       Logger.error('Erro inesperado no processo de importação', error.stack);
     } finally {
@@ -70,25 +67,12 @@ export class ImportaPedidoLogixUseCase {
     return pedidosSalvos;
   }
 
-  private async testarConexaoRedis(): Promise<void> {
-    const client = await this.planejamentoQueue.client;
-    await client.ping();
-    Logger.log('Conexão com Redis confirmada ✅');
-  }
-
   private async executarPlanejamento(
     pedidos: Pedido[],
     falhaNoPlanejar: Pedido[],
   ): Promise<void> {
     if (!pedidos.length) return;
     Logger.log('Iniciando etapa de planejamento 🫷');
-    try {
-      await this.testarConexaoRedis();
-    } catch (err) {
-      Logger.error('Redis indisponível, não será possível planejar', err);
-      falhaNoPlanejar.push(...pedidos);
-      return;
-    }
 
     const pedidosComDependencias = await this.pedidoService.consultarPedidos(
       pedidos.map((ped) => ped.id),
@@ -109,17 +93,11 @@ export class ImportaPedidoLogixUseCase {
 
     for (const pedido of pedidosValidosPrioridade) {
       try {
-        const job = await this.planejamentoQueue.add(
-          'planejar',
+        this.planejamentoQueue.emit(
+          PLANEJADOR_PLANEJAR,
           { pedidoId: pedido.id },
-          {
-            removeOnComplete: true,
-            attempts: 3,
-            backoff: 5000,
-            timeout: 60000,
-          },
         );
-        Logger.log(`Pedido ${pedido.id} adicionado à fila - ${job}`);
+        Logger.log(`Pedido ${pedido.id} adicionado à fila`);
       } catch (err) {
         Logger.error(`Falha ao enfileirar pedido ${pedido.id}`, err);
         falhaNoPlanejar.push(pedido);
