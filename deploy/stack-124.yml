@@ -164,3 +164,29 @@ services:
 networks:
   backend-network:
     driver: bridge
+
+  wifi-ethos:
+    container_name: wifi-ethos
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:wifi-ethos-latest
+    restart: always
+    ports:
+      - "30008:30008"
+    environment:
+      - NODE_ENV=production
+      - PORT=30008
+      - WIFI_CHECKOUT_URI=${WIFI_CHECKOUT_URI}
+      - WIFI_TIME_LIMIT_MINUTES=${WIFI_TIME_LIMIT_MINUTES}
+      - UBIQUITI_SERVICE_URL=${UBIQUITI_SERVICE_URL}
+      - MONGOUSER=${MONGOUSER}
+      - MONGOPASSWORD=${MONGOPASSWORD}
+      - MONGODATABASE=${MONGODATABASE}
+      - MONGOHOST=${MONGOHOST}
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      - UBIQUITI_USERNAME=${UBIQUITI_USERNAME}
+      - UBIQUITI_PASSWORD=${UBIQUITI_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - WIFI_SSID=${WIFI_SSID}
+    extra_hosts:
+      - "unifi:192.168.99.102"
+    networks:
+      - backend-network

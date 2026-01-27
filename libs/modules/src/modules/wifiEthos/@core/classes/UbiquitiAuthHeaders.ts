@@ -1,0 +1,1 @@
+export class UbiquitiAuthHeaders { headers: Record<string, string> }

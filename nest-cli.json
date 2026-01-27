@@ -154,15 +154,6 @@
         "tsConfigPath": "apps/planejador/tsconfig.app.json"
       }
     },
-    "planejador-worker": {
-      "type": "application",
-      "root": "apps/planejador-worker",
-      "entryFile": "main.worker",
-      "sourceRoot": "apps/planejador/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/planejador/tsconfig.worker.json"
-      }
-    },
     "planejador-importador": {
       "type": "application",
       "root": "apps/planejador-importador",
@@ -170,6 +161,15 @@
       "sourceRoot": "apps/planejador/src",
       "compilerOptions": {
         "tsConfigPath": "apps/planejador/tsconfig.importador.json"
+      }
+    },
+    "planejador-worker": {
+      "type": "application",
+      "root": "apps/planejador-worker",
+      "entryFile": "main.worker",
+      "sourceRoot": "apps/planejador/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/planejador/tsconfig.worker.json"
       }
     },
     "user-authenticator": {
@@ -182,6 +182,15 @@
         "assets": [
           "views/*.hbs"
         ]
+      }
+    },
+    "wifi-ethos": {
+      "type": "application",
+      "root": "apps/wifi-ethos",
+      "entryFile": "main",
+      "sourceRoot": "apps/wifi-ethos/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wifi-ethos/tsconfig.app.json"
       }
     }
   }
