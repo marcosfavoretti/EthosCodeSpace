@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 x-network-backend: &network-backend
   networks:
@@ -11,6 +11,7 @@ x-extra_hosts-planejador: &extra_hosts-planejador
 x-extra_hosts-user-auth: &extra_hosts-user-auth
   extra_hosts:
     - "cerberus:192.168.99.109"
+    - "ubiquiti:192.168.99.102"
 
 services:
   user-auth:
@@ -24,7 +25,7 @@ services:
       - NODE_ENV=production
       - HOST=0.0.0.0
       - PORT=30002
-      
+
       # Syneco DB (SQL Server)
       - SQLHOST=${SQLHOST}
       - SQLUSER=${SQLUSER}
@@ -35,7 +36,7 @@ services:
       # Auth
       - SECRET=${SECRET}
       - EXPIREHOURS=${EXPIREHOURS}
-      
+
       # App Mode
       - APP_MODE=${APP_MODE}
     <<: [*network-backend, *extra_hosts-user-auth]
@@ -51,17 +52,17 @@ services:
       - NODE_ENV=production
       - HOST=0.0.0.0
       - PORT=30005
-      
+
       # Mongo DB
       - MONGOHOST=${MONGOHOST}
       - MONGOUSER=${MONGOUSER}
       - MONGOPASSWORD=${MONGOPASSWORD}
       - MONGODATABASE=${MONGODATABASE}
-      
+
       # Auth
       - SECRET=${SECRET}
       - EXPIREHOURS=${EXPIREHOURS}
-      
+
       # App Mode
       - APP_MODE=${APP_MODE}
     <<: [*network-backend]
@@ -161,10 +162,6 @@ services:
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
     <<: [*network-backend, *extra_hosts-planejador]
 
-networks:
-  backend-network:
-    driver: bridge
-
   wifi-ethos:
     container_name: wifi-ethos
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:wifi-ethos-latest
@@ -186,7 +183,8 @@ networks:
       - UBIQUITI_PASSWORD=${UBIQUITI_PASSWORD}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - WIFI_SSID=${WIFI_SSID}
-    extra_hosts:
-      - "unifi:192.168.99.102"
-    networks:
-      - backend-network
+    <<: [*network-backend, *extra_hosts-planejador]
+
+networks:
+  backend-network:
+    driver: bridge
