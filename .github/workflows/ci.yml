@@ -65,6 +65,7 @@ jobs:
           # - planejador
           # - planejador-importador
           - user-authenticator
+          - wifi-ethos
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

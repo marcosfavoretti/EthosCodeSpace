@@ -7,6 +7,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { WifiEthosController } from "./delivery/WifiEthos.controller";
+import { validate } from "./config/env.validation";
 
 const entities = [
     WifiCodeManager,
@@ -18,6 +19,7 @@ const entities = [
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: 'apps/wifi-ethos/.env',
+            validate,
         }),
         TypeOrmModule.forRootAsync({
             name: 'mongo',
