@@ -167,11 +167,12 @@ services:
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:wifi-ethos-latest
     restart: always
     ports:
-      - "30008:30008"
-    environment:
       - NODE_ENV=production
       - PORT=30008
       - WIFI_CHECKOUT_URI=${WIFI_CHECKOUT_URI}
+      - "30008:30008"
+    environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
       - WIFI_TIME_LIMIT_MINUTES=${WIFI_TIME_LIMIT_MINUTES}
       - UBIQUITI_SERVICE_URL=${UBIQUITI_SERVICE_URL}
       - MONGOUSER=${MONGOUSER}

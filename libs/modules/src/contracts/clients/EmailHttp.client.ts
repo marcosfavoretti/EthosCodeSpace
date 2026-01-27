@@ -9,7 +9,7 @@ export class EmailHttpClient {
   private emailClient: Axios.AxiosInstance;
   constructor(private configService: ConfigService) {
     this.emailClient = axios.create({
-      baseURL: this.configService.get<string>('EMAIL_SERVICE_URL'),
+      baseURL: this.configService.getOrThrow<string>('EMAIL_SERVICE_URL'),
       headers: {
         'Content-Type': 'application/json',
       },
