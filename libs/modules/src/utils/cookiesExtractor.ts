@@ -22,3 +22,38 @@ export function cookiesExtractor(req: Request): Record<string, string> | null {
   );
   return cookiesObject;
 }
+
+export function cookiesExtractorByString(cookies: string[]): Record<string, string> {
+  // 1. Proteção contra input nulo ou indefinido
+  if (!cookies || !Array.isArray(cookies)) {
+    return {};
+  }
+
+  return cookies.reduce((accumulator, cookieString) => {
+    // Pega apenas a parte "chave=valor", ignorando "Path", "Secure", etc.
+    const cookieRaw = cookieString.split(';')[0];
+
+    // 2. Usa indexOf em vez de split para garantir que valores contendo '=' não quebrem
+    const separatorIndex = cookieRaw.indexOf('=');
+
+    // Se não tiver '=', ignora essa entrada
+    if (separatorIndex === -1) return accumulator;
+
+    // Separa a chave e o valor com precisão
+    const key = cookieRaw.substring(0, separatorIndex).trim();
+    let value = cookieRaw.substring(separatorIndex + 1).trim();
+
+    // 3. Decodifica o valor (opcional, mas recomendado)
+    try {
+      value = decodeURIComponent(value);
+    } catch (e) {
+      // Se falhar o decode, mantém o valor original
+    }
+
+    if (key) {
+      accumulator[key] = value;
+    }
+
+    return accumulator;
+  }, {} as Record<string, string>);
+}
