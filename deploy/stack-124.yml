@@ -74,6 +74,7 @@ services:
     ports:
       - "30006:30006"
     environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
       - NODE_ENV=production
       - PORT=30006
       - SQLHOST=${SQLHOST}
@@ -104,6 +105,7 @@ services:
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-importador-latest
     restart: always
     environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
       - NODE_ENV=production
       - HOST=${HOST}
       - APP_ENTRY_FILE=main.importador.js
@@ -136,6 +138,7 @@ services:
     deploy:
       replicas: 2
     environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
       - NODE_ENV=production
       - HOST=${HOST}
       - APP_ENTRY_FILE=main.worker.js
