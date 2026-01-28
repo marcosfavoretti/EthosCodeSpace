@@ -97,6 +97,7 @@ services:
       - ORACLESID=${ORACLESID}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
+      - ESTRUTURA_SERVICE_URL=${ESTRUTURA_SERVICE_URL}
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
     <<: [*network-backend, *extra_hosts-planejador]
 
@@ -128,6 +129,7 @@ services:
       - ORACLEPASSWORD=${ORACLEPASSWORD}
       - ORACLESID=${ORACLESID}
       - REDIS_PORT=${REDIS_PORT}
+      - ESTRUTURA_SERVICE_URL=${ESTRUTURA_SERVICE_URL}
       - REDIS_HOST=${REDIS_HOST}
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
     <<: [*network-backend, *extra_hosts-planejador]
@@ -161,6 +163,7 @@ services:
       - ORACLEPASSWORD=${ORACLEPASSWORD}
       - ORACLESID=${ORACLESID}
       - REDIS_PORT=${REDIS_PORT}
+      - ESTRUTURA_SERVICE_URL=${ESTRUTURA_SERVICE_URL}
       - REDIS_HOST=${REDIS_HOST}
       - SYSTEM_USER_ID=${SYSTEM_USER_ID}
     <<: [*network-backend, *extra_hosts-planejador]
