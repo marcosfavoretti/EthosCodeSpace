@@ -66,7 +66,7 @@ const entities = [
         useFactory: async (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.get<string>('RABBITMQ_URL')!],
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')!],
             queue: PLANEJADOR_QUEUE,
             queueOptions: {
               durable: true,

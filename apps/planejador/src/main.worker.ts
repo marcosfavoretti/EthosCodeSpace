@@ -12,7 +12,7 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: [configSertvice.get<string>('RABBITMQ_URL')!],
+        urls: [configSertvice.getOrThrow<string>('RABBITMQ_URL')!],
         queue: PLANEJADOR_QUEUE,
         noAck: false,
         queueOptions: {
