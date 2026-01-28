@@ -41,8 +41,9 @@ jobs:
           # - notas-maker
           # - notas-maker-worker
           - notificacao-api
-          # - planejador
-          # - planejador-importador
+          - planejador
+          - planejador-importador
+          - planejador-worker
           - user-authenticator
           - wifi-ethos
 

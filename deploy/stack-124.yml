@@ -101,7 +101,7 @@ services:
 
   planejador-master:
     container_name: planejador-master
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-importador-latest
     restart: always
     environment:
       - NODE_ENV=production
@@ -131,7 +131,7 @@ services:
     <<: [*network-backend, *extra_hosts-planejador]
 
   planejador-worker:
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-worker-latest
     restart: always
     deploy:
       replicas: 2
