@@ -1,18 +1,20 @@
 import { SincronizaPontosUseCase } from '@app/modules/modules/relogio-de-ponto/application/SincronizaPontos.usecase';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common'; // 1. Importe OnModuleInit
-import { PROCESSA_WORKER } from '../@core/symbols/symbols';
+import { PROCESSA_PONTOEVENT, PROCESSA_WORKER } from '../@core/symbols/symbols';
 import { ClientProxy } from '@nestjs/microservices';
 import { ResPontoRegistroDTO } from '@app/modules/contracts/dto/ResPontoRegistro.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class SincronizacaoPollingService implements OnModuleInit {
+  private isRunning = false;
+
   constructor(
     @Inject(SincronizaPontosUseCase)
     private sincronizacaoUseCase: SincronizaPontosUseCase,
     @Inject(PROCESSA_WORKER)
     private client: ClientProxy,
-  ) {}
+  ) { }
   // 3. Force a conexão assim que o módulo iniciar
   async onModuleInit() {
     try {
@@ -31,6 +33,16 @@ export class SincronizacaoPollingService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async sincronizarPontos() {
+    if (this.isRunning) {
+      Logger.warn(
+        'Sincronização anterior ainda em execução. Pulando este ciclo.',
+        'SincronizacaoPollingService',
+      );
+      return;
+    }
+
+    this.isRunning = true;
+
     try {
       Logger.warn('POLLING INICIADO');
       const pontosSincronizados =
@@ -59,11 +71,11 @@ export class SincronizacaoPollingService implements OnModuleInit {
         return;
       }
 
-      pontosPorUsuarioMap.forEach((value, key) => {
+      for (const [key, value] of pontosPorUsuarioMap.entries()) {
         Logger.warn(`pontos da matricula ${key} enviados para processamento`);
 
         // 4. Tratamento correto do envio
-        this.client.emit('ponto.processar', value).subscribe({
+        this.client.emit(PROCESSA_PONTOEVENT, value).subscribe({
           next: () => {
             // O 'next' no emit geralmente é vazio, mas confirma que foi despachado para o broker
             Logger.debug(`Lote ${key} despachado para a fila`);
@@ -76,12 +88,33 @@ export class SincronizacaoPollingService implements OnModuleInit {
             // Opcional: Salvar em um banco para retentativa (Dead Letter local)
           },
         });
-      });
+      }
+
+      // pontosPorUsuarioMap.forEach((value, key) => {
+      //   Logger.warn(`pontos da matricula ${key} enviados para processamento`);
+
+      //   // 4. Tratamento correto do envio
+      //   this.client.emit('ponto.processar', value).subscribe({
+      //     next: () => {
+      //       // O 'next' no emit geralmente é vazio, mas confirma que foi despachado para o broker
+      //       Logger.debug(`Lote ${key} despachado para a fila`);
+      //     },
+      //     error: (err) => {
+      //       // 5. AQUI você garante que sabe se a conexão caiu ou falhou
+      //       Logger.error(
+      //         `ERRO ao enviar matricula ${key} para fila: ${err.message}`,
+      //       );
+      //       // Opcional: Salvar em um banco para retentativa (Dead Letter local)
+      //     },
+      //   });
+      // });
 
       Logger.warn('POLLING FINALIZADO');
     } catch (error) {
       console.error(error);
       Logger.error('falha ao sincronizar pontos');
+    } finally {
+      this.isRunning = false;
     }
   }
 }

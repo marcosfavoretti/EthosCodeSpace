@@ -21,7 +21,6 @@ export class MaisHorasIrregularesKPIUseCase {
   async consultar(dto: ConsultaMarcacaoDTO): Promise<ResHorasIrregularesDTO[]> {
     try {
       const { ccid, dataFim, dataInicio, indetificador } = dto;
-      Logger.debug(dto);
 
       const marcacaoPontos = await this.consultarMarcacaoPontosUseCase.consulta(
         {

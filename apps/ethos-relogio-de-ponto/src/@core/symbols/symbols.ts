@@ -1,2 +1,3 @@
 export const PROCESSA_PONTO_QUEUE = 'PROCESSA_PONTO_QUEUE';
 export const PROCESSA_WORKER = 'PROCESSA_WORKER';
+export const PROCESSA_PONTOEVENT = 'ponto.processar'

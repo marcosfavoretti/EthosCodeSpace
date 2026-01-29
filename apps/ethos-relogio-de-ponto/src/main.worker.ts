@@ -16,6 +16,7 @@ async function bootstrap() {
       options: {
         urls: [configService.get<string>('RABBITMQ_URL')!],
         queue: PROCESSA_PONTO_QUEUE,
+        prefetchCount: 20,
         queueOptions: {
           durable: true,
         },

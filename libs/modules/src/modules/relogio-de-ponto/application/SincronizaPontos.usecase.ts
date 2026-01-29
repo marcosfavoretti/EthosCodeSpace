@@ -7,7 +7,7 @@ import {
 import { ISincronizadorDePontos } from '../@core/interfaces/ISincronizadorDePontos';
 import { ArquivoPontoDado } from '../@core/class/ArquivoPontoDado.entity';
 import { FuncinarioRepository } from '../infra/repository/Funcionario.repository';
-import { Between, IsNull, Raw } from 'typeorm';
+import { Between, Raw } from 'typeorm';
 import { ResPontoRegistroDTO } from '@app/modules/contracts/dto/ResPontoRegistro.dto';
 import { Funcionario } from '../@core/entities/Funcionarios.entity';
 import { endOfDay, getHours, startOfDay, subMonths } from 'date-fns';
@@ -57,8 +57,7 @@ export class SincronizaPontosUseCase {
        */
       const hoje = new Date();
       const dataFimBusca = endOfDay(hoje); // Hoje até 23:59:59
-      const dataInicioBusca = startOfDay(subMonths(hoje, 2)); // 2 meses atrás desde 00:00:00
-      Logger.debug(dataInicioBusca, dataFimBusca);
+      const dataInicioBusca = startOfDay(subMonths(hoje, 2)); // 2 dias atrás desde 00:00:00
       const dbData = await this.registroPontoRepository.find({
         where: {
           dataHoraAr: Between(dataInicioBusca, dataFimBusca),

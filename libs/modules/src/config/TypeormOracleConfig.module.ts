@@ -9,7 +9,7 @@ export function typeormOracleConfig(
   const config: TypeOrmModuleOptions = {
     type: 'oracle',
     name: 'logix',
-    logging: false,
+    logging: ['error'],
     useUTC: true,
     extra: {
       sessionTimezone: 'UTC',
@@ -21,6 +21,6 @@ export function typeormOracleConfig(
     entities: entities,
     synchronize: false,
   };
-  !entities.length && Object.assign(config, { name: 'SYNECO_DB' });
+  !entities.length;
   return config;
 }

@@ -20,8 +20,6 @@ export class ComputaMarcacaoService implements IComputacaoPontos {
 
     let contadorSufixo = 0;
 
-    Logger.debug(pontos, contextoMarcacao);
-
     const ultPonto = !contextoMarcacao.length ? undefined : contextoMarcacao[0];
     const ehNovo = this.ehNovoPeriodo(pontos, ultPonto?.registroPonto);
     contadorSufixo = ehNovo ? 0 : contextoMarcacao.length;
