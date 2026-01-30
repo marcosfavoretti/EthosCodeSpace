@@ -1,18 +1,25 @@
 import { SaveBufferLogDto } from '@app/modules/contracts/dto/SaveBufferLog.dto';
-import { BufferHistorico } from '@app/modules/modules/buffer/@core/entities/BufferHistorico.entity';
+import { ResBufferHistoricoDto } from '@app/modules/contracts/dto/ResBufferHistorico.dto';
+import { CompactBuffer } from '@app/modules/modules/buffer/@core/class/CompactBuffer';
 import { ConsultarBufferCompactadoUseCase } from '@app/modules/modules/buffer/application/ConsultarBufferCompactado.usecase';
 import { JobCriacaoTabelaUseCase } from '@app/modules/modules/buffer/application/JobCriacaoTabela.usecase';
 import { SaveBufferInHistUseCase } from '@app/modules/modules/buffer/application/SaveBufferInHist.usecase';
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { endOfDay, parse } from 'date-fns';
 
-@Controller('/buffer')
+@Controller('/')
 export class BufferController {
   @Inject(SaveBufferInHistUseCase)
   private bufferHistUseCase: SaveBufferInHistUseCase;
+  @ApiResponse({
+    status: 201,
+    type: ResBufferHistoricoDto,
+  })
   @Post('/')
-  async saveBufferLog(@Body() dto: SaveBufferLogDto): Promise<BufferHistorico> {
+  async saveBufferLog(
+    @Body() dto: SaveBufferLogDto,
+  ): Promise<ResBufferHistoricoDto> {
     return await this.bufferHistUseCase.saveHistorico(dto);
   }
 
@@ -31,6 +38,11 @@ export class BufferController {
     required: false,
     type: String,
     description: 'Data final (opcional)',
+  })
+  @ApiResponse({
+    status: 200,
+    type: () => CompactBuffer,
+    isArray: true,
   })
   @Get()
   async consultBufferMethod(
@@ -52,6 +64,10 @@ export class BufferController {
 
   @Inject(JobCriacaoTabelaUseCase)
   private jobCriacaoTabelaUseCase: JobCriacaoTabelaUseCase;
+  @ApiResponse({
+    status: 201,
+    description: 'Job de criação de tabela executado com sucesso',
+  })
   @Post('/dev')
   async jobMethod() {
     await this.jobCriacaoTabelaUseCase.job();

@@ -1,15 +1,15 @@
-import { Inject, NotFoundException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { SetoresRepository } from '../repository/Setores.repository';
 import { MercadosIntermediarioRepository } from '../repository/MercadosIntermediario.repository';
 import { MercadosIntermediario } from '../../@core/entities/MercadosIntermediarios.entity';
-import { EntityNotFoundError } from 'typeorm';
 
 export class ConsultaMercadoService {
   constructor(
-    @Inject(SetoresRepository) private setoresRepository: SetoresRepository,
+    @Inject(SetoresRepository)
+    private setoresRepository: SetoresRepository,
     @Inject(MercadosIntermediarioRepository)
     private mercadoIntermediarioRepo: MercadosIntermediarioRepository,
-  ) {}
+  ) { }
 
   async consultarMercadosExistentes(): Promise<MercadosIntermediario[]> {
     try {
@@ -42,30 +42,21 @@ export class ConsultaMercadoService {
     dia: Date,
   ): Promise<MercadosIntermediario[]> {
     try {
-      const mercados = await this.setoresRepository.find({
-        where: {
-          mercadosIntermediarios: {
-            histBuffer: {
-              serverTime: dia,
-            },
-          },
-          idSetor: idSetor,
-        },
-        relations: {
-          mercadosIntermediarios: {
-            histBuffer: {
-              item: true,
-            },
-          },
-        },
-      });
-      return mercados.flatMap((s) => s.mercadosIntermediarios);
+      return await this.mercadoIntermediarioRepo
+        .createQueryBuilder('mercado')
+        .innerJoin('mercado.setor', 'setor', 'setor.idSetor = :idSetor', {
+          idSetor,
+        })
+        .innerJoinAndSelect(
+          'mercado.histBuffer',
+          'buffer',
+          'buffer.serverTime = :dia',
+          { dia },
+        )
+        .leftJoinAndSelect('buffer.item', 'item')
+        .getMany();
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException(
-          `O setor não foi achado com id ${idSetor} nao foi achado}`,
-        );
-      }
+      console.error(error);
       throw error;
     }
   }

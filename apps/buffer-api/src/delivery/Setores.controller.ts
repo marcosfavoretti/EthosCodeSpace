@@ -9,6 +9,7 @@ import { ApiResponse } from '@nestjs/swagger';
 export class SetoresController {
   @Inject(ConsultaSetoresUseCase) setoresUseCase: ConsultaSetoresUseCase;
   @ApiResponse({
+    status: 200,
     type: () => ResSetorDTO,
     isArray: true,
   })
@@ -20,6 +21,7 @@ export class SetoresController {
   @Inject(ConsultarMercadoUseCase)
   private consultarMercadoUseCase: ConsultarMercadoUseCase;
   @ApiResponse({
+    status: 200,
     type: () => ResMercadosIntermediarioDoSetorDTO,
     isArray: true,
   })

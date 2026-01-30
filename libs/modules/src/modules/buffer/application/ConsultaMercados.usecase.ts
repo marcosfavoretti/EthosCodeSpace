@@ -1,6 +1,5 @@
 import { Inject, Logger } from '@nestjs/common'; // Adicionado Logger
 import { ConsultaMercadoService } from '../infra/service/ConsultarMercado.service';
-import { parse } from 'date-fns';
 import { In, Repository } from 'typeorm';
 import { ProductionRepository } from '../../@syneco/infra/repositories/Production.repository';
 import { Production } from '../../@syneco/@core/entities/Production.entity';
@@ -78,8 +77,6 @@ export class ConsultarMercadoUseCase {
     );
 
     // 4. Mapear as Production para acesso rápido por PartCode
-    // Usamos um Map para garantir acesso O(1) e lidar com múltiplos resultados,
-    // pegando o mais recente devido ao 'order: { ProductionID: 'desc' }'.
     const productionMap: Map<string, Production> = new Map();
     for (const prod of productions) {
       // Se houver múltiplas produções para o mesmo PartCode,
@@ -105,6 +102,7 @@ export class ConsultarMercadoUseCase {
               serverTime: bufferItem.serverTime,
               buffer: bufferItem.buffer,
               item: {
+                linha: bufferItem.item.linha,
                 Item: bufferItem.item.Item,
                 tipo_item: bufferItem.item.tipo_item,
                 item_cliente: itemClienteValue, // Usar o valor da Production

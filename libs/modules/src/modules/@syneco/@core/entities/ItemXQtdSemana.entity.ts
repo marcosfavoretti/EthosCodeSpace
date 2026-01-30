@@ -11,6 +11,9 @@ export class ItemXQtdSemana {
   @Column('char')
   public status: 'S' | 'N';
 
+  @Column({name: 'Linha'})
+  linha: string;
+
   public getCodigo(): string {
     return this.Item;
   }

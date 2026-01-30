@@ -13,6 +13,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { typeormSynecoConfig } from '@app/modules/config/TypeormSynecoConfig.module';
 import { BufferModule } from '@app/modules/modules/buffer/Buffer.module';
 import { ExcelController } from './delivery/Excel.controller';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ResetaTabelaBufferJob } from './cron/ResetaTabelaBuffer.job';
 
 const entities = [
   Production,
@@ -27,6 +29,7 @@ const entities = [
 @Module({
   imports: [
     BufferModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/buffer-api/.env',
@@ -40,6 +43,6 @@ const entities = [
     }),
   ],
   controllers: [BufferController, SetoresController, ExcelController],
-  providers: [],
+  providers: [ResetaTabelaBufferJob],
 })
 export class BufferApiModule {}

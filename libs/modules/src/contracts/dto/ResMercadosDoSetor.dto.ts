@@ -30,6 +30,11 @@ export class BufferItemDto {
   @IsNotEmpty({ message: 'O item do cliente não pode ser vazio.' })
   @IsString({ message: 'O item do cliente deve ser uma string.' })
   item_cliente: string;
+
+  @ApiProperty({ description: 'Código do item do cliente', example: 'CLI-001' })
+  @IsNotEmpty({ message: 'O item do cliente não pode ser vazio.' })
+  @IsString({ message: 'O item do cliente deve ser uma string.' })
+  linha: string;
 }
 
 // --- DTO para BufferHistorico ---
@@ -67,6 +72,7 @@ export class BufferHistoricoDTO {
   @IsNotEmpty({ message: 'O valor do buffer não pode ser vazio.' })
   @IsNumber({}, { message: 'O valor do buffer deve ser um número.' }) // Exemplo de mensagem mais específica
   buffer: number;
+
 }
 
 // --- DTO Principal para Resposta de Mercados Intermediários com Buffer ---
