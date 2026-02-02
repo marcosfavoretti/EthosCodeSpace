@@ -192,41 +192,41 @@ services:
       - WIFI_SSID=${WIFI_SSID}
     <<: [*network-backend, *extra_hosts-planejador]
 
-  # buffer-api:
-  #   container_name: buffer-api
-  #   image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:buffer-api-latest
-  #   restart: always
-  #   ports:
-  #     - "30009:30009"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - PORT=30009
-  #     - HOST=0.0.0.0
+  buffer-api:
+    container_name: buffer-api
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:buffer-api-latest
+    restart: always
+    ports:
+      - "30009:30009"
+    environment:
+      - NODE_ENV=production
+      - PORT=30009
+      - HOST=0.0.0.0
       
-  #     # Database Configuration
-  #     - SQLHOST=${SQLHOST}
-  #     - SQLUSER=${SQLUSER}
-  #     - SQLSENHA=${SQLSENHA}
-  #     - SQLDATABASE=${SQLDATABASE}
-  #     - SQLPORT=${SQLPORT}
+      # Database Configuration
+      - SQLHOST=${SQLHOST}
+      - SQLUSER=${SQLUSER}
+      - SQLSENHA=${SQLSENHA}
+      - SQLDATABASE=${SQLDATABASE}
+      - SQLPORT=${SQLPORT}
       
-  #     # Storage & Files
-  #     - LOCAL_STORAGE_PATH=${LOCAL_STORAGE_PATH}
-  #     - EXCELFILE=${EXCELFILE}
+      # Storage & Files
+      - LOCAL_STORAGE_PATH=${LOCAL_STORAGE_PATH}
+      - EXCELFILE=${EXCELFILE}
 
-  #   volumes:
-  #     # Volume CIFS/Samba
-  #     - win_share_excel:/mnt/storage
-  #   <<: [*network-backend, *extra_hosts-planejador]
+    volumes:
+      # Volume CIFS/Samba
+      - win_share_excel:/mnt/storage
+    <<: [*network-backend, *extra_hosts-planejador]
 
 networks:
   backend-network:
     driver: bridge
 
-# volumes:
-#   win_share_excel:
-#     driver: local
-#     driver_opts:
-#       type: cifs
-#       o: "username=${SMB_USER},password=${SMB_PASS},domain=${SMB_DOMAIN},vers=3.0,uid=1000,gid=1000,file_mode=0775,dir_mode=0775,noperm"
-#       device: "${SMB_PATH}"
+volumes:
+  win_share_excel:
+    driver: local
+    driver_opts:
+      type: cifs
+      o: "username=${SMB_USER},password=${SMB_PASS},domain=${SMB_DOMAIN},vers=3.0,uid=1000,gid=1000,file_mode=0775,dir_mode=0775,noperm"
+      device: "${SMB_PATH}"
