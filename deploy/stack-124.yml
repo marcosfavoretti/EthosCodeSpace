@@ -68,7 +68,7 @@ services:
     <<: [*network-backend]
 
   planejador-api:
-    container_name: planejador-,,
+    container_name: planejador-api
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-latest
     restart: always
     ports:
