@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { DynamicModule, Logger, Module, Provider } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -41,13 +41,15 @@ export class SharedAuthModule {
       );
     }
 
+    const strategy = isProd ? JwtProduction : JwtDev;
     const providers: Provider[] = [
-      isProd ? JwtProduction : JwtDev,
+      strategy,
       {
         provide: IJwtValidate,
-        useExisting: isProd ? JwtProduction : JwtDev,
+        useExisting: strategy,
       },
     ];
+    console.log('SEEEE', isProd);
     return {
       module: SharedAuthModule,
       imports: imports,

@@ -65,6 +65,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 @ApiTags('Fabrica')
 @Controller('fabrica')
 export class FabricaController {
+  
   @Inject(ConsutlarFabricaPrincipalAtualUseCase)
   consutlarFabricaPrincipalAtualUseCase: ConsutlarFabricaPrincipalAtualUseCase;
   @Get('/principal')

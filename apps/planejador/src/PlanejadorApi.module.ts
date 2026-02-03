@@ -32,7 +32,6 @@ import { FabricaServiceModule } from '@app/modules/modules/planejador/FabricaSer
 import { ItemComCapabilidade } from '@app/modules/modules/planejador/@core/entities/Item.entity';
 import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module';
 import { ItemController } from './delivery/Item.controller';
-import { SharedContractsModule } from '@app/modules/shared/modules/SharedContracts.module';
 
 const entities = [
   Cargo,
@@ -48,8 +47,6 @@ const entities = [
   ItemComCapabilidade,
   ItemCapabilidade,
   Setor,
-  // Mercado,
-  // TabelaProducao,
 ];
 
 @Module({
@@ -75,13 +72,11 @@ const entities = [
       inject: [ConfigService],
       name: 'syneco_database',
     }),
-    //services para guards
   ],
   providers: [DonoDaFabricaGuard],
   controllers: [
     ItemController,
     HealthController,
-    // ItemController,
     KPIController,
     PedidoController,
     FabricaController,
