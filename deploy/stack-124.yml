@@ -209,7 +209,7 @@ services:
       - SQLSENHA=${SQLSENHA}
       - SQLDATABASE=${SQLDATABASE}
       - SQLPORT=${SQLPORT}
-      
+      - TZ=${TZ}
       # Storage & Files
       - LOCAL_STORAGE_PATH=${LOCAL_STORAGE_PATH}
       - EXCELFILE=${EXCELFILE}
