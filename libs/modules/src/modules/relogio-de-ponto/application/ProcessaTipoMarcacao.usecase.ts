@@ -96,7 +96,10 @@ export class ProcessaTipoMarcacaoUseCase {
         });
 
         // 2. Prepara histórico local (processados nesta execução)
-        const contextoLocalDesc = [...dadosProcessados].reverse();
+        // CORREÇÃO: Filtrar apenas os registros do MESMO colaborador para evitar contaminação de contexto
+        const contextoLocalDesc = dadosProcessados
+          .filter((d) => d.registroPonto.mat === pontoDto.mat)
+          .reverse();
 
         // 3. Unifica os contextos
         const contextoCompleto = [...contextoLocalDesc, ...contextoBanco];
