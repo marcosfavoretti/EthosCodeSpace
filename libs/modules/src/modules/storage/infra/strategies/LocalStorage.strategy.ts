@@ -45,20 +45,25 @@ export class LocalStorageStrategy implements IStorageStrategy {
     content: Buffer,
     override = false,
   ): Promise<void> {
-    const root = this.getRootPath();
-    const fullPath = path.join(root, folder);
-    await this.createPath(fullPath);
+    try {
+      const root = this.getRootPath();
+      const fullPath = path.join(root, folder);
+      await this.createPath(fullPath);
 
-    const filePath = path.join(fullPath, filename);
+      const filePath = path.join(fullPath, filename);
 
-    const fileExists = await this.checkPathExists(filePath);
+      const fileExists = await this.checkPathExists(filePath);
 
-    if (fileExists && !override) {
-      this.logger.warn(`File ${filePath} already exists. Set override to true`);
-      return;
+      if (fileExists && !override) {
+        this.logger.warn(`File ${filePath} already exists. Set override to true`);
+        return;
+      }
+
+      await fs.writeFile(filePath, content);
+    } catch (error) {
+      Logger.error(error);
+      throw new Error('Problemas ao salvar o arquivo');
     }
-
-    await fs.writeFile(filePath, content);
   }
 
   async get(folder: string, filename: string): Promise<Buffer> {

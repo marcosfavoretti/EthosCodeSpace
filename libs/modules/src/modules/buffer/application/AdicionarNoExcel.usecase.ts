@@ -33,25 +33,24 @@ export class AdicionarNoExcelUseCase {
 
       if (!data.length) throw new Error('Sem dados para sincronizar');
 
-      // 1. CORREÇÃO AQUI: Use .map para criar um novo array corrigido
-      const fixedData = data.map((d) => {
-        const originalDate = new Date(d.serverTime);
-        return {
-          ...d,
-          serverTime: addDays(originalDate, 1),
-        };
-      });
+
+      // const fixedData = data.map((d) => {
+      //   const originalDate = new Date(d.serverTime);
+      //   return {
+      //     ...d,
+      //     serverTime: addDays(originalDate, 1),
+      //   };
+      // });
+
+      const fixedData = data;
 
       const excelBuffer = await this.storageService.get('', filename);
 
-      // Log para verificar se a data corrigida está certa
-      // Deve mostrar ...T03:00:00.000Z (que é 00:00 do dia 4 no Brasil)
       console.log(fixedData[0]);
 
       const workBook = await this.excelService.openWorkBook(excelBuffer);
 
-      // 2. USE fixedData AQUI
-      await this.excelService.removeRowsByDate(
+      this.excelService.removeRowsByDate(
         workBook,
         this.sheetTarget,
         1,
@@ -59,7 +58,7 @@ export class AdicionarNoExcelUseCase {
       );
 
       // 3. USE fixedData AQUI
-      await this.excelService.appendDataToEnd(
+      this.excelService.appendDataToEnd(
         workBook,
         fixedData,
         this.sheetTarget,
