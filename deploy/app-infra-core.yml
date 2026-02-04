@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  user-auth:
+    container_name: user-auth
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:user-authenticator-latest
+    restart: always
+    ports:
+      - "30002:30002"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=30002
+      - SQLHOST=${SQLHOST}
+      - SQLUSER=${SQLUSER}
+      - SQLSENHA=${SQLSENHA}
+      - SQLDATABASE=${SQLDATABASE}
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - USER_SERVICE_URL=${USER_SERVICE_URL}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - APP_MODE=${APP_MODE}
+    networks:
+      - backend-network
+    extra_hosts:
+      - "cerberus:192.168.99.109"
+      - "ubiquiti:192.168.99.102"
+
+  app-route:
+    container_name: app-route
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:app-ethos-latest
+    restart: always
+    ports:
+      - "30005:30005"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=30005
+      - MONGOHOST=${MONGOHOST}
+      - MONGOUSER=${MONGOUSER}
+      - MONGOPASSWORD=${MONGOPASSWORD}
+      - MONGODATABASE=${MONGODATABASE}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - APP_MODE=${APP_MODE}
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    external: true

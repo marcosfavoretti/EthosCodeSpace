@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  email-service:
+    container_name: email-service
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:notificacao-api-latest
+    restart: always
+    ports:
+      - "30003:30003"
+    environment:
+      - TZ=America/Sao_Paulo
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=30003
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASS=${MAIL_PASS}
+      - MAIL_FROM=${MAIL_FROM}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    external: true

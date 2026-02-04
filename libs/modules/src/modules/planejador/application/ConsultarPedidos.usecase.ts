@@ -23,7 +23,7 @@ export class ConsultarPedidosUseCase {
           : await this.pedidoService.consultaPedidosPlanejadosOuNPlanejados(
               Boolean(this.paramMatrix[dto.tipoConsulta]),
             );
-      return result.map((res) => PedidoResponseDTO.fromEntity(res));
+      return result.sort((a,b) => a.dataEntrega.getTime() - b.dataEntrega.getTime()).map((res) => PedidoResponseDTO.fromEntity(res));
     } catch (error) {
       Logger.error(error);
       throw new InternalServerErrorException('Falha ao consultar os pedidos');

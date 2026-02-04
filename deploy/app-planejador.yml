@@ -1,0 +1,117 @@
+version: "3.8"
+
+x-extra_hosts-planejador: &extra_hosts-planejador
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+services:
+  planejador-api:
+    container_name: planejador-api
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-latest
+    restart: always
+    ports:
+      - "30006:30006"
+    environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - NODE_ENV=production
+      - PORT=30006
+      - SQLHOST=${SQLHOST}
+      - SQLUSER=${SQLUSER}
+      - SQLSENHA=${SQLSENHA}
+      - SQLDATABASE=${SQLDATABASE}
+      - SQLPORT=${SQLPORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - APP_MODE=${APP_MODE}
+      - TZ=${TZ}
+      - CHECKPOINT_RANGE=${CHECKPOINT_RANGE}
+      - BATELADAMAX=${BATELADAMAX}
+      - PINTURAMAX=${PINTURAMAX}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEPORT=${ORACLEPORT}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - ESTRUTURA_SERVICE_URL=${ESTRUTURA_SERVICE_URL}
+      - SYSTEM_USER_ID=${SYSTEM_USER_ID}
+    networks:
+      - backend-network
+    <<: *extra_hosts-planejador
+
+  planejador-master:
+    container_name: planejador-master
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-importador-latest
+    restart: always
+    environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - NODE_ENV=production
+      - HOST=${HOST}
+      - APP_ENTRY_FILE=main.importador.js
+      - SQLHOST=${SQLHOST}
+      - SQLUSER=${SQLUSER}
+      - SQLSENHA=${SQLSENHA}
+      - SQLDATABASE=${SQLDATABASE}
+      - SQLPORT=${SQLPORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - APP_MODE=${APP_MODE}
+      - TZ=${TZ}
+      - CHECKPOINT_RANGE=${CHECKPOINT_RANGE}
+      - BATELADAMAX=${BATELADAMAX}
+      - PINTURAMAX=${PINTURAMAX}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEPORT=${ORACLEPORT}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - REDIS_PORT=${REDIS_PORT}
+      - ESTRUTURA_SERVICE_URL=${ESTRUTURA_SERVICE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - SYSTEM_USER_ID=${SYSTEM_USER_ID}
+    networks:
+      - backend-network
+    <<: *extra_hosts-planejador
+
+  planejador-worker:
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:planejador-worker-latest
+    restart: always
+    deploy:
+      replicas: 2
+    environment:
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - NODE_ENV=production
+      - HOST=${HOST}
+      - APP_ENTRY_FILE=main.worker.js
+      - SQLHOST=${SQLHOST}
+      - SQLUSER=${SQLUSER}
+      - SQLSENHA=${SQLSENHA}
+      - SQLDATABASE=${SQLDATABASE}
+      - SQLPORT=${SQLPORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - APP_MODE=${APP_MODE}
+      - TZ=${TZ}
+      - CHECKPOINT_RANGE=${CHECKPOINT_RANGE}
+      - BATELADAMAX=${BATELADAMAX}
+      - PINTURAMAX=${PINTURAMAX}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEPORT=${ORACLEPORT}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - REDIS_PORT=${REDIS_PORT}
+      - ESTRUTURA_SERVICE_URL=${ESTRUTURA_SERVICE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - SYSTEM_USER_ID=${SYSTEM_USER_ID}
+    networks:
+      - backend-network
+    <<: *extra_hosts-planejador
+
+networks:
+  backend-network:
+    external: true

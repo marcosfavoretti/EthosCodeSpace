@@ -1,0 +1,157 @@
+version: "3.8"
+
+services:
+  ponto-api:
+    container_name: ponto-api
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-api-latest
+    restart: always
+    ports:
+      - "30006:30006"
+    environment:
+      - TZ=America/Sao_Paulo
+      - APP_ENTRY_FILE=main.api.js
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=30006
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - APP_MODE=PROD
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - MONGO_URL=mongodb://mongodb:27017/seu_banco
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - backend-network
+
+  ponto-worker:
+    container_name: ponto-worker
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-worker-latest
+    restart: always
+    environment:
+      - TZ=America/Sao_Paulo
+      - APP_ENTRY_FILE=main.worker.js
+      - NODE_ENV=production
+      - PORT=30006
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - APP_MODE=PROD
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - backend-network
+
+  ponto-worker-2:
+    container_name: ponto-worker-2
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-worker-latest
+    restart: always
+    environment:
+      - TZ=America/Sao_Paulo
+      - APP_ENTRY_FILE=main.worker.js
+      - NODE_ENV=production
+      - PORT=30006
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - APP_MODE=PROD
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - backend-network
+
+  ponto-master:
+    container_name: ponto-master
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:ethos-relogio-de-ponto-master-latest
+    restart: always
+    environment:
+      - APP_ENTRY_FILE=main.master.js
+      - NODE_ENV=production
+      - PORT=30006
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - RELOGIO_ENDPOINTS=${RELOGIO_ENDPOINTS}
+      - RELOGIO_SENHA=${RELOGIO_SENHA}
+      - RELOGIO_LOGIN=${RELOGIO_LOGIN}
+      - RABBITHOST=${RABBITHOST}
+      - RABBITPORT=${RABBITPORT}
+      - RABBITUSER=${RABBITUSER}
+      - RABBITPASSWORD=${RABBITPASSWORD}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - APP_MODE=PROD
+      - PROTHEUSSID=${PROTHEUSSID}
+      - PROTHEUSUSER=${PROTHEUSUSER}
+      - PROTHEUSPASSWORD=${PROTHEUSPASSWORD}
+      - PROTHEUSHOST=${PROTHEUSHOST}
+      - ORACLEHOST=${ORACLEHOST}
+      - ORACLEUSER=${ORACLEUSER}
+      - ORACLEPASSWORD=${ORACLEPASSWORD}
+      - ORACLESID=${ORACLESID}
+      - HOURS_PER_DAY=${HOURS_PER_DAY}
+      - SECRET=${SECRET}
+      - EXPIREHOURS=${EXPIREHOURS}
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - backend-network
+    dns:
+      - 192.168.99.110
+      - 192.168.99.106
+
+networks:
+  backend-network:
+    external: true

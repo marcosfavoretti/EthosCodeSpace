@@ -36,9 +36,12 @@ export class AdicionarNoExcelUseCase {
       // 1. CORREÇÃO AQUI: Use .map para criar um novo array corrigido
       const fixedData = data.map((d) => {
         const originalDate = new Date(d.serverTime);
+        // O ExcelJS grava o valor UTC. Se o horário for 00:00 BRT (03:00 UTC), o Excel mostrará 03:00.
+        // Forçamos o UTC para 00:00 para exibir corretamente no Excel.
+        originalDate.setUTCHours(0, 0, 0, 0);
         return {
           ...d,
-          serverTime: addDays(originalDate, 1),
+          serverTime: originalDate,
         };
       });
 

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { PlanejadorModule } from '../src/planejador-api.module';
+import { PlanejadorModule } from '../src/PlanejadorApi.module';
 
 describe('PlanejadorController (e2e)', () => {
   let app: INestApplication;
