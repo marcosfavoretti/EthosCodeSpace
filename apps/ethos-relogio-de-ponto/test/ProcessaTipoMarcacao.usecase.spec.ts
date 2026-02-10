@@ -1,3 +1,4 @@
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProcessaTipoMarcacaoUseCase } from '@app/modules/modules/relogio-de-ponto/application/ProcessaTipoMarcacao.usecase';
 import { ComputaMarcacaoService } from '@app/modules/modules/relogio-de-ponto/infra/services/ComputaMarcacao.service';
@@ -10,6 +11,7 @@ import { RegistroPonto } from '@app/modules/modules/relogio-de-ponto//@core/enti
 import { RpcException } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
 import { getDataSourceToken } from '@nestjs/typeorm';
+import { parseISO, addHours } from 'date-fns';
 
 describe('ProcessaTipoMarcacaoUseCase', () => {
   let useCase: ProcessaTipoMarcacaoUseCase;
@@ -536,6 +538,73 @@ describe('ProcessaTipoMarcacaoUseCase', () => {
         expect(result[3].marcacao).toBe('1S');
       });
 
+    it('deve processar a sequência 1E 1S 2E 2S corretamente (Caso do Usuário)', async () => {
+      const mat = '001186';
+      const dateStr = '2026-02-09';
+      const t1 = new Date(`${dateStr}T05:48:00`); // 1E
+      const t2 = new Date(`${dateStr}T13:03:00`); // 1S
+      const t3 = new Date(`${dateStr}T14:02:00`); // 2E
+      const t4 = new Date(`${dateStr}T15:37:00`); // 2S
+
+      const dto: ResPontoRegistroDTO[] = [
+        { id: 501, mat: mat, dataHoraAr: t1 } as any,
+        { id: 502, mat: mat, dataHoraAr: t2 } as any,
+        { id: 503, mat: mat, dataHoraAr: t3 } as any,
+        { id: 504, mat: mat, dataHoraAr: t4 } as any,
+      ];
+
+      (tipoMarcacaoRepoMock.exist as jest.Mock).mockResolvedValue(false);
+      (tipoMarcacaoRepoMock.find as jest.Mock).mockResolvedValue([]); // No history in DB for this window
+
+      // Mock finding the entity for each ID
+      (registroPontoEntityRepoMock.findOne as jest.Mock).mockImplementation(async (opts) => {
+        const id = opts.where.id;
+        const foundDto = dto.find(d => d.id === id);
+        return foundDto ? { ...foundDto } : null;
+      });
+
+      // Mock Service to act as a simple state machine based on context
+      (computaMarcacaoService.processar as jest.Mock).mockImplementation(async ({ pontos, contextoMarcacao }) => {
+        let resultMarcacao = 'XX';
+        if (!contextoMarcacao || contextoMarcacao.length === 0) {
+          resultMarcacao = '1E';
+        } else {
+          const last = contextoMarcacao[0].marcacao; // contextoMarcacao is DESC ordered
+          if (last === '1E') resultMarcacao = '1S';
+          else if (last === '1S') resultMarcacao = '2E';
+          else if (last === '2E') resultMarcacao = '2S';
+        }
+        
+        // CRITICAL: Return registroPonto so the loop logic (gap check) works for the NEXT item
+        // Also ensure mat is included for local context filtering
+        return { 
+          marcacao: resultMarcacao,
+          registroPonto: { ...pontos, mat: pontos.mat } // Pass back the input point as the associated registry
+        };
+      });
+
+      const result = await useCase.processa(dto);
+
+      expect(computaMarcacaoService.processar).toHaveBeenCalledTimes(4);
+
+      // Verify results
+      expect(result).toHaveLength(4);
+      expect(result[0].marcacao).toBe('1E');
+      expect(result[1].marcacao).toBe('1S');
+      expect(result[2].marcacao).toBe('2E');
+      expect(result[3].marcacao).toBe('2S');
+
+      // Optional: Verify context passed for a specific call, e.g., for the 3rd point (t3, which should be 2E)
+      // Call 3 (index 2) is for t3 (14:02:00). Context should include [1S (13:03:00), 1E (05:48:00)]
+      const call3Args = (computaMarcacaoService.processar as jest.Mock).mock.calls[2][0];
+      const context3 = call3Args.contextoMarcacao;
+      expect(context3).toHaveLength(2);
+      expect(context3[0].marcacao).toBe('1S');
+      expect(context3[0].registroPonto.dataHoraAr).toEqual(t2);
+      expect(context3[1].marcacao).toBe('1E');
+      expect(context3[1].registroPonto.dataHoraAr).toEqual(t1);
+    });
+
     describe('Tratamento de Erros', () => {
       it('deve fazer rollback e lançar RpcException se erro for NJS-040 (Timeout)', async () => {
         (tipoMarcacaoRepoMock.exist as jest.Mock).mockRejectedValue(new Error('NJS-040: Connection timeout'));
@@ -569,6 +638,117 @@ describe('ProcessaTipoMarcacaoUseCase', () => {
         // Logger.error is called with (message, stack)
         expect(Logger.error).toHaveBeenCalledWith(expect.stringContaining('Erro fatal'), expect.anything());
       });
+    });
+  });
+});
+
+describe(`teste para a classe ${ComputaMarcacaoService.name}`, () => {
+  let service: ComputaMarcacaoService;
+
+  beforeEach(() => {
+    service = new ComputaMarcacaoService();
+  });
+
+  describe('dado um array com duas datas distintas com ranges de datas diferentes ele deve reprocessar registros', () => {
+    it('deve processar assincronamente e criar novos períodos de marcação', async () => {
+      const baseDate = parseISO('2023-10-26T08:00:00.000Z');
+
+      const pontos: RegistroPonto[] = [
+        // Primeiro período
+        Object.assign(new RegistroPonto(), {
+          id: 1,
+          dataHoraAr: baseDate,
+          nome: 'Funcionario 1',
+        }),
+        Object.assign(new RegistroPonto(), {
+          id: 2,
+          dataHoraAr: addHours(baseDate, 4), // 12:00
+          nome: 'Funcionario 1',
+        }),
+        // Segundo período (mais de 9 horas de diferença)
+        Object.assign(new RegistroPonto(), {
+          id: 3,
+          dataHoraAr: addHours(baseDate, 14), // 22:00 (10h after point 2)
+          nome: 'Funcionario 1',
+        }),
+        Object.assign(new RegistroPonto(), {
+          id: 4,
+          dataHoraAr: addHours(baseDate, 15), // 23:00 (1h after point 3)
+          nome: 'Funcionario 1',
+        }),
+      ];
+
+      const resultado: Partial<TipoMarcacaoPonto>[] = [];
+      let contexto: TipoMarcacaoPonto[] = [];
+
+      for (const ponto of pontos) {
+        const res = await service.processar({ pontos: ponto, contextoMarcacao: contexto });
+        resultado.push(...res);
+        contexto = [...res as TipoMarcacaoPonto[], ...contexto];
+      }
+
+      expect(resultado).toHaveLength(4);
+
+      // Primeiro período
+      expect(resultado[0].marcacao).toBe('1E');
+      expect(resultado[0].registroPonto.id).toBe(1);
+      expect(resultado[1].marcacao).toBe('1S');
+      expect(resultado[1].registroPonto.id).toBe(2);
+
+      // Segundo período
+      expect(resultado[2].marcacao).toBe('1E'); // Novo período, reinicia a contagem
+      expect(resultado[2].registroPonto.id).toBe(3);
+      expect(resultado[3].marcacao).toBe('1S');
+      expect(resultado[3].registroPonto.id).toBe(4);
+    });
+  });
+
+  describe('dado um array com dois registros de pontos em seguida ele deve processar', () => {
+    it('deve processar sincronamente e continuar o mesmo período de marcação', async () => {
+      const baseDate = parseISO('2023-10-26T08:00:00.000Z');
+
+      const pontos: RegistroPonto[] = [
+        Object.assign(new RegistroPonto(), {
+          id: 1,
+          dataHoraAr: baseDate,
+          nome: 'Funcionario 2',
+        }),
+        Object.assign(new RegistroPonto(), {
+          id: 2,
+          dataHoraAr: addHours(baseDate, 1), // 1 hora depois
+          nome: 'Funcionario 2',
+        }),
+        Object.assign(new RegistroPonto(), {
+          id: 3,
+          dataHoraAr: addHours(baseDate, 2), // 2 horas depois
+          nome: 'Funcionario 2',
+        }),
+        Object.assign(new RegistroPonto(), {
+          id: 4,
+          dataHoraAr: addHours(baseDate, 3), // 3 horas depois
+          nome: 'Funcionario 2',
+        }),
+      ];
+
+      const resultado: Partial<TipoMarcacaoPonto>[] = [];
+      let contexto: TipoMarcacaoPonto[] = [];
+
+      for (const ponto of pontos) {
+        const res = await service.processar({ pontos: ponto, contextoMarcacao: contexto });
+        resultado.push(...res);
+        contexto = [...res as TipoMarcacaoPonto[], ...contexto];
+      }
+
+      expect(resultado).toHaveLength(4);
+
+      expect(resultado[0].marcacao).toBe('1E');
+      expect(resultado[0].registroPonto.id).toBe(1);
+      expect(resultado[1].marcacao).toBe('1S');
+      expect(resultado[1].registroPonto.id).toBe(2);
+      expect(resultado[2].marcacao).toBe('2E');
+      expect(resultado[2].registroPonto.id).toBe(3);
+      expect(resultado[3].marcacao).toBe('2S');
+      expect(resultado[3].registroPonto.id).toBe(4);
     });
   });
 });
