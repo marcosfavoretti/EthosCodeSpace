@@ -11,7 +11,7 @@ import { ResponsePaginatorDTO } from '@app/modules/contracts/dto/ResponsePaginat
 import { TipoMarcacaoPonto } from '../@core/entities/TipoMarcacaoPonto.entity';
 import { RegistroPonto } from '../@core/entities/RegistroPonto.entity';
 import { ResRegistroPontoTurnoPontoDTO } from '@app/modules/contracts/dto/ResRegistroPontoTurno.dto';
-import { addDays, addHours, parse, startOfDay } from 'date-fns';
+import { addDays, addHours, parse, startOfDay, subDays } from 'date-fns';
 import { FuncinarioRepository } from '../infra/repository/Funcionario.repository';
 import { Funcionario } from '../@core/entities/Funcionarios.entity';
 import { ResTipoMarcacaoDTO } from '@app/modules/contracts/dto/ResTipoMarcacao.dto';
@@ -361,12 +361,11 @@ export class ConsultaMarcacaoPontosUseCase {
 
   private calculateWorkdayDate(eventTime: Date, tipoMarcacao: string): Date {
     let workdayDate = startOfDay(eventTime);
-    // Se for antes das 05:00 e não for a primeira entrada, pertence tecnicamente ao dia anterior
     if (
-      eventTime.getHours() < this.WORKDAY_CUTOFF_HOUR &&
-      !tipoMarcacao.endsWith('1E')
+      eventTime.getHours() < this.WORKDAY_CUTOFF_HOUR 
+      // && !tipoMarcacao.endsWith('1E')
     ) {
-      workdayDate = addDays(workdayDate, -1);
+      workdayDate = subDays(workdayDate, 1);
     }
     return workdayDate;
   }
