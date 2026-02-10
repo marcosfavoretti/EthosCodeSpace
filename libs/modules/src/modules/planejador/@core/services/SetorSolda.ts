@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { CODIGOSETOR } from '../enum/CodigoSetor.enum';
 import { MetodoDeAlocacao } from '../abstract/MetodoDeAlocacao';
 import { MetodoDeReAlocacao } from '../abstract/MetodoDeReAlocacao';

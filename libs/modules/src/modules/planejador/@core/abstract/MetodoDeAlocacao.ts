@@ -35,10 +35,6 @@ export abstract class MetodoDeAlocacao {
     protected Itemselecionador: ISelecionarItem,
   ) {}
 
-  //TODO: preciso melhorar a logica desse metodo, talvez tirar daqui
-  // protected abstract diasPossiveis(
-  //     fabrica: Fabrica, pedido: Pedido, setor: CODIGOSETOR, planejamentoFabril: PlanejamentoTemporario[]
-  // ): Promise<Date[]>;
 
   protected abstract alocacao(
     props: AlocacaoSemDependenciaProps,

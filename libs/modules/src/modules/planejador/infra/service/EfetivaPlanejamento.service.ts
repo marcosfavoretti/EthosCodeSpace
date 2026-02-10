@@ -100,13 +100,6 @@ export class EfetivaPlanejamentoService {
       tipoAcao: acao,
     };
 
-    // 3. LOG DETALHADO: Inspecione o objeto ANTES de passá-lo para o TypeORM
-    Logger.warn('--- Inspecionando objeto para repository.create() ---');
-    // Usamos 'depth: 2' para ver um nível de profundidade (pedido -> planejamentos)
-    // Se a referência circular estiver mais profunda, aumente o depth.
-    const inspectedData = inspect(dataToCreate, { depth: 2, colors: true });
-    Logger.log(inspectedData);
-    Logger.warn('--- Fim da inspeção ---');
 
     // 4. Chame o método do TypeORM
     try {

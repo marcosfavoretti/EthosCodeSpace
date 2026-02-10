@@ -1,3 +1,4 @@
+import { PlanejamentoTemporario } from '../classes/PlanejamentoTemporario';
 import { ItemComCapabilidade } from '../entities/Item.entity';
 import { CODIGOSETOR } from '../enum/CodigoSetor.enum';
 import { IVerificaCapacidade } from '../interfaces/IVerificaCapacidade';
@@ -20,5 +21,9 @@ export class VerificaCapabilidade implements IVerificaCapacidade {
 
   verificaCapacidade(qtd: number): boolean {
     return this.item.capabilidade(this.setor) <= qtd;
+  }
+
+  consumes(plan: PlanejamentoTemporario): boolean {
+    return plan.item.getCodigo() === this.item.getCodigo();
   }
 }

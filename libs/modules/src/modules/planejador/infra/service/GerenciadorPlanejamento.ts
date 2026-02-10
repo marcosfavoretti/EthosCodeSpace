@@ -17,8 +17,7 @@ import { CODIGOSETOR } from '../../@core/enum/CodigoSetor.enum';
 import { ItemComCapabilidade } from '../../@core/entities/Item.entity';
 
 export class GerenciadorPlanejamento
-  implements IGerenciadorPlanejamentoMutation, IGerenciadorPlanejamentConsulta
-{
+  implements IGerenciadorPlanejamentoMutation, IGerenciadorPlanejamentConsulta {
   private calendario: Calendario = new Calendario();
 
   constructor(
@@ -28,7 +27,7 @@ export class GerenciadorPlanejamento
     private efetivaPlanejamentoService: EfetivaPlanejamentoService,
     @Inject(ConsultaPlanejamentoService)
     private consultaPlanejamentoService: ConsultaPlanejamentoService,
-  ) {}
+  ) { }
 
   async appendReplanejamento(
     fabrica: Fabrica,
@@ -102,7 +101,6 @@ export class GerenciadorPlanejamento
     planejamentosTemp: PlanejamentoTemporario[],
   ): Promise<Planejamento[]> {
     try {
-      console.log(fabrica);
       await this.planejamentoValidatorExecutor.execute(
         fabrica,
         pedido,
@@ -119,7 +117,7 @@ export class GerenciadorPlanejamento
             (bd) =>
               isSameDay(bd.planejamento.dia, planejamentoTemp.dia) &&
               bd.planejamento.item.getCodigo() ===
-                planejamentoTemp.item.getCodigo() &&
+              planejamentoTemp.item.getCodigo() &&
               bd.planejamento.setor.codigo === planejamentoTemp.setor &&
               bd.planejamento.pedido.id === planejamentoTemp.pedido.id,
           )
@@ -284,13 +282,21 @@ export class GerenciadorPlanejamento
     planejamentosTemporarios?: PlanejamentoTemporario[],
   ): Promise<number> {
     try {
-      const filterMesmoDiaEMesmoitemEMesmoSetor = (p: PlanejamentoTemporario) =>
-        isSameDay(p.dia, dia) &&
-        p.item.getCodigo() === item.getCodigo() &&
-        p.setor === setor;
+      Logger.log(`minha estrategia ${estrategiaVerificacao.constructor.name}`, 'GerenciadorPlanejamento');
+      const filterMesmoDiaEMesmoitemEMesmoSetor = (p: PlanejamentoTemporario) => {
+        Logger.debug(
+          `Filter check: plan.dia=${p.dia?.toISOString()}, currentDia=${dia?.toISOString()}, plan.setor=${p.setor}, currentSetor=${setor}, itemLine=${p.item.linha}, planItemLine=${(p.item as any)?.linha}`,
+          'GerenciadorPlanejamento',
+        );
+        return (
+          estrategiaVerificacao.consumes(p) &&
+          isSameDay(p.dia, dia) &&
+          p.setor === setor
+        );
+      };
       /**
        * soma planejados do mesmo setor, item e dia
-       */
+      */
       const totalPlanejadoSalvo = planejamentosBanco
         .filter(filterMesmoDiaEMesmoitemEMesmoSetor)
         .reduce((total, p) => total + p.qtd, 0);
@@ -307,6 +313,7 @@ export class GerenciadorPlanejamento
       throw new Error('erro ao analisar a quantidade no dia');
     }
   }
+  
 
   async possoAlocarNoDia(
     dia: Date,
@@ -318,17 +325,17 @@ export class GerenciadorPlanejamento
     planejamentosTemporarios?: PlanejamentoTemporario[],
   ): Promise<boolean> {
     try {
-      const filterMesmoDiaEMesmoitemEMesmoSetor = (p: PlanejamentoTemporario) =>
+      const filterMesmoDiaEMesmoSetor = (p: PlanejamentoTemporario) =>
         isSameDay(p.dia, dia) &&
-        p.item.getCodigo() === item.getCodigo() &&
-        p.setor === setor;
+        p.setor === setor &&
+        estrategiaVerificacao.consumes(p);
 
       const totalPlanejadoSalvo = planejamentoBanco
-        .filter(filterMesmoDiaEMesmoitemEMesmoSetor)
+        .filter(filterMesmoDiaEMesmoSetor)
         .reduce((total, p) => total + Number(p.qtd), 0);
 
       const totalPlanejadoTemporario = (planejamentosTemporarios ?? [])
-        .filter(filterMesmoDiaEMesmoitemEMesmoSetor)
+        .filter(filterMesmoDiaEMesmoSetor)
         .reduce((total, p) => total + p.qtd, 0);
 
       const totalPlanejado = totalPlanejadoSalvo + totalPlanejadoTemporario;

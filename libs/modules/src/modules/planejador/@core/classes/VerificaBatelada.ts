@@ -1,3 +1,4 @@
+import { PlanejamentoTemporario } from '../classes/PlanejamentoTemporario';
 import { IVerificaCapacidade } from '../interfaces/IVerificaCapacidade';
 
 export class VerificaBatelada implements IVerificaCapacidade {
@@ -8,5 +9,9 @@ export class VerificaBatelada implements IVerificaCapacidade {
 
   calculaCapacidade(qtd: number): number {
     return this.qtdBateladaMax - qtd;
+  }
+
+  consumes(plan: PlanejamentoTemporario): boolean {
+    return true;
   }
 }
