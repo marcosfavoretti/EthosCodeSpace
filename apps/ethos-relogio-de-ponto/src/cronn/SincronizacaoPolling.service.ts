@@ -90,25 +90,6 @@ export class SincronizacaoPollingService implements OnModuleInit {
         });
       }
 
-      // pontosPorUsuarioMap.forEach((value, key) => {
-      //   Logger.warn(`pontos da matricula ${key} enviados para processamento`);
-
-      //   // 4. Tratamento correto do envio
-      //   this.client.emit('ponto.processar', value).subscribe({
-      //     next: () => {
-      //       // O 'next' no emit geralmente é vazio, mas confirma que foi despachado para o broker
-      //       Logger.debug(`Lote ${key} despachado para a fila`);
-      //     },
-      //     error: (err) => {
-      //       // 5. AQUI você garante que sabe se a conexão caiu ou falhou
-      //       Logger.error(
-      //         `ERRO ao enviar matricula ${key} para fila: ${err.message}`,
-      //       );
-      //       // Opcional: Salvar em um banco para retentativa (Dead Letter local)
-      //     },
-      //   });
-      // });
-
       Logger.warn('POLLING FINALIZADO');
     } catch (error) {
       console.error(error);

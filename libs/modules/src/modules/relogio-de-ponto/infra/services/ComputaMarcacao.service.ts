@@ -22,12 +22,29 @@ export class ComputaMarcacaoService implements IComputacaoPontos {
 
     const ultPonto = !contextoMarcacao.length ? undefined : contextoMarcacao[0];
     const ehNovo = this.ehNovoPeriodo(pontos, ultPonto?.registroPonto);
-    contadorSufixo = ehNovo ? 0 : contextoMarcacao.length;
+    if (ehNovo) {
+      contadorSufixo = 0;
+    } else {
+      // If not a new period, continue the sequence from the last mark
+      contadorSufixo = (ultPonto?.marcacao ? this.getContadorFromMarcacao(ultPonto.marcacao) : 0) + 1;
+    }
+
     listaMarcacao.push({
       registroPonto: pontos,
       marcacao: this.setSufixo(contadorSufixo++),
     });
     return listaMarcacao;
+  }
+
+  private getContadorFromMarcacao(marcacao: string): number {
+    const num = parseInt(marcacao.substring(0, marcacao.length - 1)); // Extract number part (e.g., '1' from '1E')
+    const type = marcacao[marcacao.length - 1]; // Extract type part (e.g., 'E' or 'S')
+
+    if (type === 'E') {
+      return (num - 1) * 2;
+    } else { // type === 'S'
+      return (num - 1) * 2 + 1;
+    }
   }
 
   private setSufixo(contador: number): string {
@@ -44,10 +61,6 @@ export class ComputaMarcacaoService implements IComputacaoPontos {
     if (!ultimoPonto) return true;
 
     const corte_timer_millis = hoursToMilliseconds(this.INTERVALO_CORTE);
-
-    console.log('-------------------------');
-    console.log({ ultimoPonto, ponto, corte_timer_millis });
-    console.log('-------------------------');
 
     const diff_millis =
       ponto.dataHoraAr.getTime() - ultimoPonto.dataHoraAr.getTime();
