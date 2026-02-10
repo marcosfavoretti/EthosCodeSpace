@@ -202,7 +202,7 @@ services:
       - NODE_ENV=production
       - PORT=30009
       - HOST=0.0.0.0
-      
+      - TZ=${TZ}
       # Database Configuration
       - SQLHOST=${SQLHOST}
       - SQLUSER=${SQLUSER}
