@@ -7,7 +7,6 @@ import { differenceInHours, subHours } from 'date-fns';
 import { RpcException } from '@nestjs/microservices';
 import { RegistroPonto } from '../@core/entities/RegistroPonto.entity'; // Import the entity
 import { RegistroPontoRepository } from '../infra/repository/RegistroPonto.repository'; // Import the custom repository
-import { TipoMarcacaoPontoRepository } from '../infra/repository/TipoMarcacaoPonto.repository'; // Import the custom repository
 import { InjectDataSource } from '@nestjs/typeorm';
 
 export class ProcessaTipoMarcacaoUseCase {
@@ -16,15 +15,8 @@ export class ProcessaTipoMarcacaoUseCase {
   private readonly MAX_SHIFT_GAP_HOURS = 9;
 
   constructor(
-    @Inject(RegistroPontoRepository) // Still inject for potential usage outside transaction
-    private registroPontoRepository: RegistroPontoRepository,
-
     @Inject(ComputaMarcacaoService)
     private computaMarcacaoService: ComputaMarcacaoService,
-
-    @Inject(TipoMarcacaoPontoRepository) // Still inject for potential usage outside transaction
-    private tipoMarcacaoPontoRepository: TipoMarcacaoPontoRepository,
-
     @InjectDataSource('logix')
     private dataSource: DataSource,
   ) {}
@@ -88,7 +80,7 @@ export class ProcessaTipoMarcacaoUseCase {
           where: {
             registroPonto: {
               mat: pontoDto.mat,
-              dataHoraAr: Between(subHours(new Date(), 48), pontoDto.dataHoraAr),
+              dataHoraAr: Between(subHours(pontoDto.dataHoraAr, 48), pontoDto.dataHoraAr),
             },
           },
           order: { registroPonto: { dataHoraAr: 'DESC' } },
@@ -125,7 +117,15 @@ export class ProcessaTipoMarcacaoUseCase {
                 indice1E + 1,
               );
             } else {
-              contextoValidoParaServico = contextoCompleto;
+              // Se nenhuma marcação '1E' é encontrada dentro do gap de turno,
+              // significa que a sequência está incompleta ou corrompida.
+              // Neste caso, resetamos o contexto para forçar o ComputaMarcacaoService
+              // a iniciar um novo turno com '1E', prevenindo inconsistências.
+              Logger.warn(
+                `Nenhuma marcação '1E' encontrada para o colaborador ${pontoDto.mat} ` +
+                `dentro do gap de turno. Iniciando novo contexto de turno para evitar inconsistências.`,
+              );
+              contextoValidoParaServico = [];
             }
           } else {
             Logger.debug(
