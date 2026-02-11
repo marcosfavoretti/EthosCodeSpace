@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { BufferServiceModule } from 'libs/modules/src/modules/buffer/BufferService.module';
 import { BufferController } from './delivery/Buffer.controller';
 import { SetoresController } from './delivery/Setores.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +14,7 @@ import { BufferModule } from '@app/modules/modules/buffer/Buffer.module';
 import { ExcelController } from './delivery/Excel.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ResetaTabelaBufferJob } from './cron/ResetaTabelaBuffer.job';
+import { SharedAuthModule } from '@app/modules/shared/modules/SharedAuth.module';
 
 const entities = [
   Production,
@@ -29,6 +29,7 @@ const entities = [
 @Module({
   imports: [
     BufferModule,
+    SharedAuthModule.forRoot(),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,

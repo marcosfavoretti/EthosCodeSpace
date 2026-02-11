@@ -2,9 +2,11 @@ import { ResMercadosIntermediarioDoSetorDTO } from '@app/modules/contracts/dto/R
 import { ResSetorDTO } from '@app/modules/contracts/dto/ResSetores.dto';
 import { ConsultarMercadoUseCase } from '@app/modules/modules/buffer/application/ConsultaMercados.usecase';
 import { ConsultaSetoresUseCase } from '@app/modules/modules/buffer/application/ConsultaSetores.usecase';
-import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
+import { Controller, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
+@UseGuards(JwtGuard)
 @Controller('/setores')
 export class SetoresController {
   @Inject(ConsultaSetoresUseCase) setoresUseCase: ConsultaSetoresUseCase;

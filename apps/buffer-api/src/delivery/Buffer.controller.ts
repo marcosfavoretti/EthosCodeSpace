@@ -4,10 +4,15 @@ import { CompactBuffer } from '@app/modules/modules/buffer/@core/class/CompactBu
 import { ConsultarBufferCompactadoUseCase } from '@app/modules/modules/buffer/application/ConsultarBufferCompactado.usecase';
 import { JobCriacaoTabelaUseCase } from '@app/modules/modules/buffer/application/JobCriacaoTabela.usecase';
 import { SaveBufferInHistUseCase } from '@app/modules/modules/buffer/application/SaveBufferInHist.usecase';
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { endOfDay, parse } from 'date-fns';
-
+import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
+import { RolesGuard } from '@app/modules/shared/guards/VerificaCargo.guard';
+import { Roles } from '@app/modules/shared/decorators/Cargo.decorator';
+import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
+@Roles(CargoEnum.PCP, CargoEnum.ADMIN)
+@UseGuards(JwtGuard, RolesGuard)
 @Controller('/')
 export class BufferController {
   @Inject(SaveBufferInHistUseCase)
