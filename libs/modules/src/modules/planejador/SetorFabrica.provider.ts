@@ -17,6 +17,10 @@ import { MetodoDeReAlocacao } from './@core/abstract/MetodoDeReAlocacao';
 import { RealocaPorCapabilidade } from './infra/service/RealocaPorCapabilidade';
 import { RealocaPorBateladaService } from './infra/service/RealocaPorBatelada.service';
 
+
+import { RealocaPorCapabilidadeELinha } from './infra/service/RealocaPorCapabilidadeELinha';
+import { AlocaPorLinhaCapabilidade } from './@core/services/AlocaPorLinhaCapabilidade';
+
 export const SetorFabricaProviders: Provider[] = [
   {
     provide: IGerenciadorPlanejamentConsulta,
@@ -26,6 +30,12 @@ export const SetorFabricaProviders: Provider[] = [
     provide: 'AlocaCapabilidadeRops',
     useFactory: (g: IGerenciadorPlanejamentConsulta) =>
       new AlocaPorCapabilidade(g, new SelecionaItemRops()),
+    inject: [IGerenciadorPlanejamentConsulta],
+  },
+  {
+    provide: 'AlocaPorLinhaCapabilidadeRops',
+    useFactory: (g: IGerenciadorPlanejamentConsulta) =>
+      new AlocaPorLinhaCapabilidade(g, new SelecionaItemRops()),
     inject: [IGerenciadorPlanejamentConsulta],
   },
   {
@@ -41,9 +51,27 @@ export const SetorFabricaProviders: Provider[] = [
     inject: [IGerenciadorPlanejamentConsulta],
   },
   {
+    provide: 'AlocaLinhaCapabilidadeMontagem',
+    useFactory: (g: IGerenciadorPlanejamentConsulta) =>
+      new AlocaPorLinhaCapabilidade(g, new SelecionaItem000()),
+    inject: [IGerenciadorPlanejamentConsulta],
+  },
+  {
     provide: 'RealocaCapabiliadeMontagem',
     useFactory: (g: IGerenciadorPlanejamentConsulta) =>
       new RealocaPorCapabilidade(g, new SelecionaItem000()),
+    inject: [IGerenciadorPlanejamentConsulta],
+  },
+  {
+    provide: 'RealocaPorLinhaCapabilidadeRops',
+    useFactory: (g: IGerenciadorPlanejamentConsulta) =>
+      new RealocaPorCapabilidadeELinha(g, new SelecionaItemRops()),
+    inject: [IGerenciadorPlanejamentConsulta],
+  },
+  {
+    provide: 'RealocaPorLinhaCapabilidadeMontagem',
+    useFactory: (g: IGerenciadorPlanejamentConsulta) =>
+      new RealocaPorCapabilidadeELinha(g, new SelecionaItem000()),
     inject: [IGerenciadorPlanejamentConsulta],
   },
   {
@@ -107,7 +135,7 @@ export const SetorFabricaProviders: Provider[] = [
     ) => {
       return new SetorSolda(metodoDeAlocacao, metodoDeReAlocacao);
     },
-    inject: ['AlocaCapabilidadeRops', 'RealocaCapabiliadeRops'], // Adicione aqui os providers que você quer injetar como dependências
+    inject: ['AlocaPorLinhaCapabilidadeRops', 'RealocaPorLinhaCapabilidadeRops'], // Adicione aqui os providers que você quer injetar como dependências
   },
   {
     provide: SetorPinturaPo,
@@ -147,6 +175,6 @@ export const SetorFabricaProviders: Provider[] = [
     ) => {
       return new SetorMontagem(metodoDeAlocacao, metodoDeReAlocacao);
     },
-    inject: ['AlocaCapabilidadeMontagem', 'RealocaCapabiliadeMontagem'], // Adicione aqui os providers que você quer injetar como dependências
+    inject: ['AlocaLinhaCapabilidadeMontagem', 'RealocaPorLinhaCapabilidadeMontagem'], // Adicione aqui os providers que você quer injetar como dependências
   },
 ];

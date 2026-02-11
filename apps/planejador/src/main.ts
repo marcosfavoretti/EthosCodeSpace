@@ -1,5 +1,4 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { PlanejadorApiModule } from './planejador-api.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +9,7 @@ import {
 } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { FastApiStyleLoggingInterceptor } from '@app/modules/shared/interceptor/FastApiStyleLoggingInterceptor.interceptor';
+import { PlanejadorApiModule } from './PlanejadorApi.module';
 
 const SERVICE_NAME = `
 __________.__                            __            .___            

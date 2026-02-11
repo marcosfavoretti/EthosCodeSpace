@@ -6,7 +6,7 @@ import { PedidoRepository } from '../repository/Pedido.repository';
 export class PedidoService {
   constructor(
     @Inject(PedidoRepository) private pedidoRepository: PedidoRepository,
-  ) {}
+  ) { }
 
   async consultarPedido(pedidoId: number): Promise<Pedido> {
     return await this.pedidoRepository.findOneOrFail({
@@ -44,8 +44,7 @@ export class PedidoService {
     const agora = new Date();
     return await this.pedidoRepository.find({
       where: [
-        { processado: false },
-        { dataEntrega: MoreThanOrEqual(new Date()) },
+        { dataEntrega: MoreThanOrEqual(agora) },
       ],
     });
   }
@@ -56,8 +55,7 @@ export class PedidoService {
         id: In(pedidosId),
       },
     });
-    if (!pedido.length)
-      throw new EntityNotFoundError(Pedido, 'not found error');
+    if (!pedido.length) throw new EntityNotFoundError(Pedido, 'not found error');
     return pedido;
   }
 

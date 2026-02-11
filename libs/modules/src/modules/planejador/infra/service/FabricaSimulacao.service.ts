@@ -22,6 +22,10 @@ import { SetorService } from '../../@core/abstract/SetorService';
 import { AlocaItensDependencias } from '../../@core/services/AlocaItensDependencias';
 import { RealocaDependenciaService } from './RealocaDependencia.service';
 import { RealocaPedidoTodoService } from './RealocaPedidoTodo.service';
+import { CODIGOSETOR } from '../../@core/enum/CodigoSetor.enum';
+import { VerificaLinhaCapabilidade } from '../../@core/classes/VerificaLinhaCapabilidade';
+import { VerificaCapabilidade } from '../../@core/classes/VerificaCapabilidade';
+import { SelecionaItem000 } from '../../@core/classes/SelecionaItem000';
 
 export class FabricaSimulacaoService {
   constructor(
@@ -36,7 +40,7 @@ export class FabricaSimulacaoService {
     @Inject(IGerenciadorPlanejamentoMutation)
     private readonly gerenciadorPlanejamento: IGerenciadorPlanejamentoMutation &
       IGerenciadorPlanejamentConsulta,
-  ) {}
+  ) { }
 
   calendario = new Calendario();
   logger = new Logger();
@@ -386,10 +390,20 @@ export class FabricaSimulacaoService {
       props.planPivot.setor,
     );
 
+    const metodoDeVerificao = primeiroSetorDoPipe.getSetorCode() === CODIGOSETOR.SOLDA ||
+      primeiroSetorDoPipe.getSetorCode() === CODIGOSETOR.MONTAGEM
+      ? new VerificaLinhaCapabilidade(props.pedido.item, props.planPivot.setor)
+      : new VerificaCapabilidade(props.pedido.item, props.planPivot.setor);
+
+    const metodoDeSelecao = primeiroSetorDoPipe.getSetorCode() === CODIGOSETOR.MONTAGEM
+      ? new SelecionaItem000()
+      : new SelecionaItemRops();
+
     primeiroSetorDoPipe.setMetodoDeReAlocacao(
       new RealocaPedidoTodoService(
         this.gerenciadorPlanejamento,
-        new SelecionaItemRops(),
+        metodoDeSelecao,
+        metodoDeVerificao,
       ),
     );
 

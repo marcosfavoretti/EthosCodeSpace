@@ -1,5 +1,5 @@
 import { differenceInBusinessDays, isAfter, isSameDay } from 'date-fns';
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   MetodoDeReAlocacao,
   RealocacaoComDepedenciaProps,
@@ -11,14 +11,18 @@ import { PlanejamentoTemporario } from '../../@core/classes/PlanejamentoTemporar
 import { CODIGOSETOR } from '../../@core/enum/CodigoSetor.enum';
 import { RealocacaoParcial } from '../../@core/classes/RealocacaoParcial';
 import { VerificaCapabilidade } from '../../@core/classes/VerificaCapabilidade';
+import type { IVerificaCapacidade } from '../../@core/interfaces/IVerificaCapacidade';
 
+@Injectable()
 export class RealocaPedidoTodoService extends MetodoDeReAlocacao {
   constructor(
     gerenciador: IGerenciadorPlanejamentConsulta,
     selecionarItem: ISelecionarItem,
+    private metodoDeVerificacao: IVerificaCapacidade
   ) {
     super(gerenciador, selecionarItem);
   }
+
 
   /**
    * @param planejamentosDoPedido
@@ -100,7 +104,7 @@ export class RealocaPedidoTodoService extends MetodoDeReAlocacao {
           props.setor,
           planejamento.item,
           totalParaRealocar,
-          new VerificaCapabilidade(props.pedido.item, props.setor),
+          this.metodoDeVerificacao,
           props.planejamentoFabril,
           resultado.adicionado,
         );

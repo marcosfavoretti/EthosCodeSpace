@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ImportadorModule } from './Importador.module';
+import { ImportadorModule } from './PlanejadorImportador.module';
 import { Logger } from '@nestjs/common';
 
 async function bootstrap() {

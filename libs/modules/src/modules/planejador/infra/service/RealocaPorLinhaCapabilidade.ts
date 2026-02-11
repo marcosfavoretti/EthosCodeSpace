@@ -17,9 +17,9 @@ import { RealocacaoParcial } from '../../@core/classes/RealocacaoParcial';
 import { PlanejamentoTemporario } from '../../@core/classes/PlanejamentoTemporario';
 import { ItemComCapabilidade } from '../../@core/entities/Item.entity';
 import { CODIGOSETOR } from '../../@core/enum/CodigoSetor.enum';
-import { VerificaCapabilidade } from '../../@core/classes/VerificaCapabilidade';
+import { VerificaLinhaCapabilidade } from '../../@core/classes/VerificaLinhaCapabilidade';
 
-export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
+export class RealocaPorLinhaCapabilidade extends MetodoDeReAlocacao {
   constructor(
     gerenciador: IGerenciadorPlanejamentConsulta,
     selecionarItem: ISelecionarItem,
@@ -30,7 +30,7 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
   protected async realocacao(
     props: RealocacaoSemDependenciaProps,
   ): Promise<RealocacaoParcial> {
-    Logger.log(`REALOCACAO SEM DEP INIT <> ${props.setor}`);
+    Logger.log(`REALOCACAO POR LINHA SEM DEP INIT ${props.setor}`);
 
     const resultado: RealocacaoParcial = new RealocacaoParcial();
 
@@ -45,22 +45,16 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
 
       const novaData = props.novoDia;
 
-      //mesmo que usuario queira eu nao deixo ele realocar em cima de capabilidade altas
       const datasParaAlocar =
         await this.gerenciadorPlan.diaParaAdiarProducaoEncaixe(
           novaData,
           props.setor,
           planejamento.item,
           totalParaRealocar,
-          new VerificaCapabilidade(props.pedido.item, props.setor),
+          new VerificaLinhaCapabilidade(props.pedido.item, props.setor),
           props.planejamentoFabril,
           resultado.adicionado,
         );
-
-      // if (data <= 0) {
-      //     novaData = this.calendario.proximoDiaUtilReplanejamento(novaData);
-      //     qtdAlocada = Math.min(totalParaRealocar, capacidade);
-      // }
 
       for (const [dataParaAlocar, _qtd] of datasParaAlocar.entries()) {
         console.log(
@@ -117,7 +111,9 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
     props: RealocacaoComDepedenciaProps,
   ): Promise<RealocacaoParcial> {
     console.log(`====================================================`);
-    console.log(`INICIANDO REALOCAÇÃO PARA O SETOR: ${props.setor}`);
+    console.log(
+      `INICIANDO REALOCAÇÃO POR LINHA PARA O SETOR: ${props.setor}`,
+    );
     console.log(
       `Recebido do setor anterior (${props.realocacaoUltSetor.adicionado[0]?.setor || 'N/A'}):`,
     );
@@ -183,8 +179,6 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
       decrementador += planejamento.qtd;
     }
 
-    // const offsetMatrix = this.calcOffSet(planejamentoImpactados, props.planFalho.dia);
-
     //intero a lista com base na data de alocacao do ultimo setor
     for (const [
       index,
@@ -196,7 +190,6 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
         break; // passa para o próximo setor na chain
       }
 
-      // const offset = offsetMatrix[index];
       //incrementa a data com base no leadtime do ultimo setor
       const novaData = addBusinessDays(
         planejamento.dia,
@@ -214,15 +207,10 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
           props.setor,
           planejamentoModificado.item,
           totalParaRealocar,
-          new VerificaCapabilidade(props.pedido.item, props.setor),
+          new VerificaLinhaCapabilidade(props.pedido.item, props.setor),
           props.planejamentoFabril,
           realocacaoParcial.adicionado,
         );
-
-      // if (data <= 0) {
-      //     novaData = this.calendario.proximoDiaUtilReplanejamento(novaData);
-      //     qtdAlocada = Math.min(totalParaRealocar, capacidade);
-      // }
 
       for (const [dataParaAlocar, _qtd] of datasParaAlocar.entries()) {
         console.log(
@@ -247,7 +235,9 @@ export class RealocaPorCapabilidade extends MetodoDeReAlocacao {
       }
     }
     console.debug(`====================================================`);
-    console.debug(`FINALIZANDO REALOCAÇÃO PARA O SETOR: ${props.setor}`);
+    console.debug(
+      `FINALIZANDO REALOCAÇÃO POR LINHA PARA O SETOR: ${props.setor}`,
+    );
     console.debug(
       `--> Itens que ESTE setor está REMOVENDO: ${realocacaoParcial.retirado.map((d) => d.dia)}`,
     );
