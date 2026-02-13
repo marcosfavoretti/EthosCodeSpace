@@ -23,7 +23,7 @@ import { CargoEnum } from '@app/modules/modules/user/@core/enum/CARGOS.enum';
 import { JwtGuard } from '@app/modules/shared/guards/jwt.guard';
 import { RolesGuard } from '@app/modules/shared/guards/VerificaCargo.guard';
 
-@Roles(CargoEnum.ADMIN)
+@Roles(CargoEnum.ADMIN, CargoEnum.LIDER_LASER, CargoEnum.LIDER_MONTAGEM, CargoEnum.LIDER_SOLDA, CargoEnum.LIDER_QUALIDADE, CargoEnum.DIRETOR)
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('/funcionario')
 export class FuncionarioController {

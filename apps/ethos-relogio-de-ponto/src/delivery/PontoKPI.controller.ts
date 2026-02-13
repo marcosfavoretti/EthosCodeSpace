@@ -8,7 +8,7 @@ import { RolesGuard } from '@app/modules/shared/guards/VerificaCargo.guard';
 import { Controller, Get, Inject, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
-@Roles(CargoEnum.ADMIN)
+@Roles(CargoEnum.ADMIN, CargoEnum.LIDER_LASER, CargoEnum.LIDER_MONTAGEM, CargoEnum.LIDER_SOLDA, CargoEnum.LIDER_QUALIDADE, CargoEnum.DIRETOR)
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('/kpi')
 export class PontoKPIController {
