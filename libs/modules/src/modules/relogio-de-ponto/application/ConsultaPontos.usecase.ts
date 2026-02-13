@@ -419,10 +419,9 @@ export class ConsultaMarcacaoPontosUseCase {
     let applied = false;
 
     if (dto.ccid) {
-      qb.innerJoin('f.centroDeCusto', 'cc').andWhere(
-        'TRIM(f.RA_CC) = TRIM(:cc)',
-        { cc: dto.ccid },
-      );
+      const ccids = Array.isArray(dto.ccid) ? dto.ccid : [dto.ccid];
+      qb.innerJoin('f.centroDeCusto', 'cc');
+      qb.andWhere('TRIM(f.RA_CC) IN (:...ccids)', { ccids: ccids.map(cc => String(cc).trim()) });
       applied = true;
     }
 

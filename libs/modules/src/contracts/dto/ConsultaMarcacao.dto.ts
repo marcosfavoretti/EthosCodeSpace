@@ -14,10 +14,12 @@ export class ConsultaMarcacaoDTO extends PaginationDTO {
   @ApiProperty({
     required: false,
     description: 'Identificador do centro de custo',
+    isArray: true,
+    type: String
   })
   @IsOptional()
-  @IsString()
-  ccid?: number;
+  @IsString({ each: true })
+  ccid?: string[];
 
   @ApiProperty({
     required: false,
