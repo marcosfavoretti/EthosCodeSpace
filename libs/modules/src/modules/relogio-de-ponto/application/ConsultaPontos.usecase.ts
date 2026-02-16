@@ -28,7 +28,7 @@ export class ConsultaMarcacaoPontosUseCase {
     private checkHorasIrregulares: CheckInvalidHours,
     private tipoMarcacaoPontoRepository: TipoMarcacaoPontoRepository,
     private funcionarioRepository: FuncinarioRepository,
-  ) {}
+  ) { }
 
   /**
    * Método Orquestrador Principal
@@ -145,7 +145,6 @@ export class ConsultaMarcacaoPontosUseCase {
     const [sqlQuery, sqlParams] = qbCount.getQueryAndParameters();
 
     // Envolve a query DISTINCT em um COUNT externo
-    Logger.debug(sqlQuery);
     const countResult = await this.tipoMarcacaoPontoRepository.manager.query(
       `SELECT COUNT(1) AS "total" FROM (${sqlQuery})`,
       sqlParams,
@@ -329,6 +328,12 @@ export class ConsultaMarcacaoPontosUseCase {
     const turnoDia = new Date(datePart);
 
     const funcionario = funcionariosDict[header.mat];
+
+    
+    if (!funcionario?.centroDeCusto?.descricao ) {
+      this.logger.warn(`Funcionario ou centro de custo indefinido para matricula: ${header.mat}`);
+    }
+
     const setorDesc = funcionario?.centroDeCusto?.descricao || 'N/A';
     const nomeFunc = funcionario?.nome || header.nome || 'Desconhecido';
 
@@ -362,7 +367,7 @@ export class ConsultaMarcacaoPontosUseCase {
   private calculateWorkdayDate(eventTime: Date, tipoMarcacao: string): Date {
     let workdayDate = startOfDay(eventTime);
     if (
-      eventTime.getHours() < this.WORKDAY_CUTOFF_HOUR 
+      eventTime.getHours() < this.WORKDAY_CUTOFF_HOUR
       // && !tipoMarcacao.endsWith('1E')
     ) {
       workdayDate = subDays(workdayDate, 1);
@@ -421,6 +426,7 @@ export class ConsultaMarcacaoPontosUseCase {
     if (dto.ccid) {
       const ccids = Array.isArray(dto.ccid) ? dto.ccid : [dto.ccid];
       qb.innerJoin('f.centroDeCusto', 'cc');
+      qb.andWhere('f.demitido != :demitido', { demitido: 'D' })
       qb.andWhere('TRIM(f.RA_CC) IN (:...ccids)', { ccids: ccids.map(cc => String(cc).trim()) });
       applied = true;
     }
@@ -442,8 +448,10 @@ export class ConsultaMarcacaoPontosUseCase {
     matriculas: string[],
   ): Promise<Record<string, Funcionario>> {
     if (!matriculas.length) return {};
+
     const lista =
       await this.funcionarioRepository.buscarPoridentificador(matriculas);
+
     const mapa: Record<string, Funcionario> = {};
     for (const f of lista) mapa[f.matricula.trim()] = f;
     return mapa;
