@@ -18,8 +18,7 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const mode = this.configService.get<string>('APP_MODE')?.toLowerCase();
-    if (mode === 'dev') return true;
+
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],

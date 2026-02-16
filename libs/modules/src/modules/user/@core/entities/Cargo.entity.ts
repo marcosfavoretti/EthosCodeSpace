@@ -6,14 +6,13 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { GerenciaCargo } from './GerenciaCargo.entity';
-import { CargoEnum } from '../enum/CARGOS.enum';
 
 @Entity()
 export class Cargo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, enum: CargoEnum })
+  @Column({ unique: true })
   nome: string;
 
   @Column({ nullable: true })

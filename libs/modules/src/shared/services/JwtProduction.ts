@@ -14,12 +14,20 @@ export class JwtProduction implements IJwtValidate {
 
   private readonly logger = new Logger(JwtGuard.name);
 
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+
   private extractTokenFromCookie(request: Request): string | undefined {
     return request.cookies?.access_token;
   }
 
   async validate(req: Request): Promise<boolean> {
-    const token = this.extractTokenFromCookie(req);
+    let token = this.extractTokenFromHeader(req);
+    if (!token) {
+      token = this.extractTokenFromCookie(req);
+    }
 
     if (!token) {
       throw new UnauthorizedException('Token não encontrado');

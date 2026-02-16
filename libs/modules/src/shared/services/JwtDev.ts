@@ -8,11 +8,12 @@ export class JwtDev implements IJwtValidate {
   validate(request: Request): boolean {
     Logger.debug('JWT DEV MODE', JwtDev.name);
     const userPayload: Partial<User> = {
-      name: 'user',
+      name: 'Dev User',
       avatar: '',
-      cargosLista: [],
+      email: '',
+      cargosLista: ['ADMIN', 'USER'],   
     };
-    request['user'];
+    request['user'] = userPayload;
     return true;
   }
 }
