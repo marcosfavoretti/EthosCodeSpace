@@ -204,6 +204,7 @@ services:
       - HOST=0.0.0.0
       - TZ=${TZ}
       # Database Configuration
+      - SECRET=${SECRET}
       - SQLHOST=${SQLHOST}
       - SQLUSER=${SQLUSER}
       - SQLSENHA=${SQLSENHA}
