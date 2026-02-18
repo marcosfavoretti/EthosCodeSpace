@@ -23,9 +23,9 @@ import { PLANEJADOR_QUEUE } from './@core/const/planejador.const';
 import { ImportaPedidoLogixUseCase } from '@app/modules/modules/planejador/application/ImportaPedidosLogix.usecase';
 import { PedidoServiceModule } from '@app/modules/modules/planejador/PedidoService.module';
 import { INotificaFalhas } from '@app/modules/modules/planejador/@core/interfaces/INotificaFalhas';
-import { PlanejadorNotificaLoggerService } from '@app/modules/modules/planejador/infra/service/PlanejadorNotificaLogger.service';
 import { ItemServiceModule } from '@app/modules/modules/planejador/ItemService.module';
 import { PlanejadorNotificaPorEmailService } from '@app/modules/modules/planejador/infra/service/PlanejadorNotificaPorEmail.service';
+import { EmailHttpClient } from '@app/modules/contracts/clients/EmailHttp.client';
 
 const entities = [
   Cargo,
@@ -67,11 +67,11 @@ const entities = [
         useFactory: async (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.getOrThrow<string>('RABBITMQ_URL')!],
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
             queue: PLANEJADOR_QUEUE,
             queueOptions: {
               durable: true,
-            }
+            },
           },
         }),
 
@@ -80,13 +80,14 @@ const entities = [
     ]),
   ],
   providers: [
-    //strategy de como vai ter o logg dee erros dos produtos
+    EmailHttpClient,
     {
       provide: INotificaFalhas,
       useClass: PlanejadorNotificaPorEmailService,
     },
     ImportacaoPolling,
-    ImportaPedidoLogixUseCase],
+    ImportaPedidoLogixUseCase,
+  ],
   controllers: [],
 })
-export class ImportadorModule { }
+export class ImportadorModule {}
