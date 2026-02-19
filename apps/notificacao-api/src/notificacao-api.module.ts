@@ -3,7 +3,10 @@ import { NotificacaoApiEmailController } from './delivery/notificacao-api-email.
 import { ConfigModule } from '@nestjs/config';
 import { NotificacaoModule } from '@app/modules/modules/notificacao/Notificacao.module';
 import { validate } from './config/env.validation';
+import { ApiExtraModels } from '@nestjs/swagger'; // Added import
+import { AttachmentDto } from '@app/modules/contracts/dto/Attachment.dto'; // Added import
 
+@ApiExtraModels(AttachmentDto) // Added decorator
 @Module({
   imports: [
     NotificacaoModule,

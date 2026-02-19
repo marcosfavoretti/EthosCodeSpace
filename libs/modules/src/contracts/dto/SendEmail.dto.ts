@@ -6,7 +6,10 @@ import {
   ValidateIf,
   IsArray,
   IsOptional,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { AttachmentDto } from './Attachment.dto';
 
 export class SendEmailDTO {
   @ApiProperty()
@@ -27,9 +30,16 @@ export class SendEmailDTO {
   @IsNotEmpty()
   to: string[];
   @ApiProperty({
-    type: [String],
+    description:
+      'Array de caminhos de arquivos (string) ou objetos de anexo (AttachmentDto) com conteúdo base64.',
+    oneOf: [
+      { type: 'array', items: { type: 'string' } },
+      { type: 'array', items: { $ref: '#/components/schemas/AttachmentDto' } },
+    ],
   })
   @IsOptional()
   @IsArray()
-  attachments: string[];
+  @ValidateNested({ each: true })
+  @Type(() => AttachmentDto) // This helps with validation for AttachmentDto objects
+  attachments?: (string | AttachmentDto)[];
 }
