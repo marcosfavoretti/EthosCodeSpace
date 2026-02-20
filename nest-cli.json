@@ -37,6 +37,15 @@
         "tsConfigPath": "apps/certificados-cat/tsconfig.app.json"
       }
     },
+    "controle-portaria": {
+      "type": "application",
+      "root": "apps/controle-portaria",
+      "entryFile": "main",
+      "sourceRoot": "apps/controle-portaria/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/controle-portaria/tsconfig.app.json"
+      }
+    },
     "estrutura-api": {
       "type": "application",
       "root": "apps/estrutura-api",

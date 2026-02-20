@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IStorageService } from '../@core/interfaces/IStorage.service';
 import { IStorageStrategy } from '../@core/interfaces/IStorage.strategy';
 import { ReadStream } from 'fs';
@@ -8,7 +8,7 @@ export class StorageService implements IStorageService {
   constructor(
     @Inject(IStorageStrategy)
     private readonly storageStrategy: IStorageStrategy,
-  ) {}
+  ) { }
 
   save(
     path: string,
@@ -16,7 +16,12 @@ export class StorageService implements IStorageService {
     content: Buffer,
     override?: boolean,
   ): Promise<void> {
-    return this.storageStrategy.save(path, filename, content, override);
+    try {
+      return this.storageStrategy.save(path, filename, content, override);
+    } catch (error) {
+      Logger.error(error);
+      throw new Error('Error saving file to storage')
+    }
   }
 
   get(path: string, filename: string): Promise<Buffer> {

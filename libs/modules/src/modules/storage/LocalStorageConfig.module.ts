@@ -8,7 +8,7 @@ import { LocalStorageConfigDto } from './@core/domain/LocalStorageConfig.dto';
     {
       provide: LocalStorageConfigDto,
       useFactory: (config: ConfigService) => {
-        const path = config.get<string>('LOCAL_STORAGE_PATH');
+        const path = config.getOrThrow<string>('LOCAL_STORAGE_PATH');
         Logger.debug(`Storage local configurado em : ${path}`, 'LOCAL STORAGE');
         return {
           path: path,
