@@ -8,17 +8,17 @@ export class PuppeteerAutomation implements IWebAutomation {
     private currentPage?: Page;
     private browser?: Browser;
     private configuration: LaunchOptions;
-    
+
     constructor(private configService: ConfigService) {
         this.configuration = {
-            headless: !!Number(this.configService.get<number>('HEADLESS_BROWSER', 1)),
+            headless: true, //!!Number(this.configService.get<number>('HEADLESS_BROWSER', 1)),
             defaultViewport: { height: 900, width: 900 },
             args: [
-                '--disable-gpu',
                 '--no-sandbox',
-                '--disable-dev-shm-usage',
                 '--disable-setuid-sandbox',
-                '--enable-features=NetworkService',
+                '--disable-dev-shm-usage',
+                '--window-size=1920,1080',
+                '--start-maximized'
             ],
         };
     }
@@ -64,14 +64,14 @@ export class PuppeteerAutomation implements IWebAutomation {
         try {
             await this.checkToolsToSearch();
             const element = await this.currentPage!.waitForSelector(selector, { visible: true, timeout });
-            
+
             if (!element) return null;
 
             // Corrigido: Usar element.evaluate para evitar erro de "JavaScript world"
             const isDisabled = await element.evaluate((el: any) => el.hasAttribute('disabled'));
-            
+
             if (isDisabled) return null;
-            
+
             return element;
         } catch (err) {
             if (err instanceof TimeoutError) return null;
@@ -87,11 +87,34 @@ export class PuppeteerAutomation implements IWebAutomation {
 
     async click(element: ElementHandle): Promise<void> {
         if (!element) throw new Error("Elemento não definido para clique");
-        await element.click();
+        try {
+            await element.click();
+        } catch (error) {
+            // O clique em botões do Power BI pode disparar navegação/redirecionamento
+            // que destrói o contexto de execução. Se o clique foi executado e a página
+            // está navegando, consideramos sucesso e continuamos.
+            if (error.message.includes('Execution context was destroyed') ||
+                error.message.includes('Node is detached from document')) {
+                console.warn('Clique executado mas contexto foi destruído pela navegação da página - isso é esperado no Power BI');
+                return;
+            }
+            throw error;
+        }
     }
 
-    async reloadPage(): Promise<void> {
-        if (this.currentPage) await this.currentPage.reload({ waitUntil: 'networkidle2' });
+    async reloadPage(waitForSelector?: string): Promise<void> {
+        if (this.currentPage) {
+            // 'load' é mais seguro no modo headless pois o Power BI tem muitas requisições em background (telemetria, polling)
+            // que nunca atingem o estado networkidle, o que causaria timeout no modo headless 'shell'
+            await this.currentPage.reload({ waitUntil: 'load', timeout: 60000 });
+
+            // Após reload, aguarda um elemento específico para garantir que a página está pronta
+            // Isso evita o erro "Execution context was destroyed"
+            if (waitForSelector) {
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Pequeno delay para garantir que o DOM está pronto
+                await this.waitElement(waitForSelector, 15000);
+            }
+        }
     }
 
     async waitElementDisappear(selector: string, timeout: number = 300000): Promise<void> {

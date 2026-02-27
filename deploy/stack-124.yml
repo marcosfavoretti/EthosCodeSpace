@@ -224,6 +224,10 @@ services:
     container_name: pbindex
     image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:pbindex-latest
     restart: always
+    #habilita o INSTALL_CHROMIUM
+    args:
+      APP_NAME: pbindex
+      INSTALL_CHROMIUM: "true"
     ports:
       - "30010:30010"
       - "30001:30001"
@@ -241,7 +245,7 @@ services:
       - POWERBIEMAIL=${POWERBIEMAIL}
       - POWERBISENHA=${POWERBISENHA}
       - SECRET=${SECRET}
-      - TZ=
+      - TZ=${TZ}
       - HEADLESS_BROWSER=${HEADLESS_BROWSER}
       - PRODUCTIONRELATION_URL=${PRODUCTIONRELATION_URL}
     <<: [*network-backend, *extra_hosts-planejador]

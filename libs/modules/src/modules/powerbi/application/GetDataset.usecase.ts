@@ -26,6 +26,7 @@ export class GetDatasetsUseCase {
                 }
             })
         } catch (error) {
+            Logger.error(error);
             throw new InternalServerErrorException('Não foi possível consultar os datasets');
         }
     }

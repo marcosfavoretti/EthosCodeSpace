@@ -8,7 +8,6 @@ import { ProblensOnRefresh } from "../../@core/exceptions/problens-on-refresh.ex
 import { DoesntRefresing } from "../../@core/exceptions/doesnt-refreshing.exeception";
 import { ConfigService } from "@nestjs/config";
 import { IPowerbiRefreshObserver } from "../../@core/interfaces/IPowerbiRefreshObserver";
-import { PreActionExecutorService } from "./PreActionsExecutor.service";
 
 @Injectable()
 export class PowerbiAtualizadorService implements IPowerbiAtualizador {
@@ -82,7 +81,9 @@ export class PowerbiAtualizadorService implements IPowerbiAtualizador {
             await new Promise((resolve) => setTimeout(resolve, 2500));
             await this.clickBtnRefresh();
             await new Promise((resolve) => setTimeout(resolve, 5_000));
-            await this.automation.reloadPage();
+            // Passa o seletor do loader para garantir que a página está pronta após o reload
+            // Isso evita o erro "Execution context was destroyed"
+            await this.automation.reloadPage('#content spinner');
         } catch (error) {
             console.log(error);
             throw error;
@@ -91,8 +92,14 @@ export class PowerbiAtualizadorService implements IPowerbiAtualizador {
     private async openDropDownMenu() {
         try {
             const dropdown_menu = await this.automation.waitElement(`#model-actionbar-refresh`);
-            await dropdown_menu.click()
+            await this.automation.click(dropdown_menu)
         } catch (error) {
+            // Ignora erro de contexto destruído pois pode ser causado por navegação após clique
+            if (error.message.includes('Execution context was destroyed') ||
+                error.message.includes('Node is detached from document')) {
+                console.warn('Menu dropdown aberto mas contexto foi destruído pela navegação da página');
+                return;
+            }
             Logger.log('nao foi possível abrir o menu');
             throw error;
         }
@@ -107,11 +114,17 @@ export class PowerbiAtualizadorService implements IPowerbiAtualizador {
             const btn_refresh = await this.automation.waitElement(selector);
             await new Promise(resolve => setTimeout(resolve, 1_000));
             if (btn_refresh) {
-                await btn_refresh.click();
+                await this.automation.click(btn_refresh);
                 return;
             }
             await this.clickBtnRefresh(tryNumber + 1);
         } catch (error) {
+            // Ignora erro de contexto destruído pois o clique pode disparar navegação no Power BI
+            if (error.message.includes('Execution context was destroyed') ||
+                error.message.includes('Node is detached from document')) {
+                console.warn('Botão de refresh clicado mas contexto foi destruído pela navegação da página');
+                return;
+            }
             console.log('não foi possível clicar para atualizar o dataset');
             throw error;
         }

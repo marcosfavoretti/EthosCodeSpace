@@ -29,10 +29,21 @@ RUN npx nest build ${APP_NAME}
 FROM node:22-alpine AS production
 
 ARG APP_NAME
+ARG INSTALL_CHROMIUM=false
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 
+# Conditionally install Chromium
+RUN if [ "$INSTALL_CHROMIUM" = "true" ]; then \
+    apk add --no-cache chromium ; \
+    fi
+
+# Tell Puppeteer where to find Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Tell puppeteer to skip downloading chromium
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 # Install production dependencies only
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
