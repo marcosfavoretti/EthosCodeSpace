@@ -154,6 +154,15 @@
         "tsConfigPath": "apps/notificacao-api/tsconfig.app.json"
       }
     },
+    "pbindex": {
+      "type": "application",
+      "root": "apps/pbindex",
+      "entryFile": "main",
+      "sourceRoot": "apps/pbindex/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/pbindex/tsconfig.app.json"
+      }
+    },
     "planejador": {
       "type": "application",
       "root": "apps/planejador",

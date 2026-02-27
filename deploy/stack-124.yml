@@ -220,6 +220,32 @@ services:
       - win_share_excel:/mnt/storage
     <<: [*network-backend, *extra_hosts-planejador]
 
+  pbindex:
+    container_name: pbindex
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:pbindex-latest
+    restart: always
+    ports:
+      - "30010:30010"
+      - "30001:30001"
+    environment:
+      - NODE_ENV=production
+      - PORT=30010
+      - WSPORT=30001
+      - WSHOST=0.0.0.0
+      - HOST=0.0.0.0
+      - APP_MODE=${APP_MODE}
+      - MYSQLUSER=${MYSQLUSER}
+      - MYSQLSENHA=${MYSQLSENHA}
+      - MYSQLDATABASE=${MYSQLDATABASE}
+      - MYSQLHOST=${MYSQLHOST}
+      - POWERBIEMAIL=${POWERBIEMAIL}
+      - POWERBISENHA=${POWERBISENHA}
+      - SECRET=${SECRET}
+      - TZ=
+      - HEADLESS_BROWSER=${HEADLESS_BROWSER}
+      - PRODUCTIONRELATION_URL=${PRODUCTIONRELATION_URL}
+    <<: [*network-backend, *extra_hosts-planejador]
+
 networks:
   backend-network:
     driver: bridge

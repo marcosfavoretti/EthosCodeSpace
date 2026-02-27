@@ -41,6 +41,7 @@ jobs:
           # - notas-maker
           # - notas-maker-worker
           - notificacao-api
+          - pbindex
           - planejador
           - planejador-importador
           - planejador-worker
