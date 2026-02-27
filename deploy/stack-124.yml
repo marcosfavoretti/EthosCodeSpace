@@ -11,6 +11,7 @@ x-extra_hosts-planejador: &extra_hosts-planejador
 x-extra_hosts-user-auth: &extra_hosts-user-auth
   extra_hosts:
     - "cerberus:192.168.99.109"
+    - "apolo:192.168.99.102"
     - "ubiquiti:192.168.99.102"
 
 services:
