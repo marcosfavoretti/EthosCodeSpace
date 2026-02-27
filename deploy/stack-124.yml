@@ -221,35 +221,35 @@ services:
       - win_share_excel:/mnt/storage
     <<: [*network-backend, *extra_hosts-planejador]
 
-  pbindex:
-    container_name: pbindex
-    # Use imagem com Chromium pré-construída. Para sem Chromium, use: pbindex-latest
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:pbindex-chromium-latest
-    restart: always
-    ports:
-      - "30010:30010"
-      - "30001:30001"
-    environment:
-      - NODE_ENV=production
-      - PORT=30010
-      - WSPORT=30001
-      - WSHOST=0.0.0.0
-      - HOST=0.0.0.0
-      - APP_MODE=${APP_MODE}
-      - MYSQLUSER=${MYSQLUSER}
-      - MYSQLSENHA=${MYSQLSENHA}
-      - MYSQLDATABASE=${MYSQLDATABASE}
-      - MYSQLHOST=${MYSQLHOST}
-      - POWERBIEMAIL=${POWERBIEMAIL}
-      - POWERBISENHA=${POWERBISENHA}
-      - SECRET=${SECRET}
-      - TZ=${TZ}
-      - HEADLESS_BROWSER=${HEADLESS_BROWSER}
-      - PRODUCTIONRELATION_URL=${PRODUCTIONRELATION_URL}
-      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-      - PUPPETEER_SKIP_DOWNLOAD=true
-      - APP_ENTRY_FILE=main.js
-    <<: [*network-backend, *extra_hosts-planejador]
+  # pbindex:
+  #   container_name: pbindex
+  #   # Use imagem com Chromium pré-construída. Para sem Chromium, use: pbindex-latest
+  #   image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:pbindex-chromium-latest
+  #   restart: always
+  #   ports:
+  #     - "30010:30010"
+  #     - "30001:30001"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - PORT=30010
+  #     - WSPORT=30001
+  #     - WSHOST=0.0.0.0
+  #     - HOST=0.0.0.0
+  #     - APP_MODE=${APP_MODE}
+  #     - MYSQLUSER=${MYSQLUSER}
+  #     - MYSQLSENHA=${MYSQLSENHA}
+  #     - MYSQLDATABASE=${MYSQLDATABASE}
+  #     - MYSQLHOST=${MYSQLHOST}
+  #     - POWERBIEMAIL=${POWERBIEMAIL}
+  #     - POWERBISENHA=${POWERBISENHA}
+  #     - SECRET=${SECRET}
+  #     - TZ=${TZ}
+  #     - HEADLESS_BROWSER=${HEADLESS_BROWSER}
+  #     - PRODUCTIONRELATION_URL=${PRODUCTIONRELATION_URL}
+  #     - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+  #     - PUPPETEER_SKIP_DOWNLOAD=true
+  #     - APP_ENTRY_FILE=main.js
+  #   <<: [*network-backend, *extra_hosts-planejador]
 
 networks:
   backend-network:
