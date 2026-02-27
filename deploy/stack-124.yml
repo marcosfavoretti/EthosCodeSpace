@@ -223,12 +223,9 @@ services:
 
   pbindex:
     container_name: pbindex
-    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:pbindex-latest
+    # Use imagem com Chromium pré-construída. Para sem Chromium, use: pbindex-latest
+    image: ghcr.io/${GITHUB_USER_OR_ORG}/ethoscodespace:pbindex-chromium-latest
     restart: always
-    #habilita o INSTALL_CHROMIUM
-    args:
-      APP_NAME: pbindex
-      INSTALL_CHROMIUM: "true"
     ports:
       - "30010:30010"
       - "30001:30001"
@@ -249,6 +246,9 @@ services:
       - TZ=${TZ}
       - HEADLESS_BROWSER=${HEADLESS_BROWSER}
       - PRODUCTIONRELATION_URL=${PRODUCTIONRELATION_URL}
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      - PUPPETEER_SKIP_DOWNLOAD=true
+      - APP_ENTRY_FILE=main.js
     <<: [*network-backend, *extra_hosts-planejador]
 
 networks:
